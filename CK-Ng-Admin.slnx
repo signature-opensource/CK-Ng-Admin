@@ -4,5 +4,8 @@
     <File Path=".gitignore" />
     <File Path="nuget.config" />
   </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="Tests/CK.Ng.Admin.Tests/CK.Ng.Admin.Tests.csproj" />
+  </Folder>
   <Project Path="CK.Ng.Admin/CK.Ng.Admin.csproj" />
 </Solution>

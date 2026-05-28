@@ -1,5 +1,6 @@
 create <ts> transformer
 begin
+    ensure import { computed } from '@angular/core';
     ensure import { GroupInfos } from '@local/ck-gen';
 
     inject """
