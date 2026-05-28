@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="nuget.config" />
+  </Folder>
+  <Project Path="CK.Ng.Admin/CK.Ng.Admin.csproj" />
+</Solution>
