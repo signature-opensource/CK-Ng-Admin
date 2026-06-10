@@ -1,0 +1,19 @@
+{
+    "CK.Admin.Register.Title": "Finalisez votre inscription",
+    "CK.Admin.Register.SubTitle": "Complétez vos informations pour activer votre compte.",
+    "CK.Admin.Register.Email.Placeholder": "E-mail",
+    "CK.Admin.Register.FirstName.Placeholder": "Prénom",
+    "CK.Admin.Register.FirstName.Required": "Le prénom est obligatoire.",
+    "CK.Admin.Register.LastName.Placeholder": "Nom",
+    "CK.Admin.Register.LastName.Required": "Le nom est obligatoire.",
+    "CK.Admin.Register.Password.Placeholder": "Mot de passe",
+    "CK.Admin.Register.Password.Required": "Le mot de passe est obligatoire.",
+    "CK.Admin.Register.Password.MinLength": "Le mot de passe doit contenir au moins 8 caractères.",
+    "CK.Admin.Register.Password.Complexity": "Le mot de passe doit contenir au moins trois de : majuscule, minuscule, chiffre, caractère spécial.",
+    "CK.Admin.Register.ConfirmPassword.Placeholder": "Confirmer le mot de passe",
+    "CK.Admin.Register.ConfirmPassword.Required": "Merci de confirmer votre mot de passe.",
+    "CK.Admin.Register.ConfirmPassword.Mismatch": "Les mots de passe ne correspondent pas.",
+    "CK.Admin.Register.Submit": "Valider mon inscription",
+    "CK.Admin.Register.InvalidToken": "Ce lien d'invitation n'est plus valide. Veuillez contacter votre administrateur pour obtenir une nouvelle invitation.",
+    "CK.Admin.Register.InvalidTokenTitle": "Invitation invalide"
+}

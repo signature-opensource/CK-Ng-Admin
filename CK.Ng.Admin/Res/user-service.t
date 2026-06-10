@@ -1,18 +1,27 @@
 create <ts> transformer
 begin
     ensure import { computed } from '@angular/core';
-    ensure import { GroupInfos } from '@local/ck-gen';
+    ensure import { GrantLevel, GroupInfos } from '@local/ck-gen';
 
     inject """
-           readonly #isAdmin: WritableSignal<boolean> = computed( () => {
-             const adminZone = this.userProfile()?.groups.find( g => g.groupName === 'AdminZone' );
-               if( adminZone && adminZone.grantLevel >= 112 )
-                 return true;
+           readonly isAdmin: Signal<boolean> = computed( () => {
+             let result = false;
+             // <PrePlatformAdmin />
+             const adminZone = this.userProfile()?.groups.find( g => g.group.groupName === 'AdminZone' );
+             if( adminZone && adminZone.grantLevel >= GrantLevel.SafeAdministrator ) {
+                result = true;
+                // <PostPlatformAdmin />
 
-             const currentWorkspaceGrantLevel = this.userProfile()?.groups.find( g => g.groupId === this.currentWorkspace()?.groupId )?.grantLevel ?? 0;
-             return currentWorkspaceGrantLevel >= 112;
+                return result;
+             }
+
+             // <PreWorkspaceAdmin />
+             const currentWorkspaceGrantLevel = this.userProfile()?.groups.find( g => g.group.groupId === this.currentWorkspace()?.groupId )?.grantLevel ?? 0;
+             result = currentWorkspaceGrantLevel >= GrantLevel.SafeAdministrator;
+             // <PostWorkspaceAdmin />
+             
+             return result;
            } );
-           readonly isAdmin: Signal<boolean> = this.#isAdmin.asReadonly();
 
            """ into <PostLocalVariables>;
 end

@@ -1,0 +1,79 @@
+<div class="platform-user-form-container">
+    <form nz-form [formGroup]="userForm" nzLayout="vertical">
+        <nz-form-item>
+            <nz-form-label class="form-label" nzRequired>{{'CK.Admin.UserManagement.User.Email' | translate}}</nz-form-label>
+            <nz-form-control [nzErrorTip]="'CK.Admin.UserManagement.Form.InvalidEmail' | translate">
+                <input type="text" nz-input formControlName="email" [placeholder]="'CK.Admin.UserManagement.User.Email' | translate" />
+            </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+            <nz-form-label class="form-label" nzRequired>{{'CK.Admin.UserManagement.Form.DefaultLanguage' | translate}}</nz-form-label>
+            <nz-form-control>
+                <nz-select formControlName="cultureName">
+                    @for ( l of languages; track l.name ) {
+                        <nz-option [nzLabel]="l.nativeName" [nzValue]="l.name"></nz-option>
+                    }
+                </nz-select>
+            </nz-form-control>
+        </nz-form-item>
+        @if ( selectedOrg ) {
+            <div class="groups">
+                <div class="form-label">{{ 'CK.Admin.UserManagement.Form.Groups' | translate }}</div>
+                <nz-select class="org-select" [style]="{ 'width': '100%', 'margin-bottom': '2%' }" [(ngModel)]="selectedOrg" [ngModelOptions]="{standalone: true}">
+                    @for ( org of getOrgs(); track org.groupId ) {
+                        <nz-option [nzValue]="org" [nzLabel]="org.groupName"></nz-option>
+                    }
+                </nz-select>
+                <div class="group-choices">
+                    <label
+                        nz-checkbox
+                        [(ngModel)]="map.get( selectedOrg.groupId )!.checked"
+                        [ngModelOptions]="{standalone: true}"
+                        (click)="selectGroup( selectedOrg.groupId )">
+                        {{ 'CK.Admin.UserManagement.Role.Member' | translate }}
+                    </label>
+                    <label
+                        nz-checkbox
+                        [(ngModel)]="map.get( getAdminGroupId( selectedOrg.groupId ) )!.checked"
+                        [ngModelOptions]="{standalone: true}"
+                        (click)="selectAdminGroup( selectedOrg.groupId )">
+                        {{ 'CK.Admin.UserManagement.Role.Administrator' | translate }}
+                    </label>
+                </div>
+                @for ( w of getChildren( selectedOrg.groupId ); track w.groupId ) {
+                    <div class="warehouse-groups">
+                        <div class="group-label">
+                            <fa-icon class="icon" [icon]="icon"></fa-icon>
+                            <span>{{ w.groupName }}</span>
+                        </div>
+                        <div class="group-choices">
+                            <label
+                                nz-checkbox
+                                [(ngModel)]="map.get( w.groupId )!.checked"
+                                [ngModelOptions]="{standalone: true}"
+                                (click)="selectGroup( w.groupId )">
+                                {{ 'CK.Admin.UserManagement.Role.Member' | translate }}
+                            </label>
+                            <label
+                                nz-checkbox
+                                [ngModel]="map.get( getAdminGroupId( w.groupId ) )!.checked"
+                                [ngModelOptions]="{standalone: true}"
+                                (click)="selectAdminGroup( w.groupId )">
+                                {{ 'CK.Admin.UserManagement.Role.Administrator' | translate }}
+                            </label>
+                        </div>
+                    </div>
+                }
+            </div>
+        } @else {
+            <nz-form-item>
+                <nz-form-label class="form-label" nzRequired>{{'CK.Admin.UserManagement.Form.Groups' | translate}}</nz-form-label>
+                <nz-form-control>
+                    <ck-user-workspace-group-picker
+                        [control]="groupsControl"
+                        [groups]="groupInfos" />
+                </nz-form-control>
+            </nz-form-item>
+        }
+    </form>
+</div>

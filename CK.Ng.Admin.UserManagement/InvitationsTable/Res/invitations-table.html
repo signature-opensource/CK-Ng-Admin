@@ -1,0 +1,18 @@
+<ck-table
+        #table
+        [tableData]="invitations()"
+        [dataUniqueKey]="'email'"
+        [columns]="columns()"
+        [tableActions]="rowActions()"
+        [totalCount]="invitations().length"
+        [totalCountLabel]="'CK.Admin.UserManagement.Tab.Invitations' | translate"
+        (selectionChanged)="getTableSelection($event)">
+</ck-table>
+
+<ng-template #activeCellTemplate let-inv="row">
+    @if ( inv.active ) {
+        <nz-tag nzColor="green">{{ 'CK.Admin.UserManagement.Invitation.Active' | translate }}</nz-tag>
+    } @else {
+        <nz-tag nzColor="red">{{ 'CK.Admin.UserManagement.Invitation.Expired' | translate }}</nz-tag>
+    }
+</ng-template>
