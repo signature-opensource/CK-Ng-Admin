@@ -3,12 +3,12 @@ using CK.IO.UserProfile.Workspace;
 using CK.SqlServer;
 using Dapper;
 
-namespace CK.Ng.Admin.Tests.User;
+namespace CK.Ng.Admin.Sample.App.User;
 
 /// <summary>
-/// Test-only Dapper queries that read a <see cref="IUserProfile"/> with its <see cref="IUserGroup"/> list.
+/// Dapper queries that read a <see cref="IUserProfile"/> with its <see cref="IUserGroup"/> list.
 /// The base <c>CK.sUserUserProfileRead</c> stored procedure only projects <c>UserId</c>/<c>UserName</c>, so this
-/// service is used by <see cref="TestCommandHandler"/> to override the default
+/// service is used by <see cref="GetUserProfileCommandHandler"/> to override the default
 /// <c>IGetUserProfileQCommand</c> handler with a result that includes groups + grant levels.
 /// </summary>
 public class UserQueries : IAutoService

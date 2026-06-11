@@ -1,4 +1,9 @@
 <Solution>
+  <Folder Name="/Sample/">
+    <Project Path="Sample/CK.Ng.Admin.Sample.App/CK.Ng.Admin.Sample.App.csproj" />
+    <Project Path="Sample/CK.Ng.Admin.Sample.Builder/CK.Ng.Admin.Sample.Builder.csproj" />
+    <Project Path="Sample/CK.Ng.Admin.Sample.Host/CK.Ng.Admin.Sample.Host.csproj" />
+  </Folder>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
     <File Path=".gitignore" />
