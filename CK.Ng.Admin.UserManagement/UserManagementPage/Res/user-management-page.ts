@@ -20,7 +20,6 @@ type AdminTab = 'users' | 'invitations';
 @Component( {
   selector: 'ck-user-management-page',
   templateUrl: './user-management-page.html',
-  styleUrls: ['./user-management-page.less'],
   imports: [LayoutContent, NzTabsModule, TranslateModule, UsersTab, InvitationsTable]
 } )
 export class UserManagementPage {

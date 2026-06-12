@@ -1,17 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="CK.IO.UserInvitation" Version="0.4.6--ci.3" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="CK.IO.UserInvitation" Version="0.4.6--ci.5" />
+        <PackageReference Include="CK.Ng.UserProfile.UserPassword" Version="0.7.1--ci.7" />
+        <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="0.6.4--ci.2" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\CK.Ng.Admin\CK.Ng.Admin.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\CK.IO.UserManagement\CK.IO.UserManagement.csproj" />
+        <ProjectReference Include="..\CK.Ng.Admin\CK.Ng.Admin.csproj" />
+    </ItemGroup>
 
 </Project>

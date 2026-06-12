@@ -12,6 +12,8 @@
   <Folder Name="/Tests/">
     <Project Path="Tests/CK.Ng.Admin.Tests/CK.Ng.Admin.Tests.csproj" />
   </Folder>
+  <Project Path="CK.IO.Admin/CK.IO.Admin.csproj" />
+  <Project Path="CK.IO.UserManagement/CK.IO.UserManagement.csproj" />
   <Project Path="CK.Ng.Admin.UserManagement/CK.Ng.Admin.UserManagement.csproj" Id="55bb900f-4ba3-489c-8caf-648691ee653c" />
   <Project Path="CK.Ng.Admin/CK.Ng.Admin.csproj" />
 </Solution>

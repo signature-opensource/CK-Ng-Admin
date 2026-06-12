@@ -97,7 +97,7 @@ static async Task SeedDemoUsersAsync( IStObjMap map, IActivityMonitor monitor )
     if( idAdmin <= 0 )
     {
         idAdmin = await userTable.CreateUserAsync( ctx, 1, "AdminUser" );
-        await groupTable.AddUserAsync( ctx, 1, 2, idAdmin, true );
+        await groupTable.AddUserAsync( ctx, 1, 2, idAdmin );
     }
     await pwdTable.CreateOrUpdatePasswordUserAsync( ctx, 1, idAdmin, "success", CK.DB.Auth.UCLMode.CreateOrUpdate );
 

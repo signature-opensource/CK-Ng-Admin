@@ -60,11 +60,10 @@ public class UserQueries : IAutoService
                     up.PreferredWorkspaceId = user.PreferredWorkspaceId;
                     foreach( var g in u.Where( r => r.GroupId != 0 ).DistinctBy( r => r.GroupId ) )
                     {
-                        up.Groups.Add( _pocoDirectory.Create<IGroupInfos>( ug =>
+                        up.Groups.Add( _pocoDirectory.Create<IUserGroup>( ug =>
                         {
-                            //ug.GrantLevel = g.GrantLevel;
-                            //ug.Group =
-                            _pocoDirectory.Create<IGroupInfos>( gi =>
+                            ug.GrantLevel = g.GrantLevel;
+                            ug.Group = _pocoDirectory.Create<IGroupInfos>( gi =>
                             {
                                 gi.GroupId = g.GroupId;
                                 gi.GroupName = g.GroupName;

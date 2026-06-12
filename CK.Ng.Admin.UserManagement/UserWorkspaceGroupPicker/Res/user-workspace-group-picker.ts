@@ -7,7 +7,6 @@ import { GroupInfos } from '@local/ck-gen';
 @Component( {
   selector: 'ck-user-workspace-group-picker',
   templateUrl: './user-workspace-group-picker.html',
-  styleUrls: ['./user-workspace-group-picker.less'],
   imports: [ReactiveFormsModule, TranslateModule, NzSelectModule]
 } )
 export class UserWorkspaceGroupPicker {

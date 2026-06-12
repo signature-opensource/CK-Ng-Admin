@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="CK.IO.Globalization" Version="0.1.4--ci.6" />
+      <PackageReference Include="CK.IO.UserProfile.Workspace" Version="15.1.1--ci.7" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\CK.IO.Admin\CK.IO.Admin.csproj" />
+    </ItemGroup>
+
+</Project>

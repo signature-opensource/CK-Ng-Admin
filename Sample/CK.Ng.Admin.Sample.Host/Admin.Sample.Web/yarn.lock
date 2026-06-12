@@ -3707,6 +3707,50 @@ __metadata:
   languageName: node
   linkType: hard
 
+"admin.sample.web@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "admin.sample.web@workspace:."
+  dependencies:
+    "@angular/animations": "npm:^20"
+    "@angular/build": "npm:^20"
+    "@angular/cdk": "npm:^20"
+    "@angular/cli": "npm:^20"
+    "@angular/common": "npm:^20"
+    "@angular/compiler": "npm:^20"
+    "@angular/compiler-cli": "npm:^20"
+    "@angular/core": "npm:^20"
+    "@angular/forms": "npm:^20"
+    "@angular/platform-browser": "npm:^20"
+    "@angular/platform-browser-dynamic": "npm:^20.3"
+    "@angular/router": "npm:^20"
+    "@fortawesome/angular-fontawesome": "npm:^3"
+    "@fortawesome/fontawesome-svg-core": "npm:^7"
+    "@fortawesome/free-brands-svg-icons": "npm:^7"
+    "@fortawesome/free-regular-svg-icons": "npm:^7"
+    "@fortawesome/free-solid-svg-icons": "npm:^7"
+    "@ngx-translate/core": "npm:^17"
+    "@types/jest": "npm:^29.5.14"
+    "@types/luxon": "npm:^3.6.2"
+    "@types/node": "npm:^22.10.10"
+    "@yarnpkg/sdks": "npm:^3.2.3"
+    axios: "npm:^1.7.7"
+    jest: "npm:^30.1.1"
+    jest-environment-jsdom: "npm:^30.1.1"
+    jest-preset-angular: "npm:^15"
+    jest-util: "npm:^30.0.5"
+    less: "npm:^4.4.1"
+    luxon: "npm:^3.5"
+    ng-zorro-antd: "npm:~20.3"
+    rxjs: "npm:~7.8"
+    ts-jest: "npm:^29.4.1"
+    tslib: "npm:^2.3"
+    typescript: "npm:~5.9.2"
+    zone.js: "npm:~0.15"
+  peerDependencies:
+    axios: ^1.7.7
+  languageName: unknown
+  linkType: soft
+
 "agent-base@npm:^7.1.0, agent-base@npm:^7.1.2":
   version: 7.1.4
   resolution: "agent-base@npm:7.1.4"
@@ -9193,50 +9237,6 @@ __metadata:
   checksum: 10/b271ca7e3d46b7160222e3afa3e531505161c9a4e097febae9664e4b59912f4cbe94861361a4175edac3a03fee99d91e44b6a58c17a634bc5a664b19fc76fbcb
   languageName: node
   linkType: hard
-
-"admin.sample.web@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "admin.sample.web@workspace:."
-  dependencies:
-    "@angular/animations": "npm:^20"
-    "@angular/build": "npm:^20"
-    "@angular/cdk": "npm:^20"
-    "@angular/cli": "npm:^20"
-    "@angular/common": "npm:^20"
-    "@angular/compiler": "npm:^20"
-    "@angular/compiler-cli": "npm:^20"
-    "@angular/core": "npm:^20"
-    "@angular/forms": "npm:^20"
-    "@angular/platform-browser": "npm:^20"
-    "@angular/platform-browser-dynamic": "npm:^20.3"
-    "@angular/router": "npm:^20"
-    "@fortawesome/angular-fontawesome": "npm:^3"
-    "@fortawesome/fontawesome-svg-core": "npm:^7"
-    "@fortawesome/free-brands-svg-icons": "npm:^7"
-    "@fortawesome/free-regular-svg-icons": "npm:^7"
-    "@fortawesome/free-solid-svg-icons": "npm:^7"
-    "@ngx-translate/core": "npm:^17"
-    "@types/jest": "npm:^29.5.14"
-    "@types/luxon": "npm:^3.6.2"
-    "@types/node": "npm:^22.10.10"
-    "@yarnpkg/sdks": "npm:^3.2.3"
-    axios: "npm:^1.7.7"
-    jest: "npm:^30.1.1"
-    jest-environment-jsdom: "npm:^30.1.1"
-    jest-preset-angular: "npm:^15"
-    jest-util: "npm:^30.0.5"
-    less: "npm:^4.4.1"
-    luxon: "npm:^3.5"
-    ng-zorro-antd: "npm:~20.3"
-    rxjs: "npm:~7.8"
-    ts-jest: "npm:^29.4.1"
-    tslib: "npm:^2.3"
-    typescript: "npm:~5.9.2"
-    zone.js: "npm:~0.15"
-  peerDependencies:
-    axios: ^1.7.7
-  languageName: unknown
-  linkType: soft
 
 "v8-to-istanbul@npm:^9.0.1":
   version: 9.3.0

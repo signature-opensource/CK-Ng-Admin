@@ -26,7 +26,6 @@ import {
 @Component( {
   selector: 'ck-invitations-table',
   templateUrl: './invitations-table.html',
-  styleUrls: ['./invitations-table.less'],
   imports: [Table, TranslateModule, NzTagModule]
 } )
 export class InvitationsTable {
