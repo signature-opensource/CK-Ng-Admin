@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- Data access for the command handlers. -->
+        <PackageReference Include="CK.SqlServer.Dapper" Version="15.0.1" />
+        <PackageReference Include="CK.SqlServer.Transaction" Version="12.0.1" />
+
+        <!-- Standard CK.DB building blocks used by the handlers. -->
+        <PackageReference Include="CK.DB.Workspace" Version="15.1.1--ci.7" />
+        <PackageReference Include="CK.DB.Zone" Version="28.0.2--ci.3" />
+        <PackageReference Include="CK.DB.User.NamedUser" Version="28.0.2--ci.2" />
+        <PackageReference Include="CK.DB.User.UserPassword" Version="28.0.2--ci.2" />
+        <PackageReference Include="CK.DB.User.PreferredCulture" Version="0.4.2--ci.2" />
+        <PackageReference Include="CK.DB.Actor.ActorEMail" Version="28.0.2--ci.2" />
+        <PackageReference Include="CK.DB.TokenStore" Version="0.38.2--ci.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\CK.IO.UserManagement\CK.IO.UserManagement.csproj" />
+    </ItemGroup>
+
+</Project>

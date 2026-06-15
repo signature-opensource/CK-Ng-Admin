@@ -27,5 +27,6 @@
     <PackageReference Include="CK.SqlServer.Transaction" Version="12.0.1" />
 
     <ProjectReference Include="..\..\CK.Ng.Admin.UserManagement\CK.Ng.Admin.UserManagement.csproj" />
+    <ProjectReference Include="..\..\CK.UserManagement\CK.UserManagement.csproj" />
   </ItemGroup>
 </Project>

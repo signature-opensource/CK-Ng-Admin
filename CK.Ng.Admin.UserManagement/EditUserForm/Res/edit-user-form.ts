@@ -54,7 +54,7 @@ export class EditUserForm implements OnInit, OnDestroy {
       groups.forEach( g => {
         if ( g.groupName.includes( 'Administrators' ) ) {
           if ( !groups.find( group => group.groupId === g.zoneId ) ) {
-            groups.unshift( { groupId: g.zoneId, groupName: g.zoneName, isOrganization: false, organizationId: 0, organizationName: '', roleName: '', zoneId: g.zoneId, zoneName: g.zoneName } as GroupInfos );
+              groups.unshift({ groupId: g.zoneId, groupName: g.zoneName, isZone: false, zoneId: g.zoneId, zoneName: g.zoneName } as GroupInfos );
           }
         }
       } );

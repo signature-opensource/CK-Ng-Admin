@@ -125,9 +125,10 @@ export class Register implements OnInit {
       }
 
       const user: PendingUser = tokenRes.user;
+      const matchedLocale = this.languages.find( l => l.id === user.defaultXLCID );
       this.registerForm.patchValue( {
         email: user.email,
-        cultureName: user.cultureName || this.languages[0]?.name || 'fr'
+        cultureName: matchedLocale?.name ?? this.languages[0]?.name ?? 'fr'
       } );
     } catch {
       this.tokenError.set( this.#translateService.instant( 'CK.Admin.Register.InvalidToken' ) );
