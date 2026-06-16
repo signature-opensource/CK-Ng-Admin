@@ -73,7 +73,7 @@ static async Task SeedDemoUsersAsync( IStObjMap map, IActivityMonitor monitor )
 {
     var userTable = map.StObjs.Obtain<UserTable>()!;
     var pwdTable = map.StObjs.Obtain<UserPasswordTable>()!;
-    var groupTable = map.StObjs.Obtain<GroupTable>()!;
+    var groupTable = map.StObjs.Obtain<CK.DB.Zone.GroupTable>()!;
     var workspace = map.StObjs.Obtain<CK.DB.Workspace.Package>()!;
     var dir = map.StObjs.Obtain<PocoDirectory>()!;
 
@@ -97,7 +97,13 @@ static async Task SeedDemoUsersAsync( IStObjMap map, IActivityMonitor monitor )
     if( idAdmin <= 0 )
     {
         idAdmin = await userTable.CreateUserAsync( ctx, 1, "AdminUser" );
-        await groupTable.AddUserAsync( ctx, 1, 2, idAdmin );
+        await groupTable.AddUserAsync( ctx, 1, 2, idAdmin,true );
+        await workspace.SetPreferredWorkspaceIdAsync( ctx, dir.Create<ISetPreferredWorkspaceIdCommand>( c =>
+        {
+            c.ActorId = 1;
+            c.UserId = idAdmin;
+            c.WorkspaceId = 3;
+        } ) );
     }
     await pwdTable.CreateOrUpdatePasswordUserAsync( ctx, 1, idAdmin, "success", CK.DB.Auth.UCLMode.CreateOrUpdate );
 

@@ -122,7 +122,7 @@ export class InvitationsTable {
             nzTitle: this.#translateService.instant( 'CK.Admin.UserManagement.Modal.ResendInvitation' ),
             nzContent: `${this.#translateService.instant( 'CK.Admin.UserManagement.Modal.ResendInvitationContent' )} : ${inv.email}`,
             nzOnOk: async () => {
-              const res = await this.#crisEndpoint.sendOrThrowAsync( new ResendInvitationsCommand( [inv], undefined, this.#userService.userProfile()!.userId ) );
+              const res = await this.#crisEndpoint.sendOrThrowAsync( new ResendInvitationsCommand( [inv] ) );
               this.#notifService.notifyUserMessage( res );
               await this.getInvitations();
             }

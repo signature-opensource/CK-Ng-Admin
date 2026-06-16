@@ -13,6 +13,7 @@
     <PackageReference Include="CK.Setupable.Engine" Version="33.0.2--ci.1" />
     <PackageReference Include="CK.SqlServer.Setup.Engine" Version="33.0.2--ci.1" />
     <PackageReference Include="CK.TS.Angular.Engine" Version="0.31.2" />
+    <PackageReference Include="CK.Template.Fluid.Engine" Version="0.0.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CK.Ng.Admin.Sample.App\CK.Ng.Admin.Sample.App.csproj" />

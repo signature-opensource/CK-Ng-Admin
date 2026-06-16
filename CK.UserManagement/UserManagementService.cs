@@ -31,6 +31,7 @@ public class UserManagementService : IAutoService
     readonly GroupTable _groupTable;
     readonly CK.DB.Workspace.Package _workspacePackage;
     readonly UserManagementQueries _queries;
+    readonly IUserManagementMailer _mailer;
 
     public UserManagementService( PocoDirectory pocoDir,
                                   TokenStoreTable tokenTable,
@@ -40,7 +41,8 @@ public class UserManagementService : IAutoService
                                   UserPasswordTable passwordTable,
                                   GroupTable groupTable,
                                   CK.DB.Workspace.Package workspacePackage,
-                                  UserManagementQueries queries )
+                                  UserManagementQueries queries,
+                                  IUserManagementMailer mailer )
     {
         _pocoDir = pocoDir;
         _tokenTable = tokenTable;
@@ -51,6 +53,7 @@ public class UserManagementService : IAutoService
         _groupTable = groupTable;
         _workspacePackage = workspacePackage;
         _queries = queries;
+        _mailer = mailer;
     }
 
     /// <summary>
@@ -69,14 +72,13 @@ public class UserManagementService : IAutoService
         await _tokenTable.SetExtraDataAsync( ctx, actorId, result.TokenId, payload.Serialize() );
 
         ctx.Monitor.Info( $"Invitation created. (Email: {email}, WorkspaceId: {workspaceId})" );
-        // TODO: send the invitation e-mail carrying 'result.Token' here.
-        ctx.Monitor.Info( $"Invitation e-mail would be sent. (Email: {email}, Token: {result.Token})" );
+        await _mailer.SendUserInvitationAsync( ctx.Monitor, email, result.Token, cultureName );
     }
 
     /// <summary>
     /// Re-activates a pending invitation (extends its expiration) and (would) resend the e-mail.
     /// </summary>
-    public async Task ResendInvitationAsync( ISqlCallContext ctx, int actorId, int workspaceId, string email )
+    public async Task ResendInvitationAsync( ISqlCallContext ctx, int actorId, int workspaceId, string email, string cultureName )
     {
         var scope = UserManagementQueries.InvitationScope( workspaceId );
         var token = await _queries.GetInvitationRefAsync( ctx, scope, email );
@@ -88,8 +90,7 @@ public class UserManagementService : IAutoService
 
         await _tokenTable.ActivateAsync( ctx, actorId, token.Value.TokenId, active: true, expirationDateUtc: DateTime.UtcNow.AddDays( 3 ) );
         ctx.Monitor.Info( $"Invitation re-activated. (Email: {email})" );
-        // TODO: resend the invitation e-mail carrying 'token.Value.Token' here.
-        ctx.Monitor.Info( $"Invitation e-mail would be resent. (Email: {email}, Token: {token.Value.Token})" );
+        await _mailer.SendUserInvitationAsync( ctx.Monitor, email, token.Value.Token, cultureName );
     }
 
     /// <summary>

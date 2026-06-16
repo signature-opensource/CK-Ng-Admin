@@ -385,9 +385,7 @@ export class UsersTab implements OnInit, AfterViewInit {
           new CreateInvitationCommand(
             formGroup.get( 'email' )!.value,
             formGroup.get( 'groups' )!.value,
-            formGroup.get( 'cultureName' )!.value,
-            undefined,
-            this.#userService.userProfile()!.userId
+            formGroup.get( 'cultureName' )!.value
           )
         );
         this.#notifService.notifyUserMessage( createRes );

@@ -19,6 +19,12 @@
         <PackageReference Include="CK.DB.User.PreferredCulture" Version="0.4.2--ci.2" />
         <PackageReference Include="CK.DB.Actor.ActorEMail" Version="28.0.2--ci.2" />
         <PackageReference Include="CK.DB.TokenStore" Version="0.38.2--ci.2" />
+
+        <!-- Invitation e-mail: Fluid templates rendered + sent via the CK-AppIdentity-configured mailer.
+             Res/Templates/*.liquid are auto-embedded by CK.EmbeddedResources (buildTransitive). -->
+        <PackageReference Include="CK.Mailer.MailKit" Version="12.0.1" />
+        <PackageReference Include="CK.Template.Fluid" Version="0.0.0" />
+        <PackageReference Include="CK.AppIdentity.Abstractions" Version="0.14.1" />
     </ItemGroup>
 
     <ItemGroup>

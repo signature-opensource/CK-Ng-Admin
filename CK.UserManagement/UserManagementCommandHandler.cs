@@ -182,7 +182,7 @@ public class UserManagementCommandHandler : IScopedAutoService
                 {
                     foreach( var inv in cmd.Invitations )
                     {
-                        await service.ResendInvitationAsync( ctx, actorId, cmd.CurrentWorkspaceId.GetValueOrDefault(), inv.Email );
+                        await service.ResendInvitationAsync( ctx, actorId, cmd.CurrentWorkspaceId.GetValueOrDefault(), inv.Email, inv.CultureName );
                     }
                     transaction.Commit();
                 }
