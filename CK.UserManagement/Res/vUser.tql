@@ -1,0 +1,6 @@
+create transformer on CK.vUser
+as
+begin
+    add column u.ExtendedCultureId;
+    add column u.BinDate;
+end

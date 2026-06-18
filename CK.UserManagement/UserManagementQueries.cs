@@ -42,6 +42,7 @@ public class UserManagementQueries : IAutoService
                   ,u.FirstName
                   ,u.LastName
                   ,IsWorkspaceAdmin = cast( case when CK.fAclGrantLevel( u.UserId, w.AclId ) >= 112 then 1 else 0 end as bit )
+                  ,u.BinDate
               from CK.vUser u
                   inner join CK.tActorProfile ap on ap.ActorId = u.UserId
                   inner join CK.tWorkspace w on w.WorkspaceId = @WorkspaceId
@@ -56,7 +57,7 @@ public class UserManagementQueries : IAutoService
             u.FirstName = r.FirstName;
             u.LastName = r.LastName;
             u.IsWorkspaceAdmin = r.IsWorkspaceAdmin;
-            u.BinDate = null;
+            u.BinDate = r.BinDate;
         } ) ).ToList();
     }
 
@@ -181,6 +182,7 @@ public class UserManagementQueries : IAutoService
         public string FirstName { get; init; } = string.Empty;
         public string LastName { get; init; } = string.Empty;
         public bool IsWorkspaceAdmin { get; init; }
+        public DateTime? BinDate { get; set; } = null;
     }
 
     record FlatGroup

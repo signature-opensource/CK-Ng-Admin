@@ -1,4 +1,8 @@
 <Solution>
+  <Folder Name="/CK-Ng-Admin/">
+    <Project Path="CK.Mail.SharedLayout/CK.Mail.SharedLayout.csproj" />
+    <Project Path="SLog.Mail.Branding/SLog.Mail.Branding.csproj" />
+  </Folder>
   <Folder Name="/Sample/">
     <Project Path="Sample/CK.Ng.Admin.Sample.App/CK.Ng.Admin.Sample.App.csproj" />
     <Project Path="Sample/CK.Ng.Admin.Sample.Builder/CK.Ng.Admin.Sample.Builder.csproj" />

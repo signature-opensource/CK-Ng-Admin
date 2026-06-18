@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, DestroyRef, OnInit, TemplateRef, WritableSignal, inject, input, output, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Validators } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { first } from 'rxjs';
 import { ModalOptions, NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
@@ -13,6 +13,8 @@ import {
   EditUserForm,
   EditWorkspaceUserCommand,
   Filter,
+  FormControlConfig,
+  GenericFormData,
   GetWorkspaceInvitationDataQCommand,
   GetWorkspaceUsersQCommand,
   GroupInfos,
@@ -23,6 +25,7 @@ import {
   SimpleUserMessage,
   SwitchFilter,
   Table,
+  TableAction,
   TableCellContext,
   TableColumn,
   UserForm,
@@ -35,7 +38,6 @@ import { locales } from '@local/ck-gen/ts-locales/locales';
 @Component( {
   selector: 'ck-users-tab',
   templateUrl: './users-tab.html',
-  styleUrls: ['./users-tab.less'],
   imports: [TranslateModule, Table, NzModalModule, NzTagModule]
 } )
 export class UsersTab implements OnInit, AfterViewInit {
@@ -53,7 +55,6 @@ export class UsersTab implements OnInit, AfterViewInit {
   readonly #userService = inject( UserService );
   readonly #notifService = inject( NotificationService );
   readonly #nzModalService = inject( NzModalService );
-  readonly #formBuilder = inject( FormBuilder );
   readonly #destroyRef = inject( DestroyRef );
   // <PostDependencyInjection />
 
@@ -61,6 +62,7 @@ export class UsersTab implements OnInit, AfterViewInit {
   protected isLoading: WritableSignal<boolean> = signal( false );
   protected users: WritableSignal<Array<WorkspaceUser>> = signal( [] );
   protected columns: Array<TableColumn<WorkspaceUser>> = [];
+  protected rowActions: Array<TableAction<WorkspaceUser>> = [];
   protected pageSize: number = 10;
   protected selectedUsers: Array<WorkspaceUser> = [];
   #allUsers: Array<WorkspaceUser> = [];
@@ -104,6 +106,7 @@ export class UsersTab implements OnInit, AfterViewInit {
     ] ).pipe( first() ).subscribe( t => {
       this.initColumns( t );
       this.initActions( t );
+      this.initRowActions( t );
       this.#refreshFilterLabels( t );
     } );
   }
@@ -308,18 +311,7 @@ export class UsersTab implements OnInit, AfterViewInit {
           displayName: t['Button.Delete'],
           icon: faTrash,
           isDanger: true,
-          execute: async () => {
-            const opts: ModalOptions = {
-              nzTitle: `${this.#translateService.instant( 'CK.Admin.UserManagement.Modal.ArchiveUsers' )} : ${this.selectedUsers.map( i => i.userName ).join( ' ,' )} ?`,
-              nzOnOk: async () => {
-                const res = await this.#crisEndpoint.sendOrThrowAsync( new ArchiveUsersCommand( this.selectedUsers.map( i => i.userId ), undefined, this.#userService.userProfile()!.userId ) );
-                this.#notifService.notifyUserMessage( res );
-                this.isLoading.set( true );
-                await this.loadUsers();
-              }
-            };
-            this.#nzModalService.confirm( opts );
-          },
+          execute: () => this.confirmArchiveUsers( this.selectedUsers ),
           shouldBeDisplayed: () => this.selectedUsers.length > 0 && this.selectedUsers.every( u => !u.binDate )
         },
         {
@@ -327,18 +319,7 @@ export class UsersTab implements OnInit, AfterViewInit {
           displayName: t['Button.Restore'],
           icon: faArrowRotateLeft,
           isDanger: false,
-          execute: async () => {
-            const opts: ModalOptions = {
-              nzTitle: `${this.#translateService.instant( 'CK.Admin.UserManagement.Modal.RestoreUsers' )} : ${this.selectedUsers.map( i => i.userName ).join( ' ,' )} ?`,
-              nzOnOk: async () => {
-                const res = await this.#crisEndpoint.sendOrThrowAsync( new RestoreUsersCommand( this.selectedUsers.map( i => i.userId ), undefined, this.#userService.userProfile()!.userId ) );
-                this.#notifService.notifyUserMessage( res );
-                this.isLoading.set( true );
-                await this.loadUsers();
-              }
-            };
-            this.#nzModalService.confirm( opts );
-          },
+          execute: () => this.confirmRestoreUsers( this.selectedUsers ),
           shouldBeDisplayed: () => this.selectedUsers.length > 0 && this.selectedUsers.every( u => !!u.binDate )
         },
         {
@@ -355,6 +336,68 @@ export class UsersTab implements OnInit, AfterViewInit {
     this.actionsChanged.emit( actions );
   }
 
+  initRowActions( t: Record<string, string> ): void {
+    // <UsersTabRowActionsRegistration>
+    this.rowActions = [
+      {
+        name: 'edit',
+        icon: faEdit,
+        isDanger: false,
+        type: 'text',
+        tooltip: t['Button.Edit'],
+        execute: ( u: WorkspaceUser ) => { void this.openUserEditModal( u ); },
+        shouldBeDisplayed: () => true
+      },
+      {
+        name: 'archive',
+        icon: faTrash,
+        isDanger: true,
+        type: 'text',
+        tooltip: t['Button.Delete'],
+        execute: ( u: WorkspaceUser ) => this.confirmArchiveUsers( [u] ),
+        shouldBeDisplayed: ( u: WorkspaceUser ) => !u.binDate
+      },
+      {
+        name: 'restore',
+        icon: faArrowRotateLeft,
+        isDanger: false,
+        type: 'text',
+        tooltip: t['Button.Restore'],
+        execute: ( u: WorkspaceUser ) => this.confirmRestoreUsers( [u] ),
+        shouldBeDisplayed: ( u: WorkspaceUser ) => !!u.binDate
+      }
+    ];
+    // </UsersTabRowActionsRegistration>
+  }
+
+  confirmArchiveUsers( users: Array<WorkspaceUser> ): void {
+    if ( users.length === 0 ) return;
+    const opts: ModalOptions = {
+      nzTitle: `${this.#translateService.instant( 'CK.Admin.UserManagement.Modal.ArchiveUsers' )} : ${users.map( i => i.userName ).join( ' ,' )} ?`,
+      nzOnOk: async () => {
+        const res = await this.#crisEndpoint.sendOrThrowAsync( new ArchiveUsersCommand( users.map( i => i.userId ), undefined, this.#userService.userProfile()!.userId ) );
+        this.#notifService.notifyUserMessage( res );
+        this.isLoading.set( true );
+        await this.loadUsers();
+      }
+    };
+    this.#nzModalService.confirm( opts );
+  }
+
+  confirmRestoreUsers( users: Array<WorkspaceUser> ): void {
+    if ( users.length === 0 ) return;
+    const opts: ModalOptions = {
+      nzTitle: `${this.#translateService.instant( 'CK.Admin.UserManagement.Modal.RestoreUsers' )} : ${users.map( i => i.userName ).join( ' ,' )} ?`,
+      nzOnOk: async () => {
+        const res = await this.#crisEndpoint.sendOrThrowAsync( new RestoreUsersCommand( users.map( i => i.userId ), undefined, this.#userService.userProfile()!.userId ) );
+        this.#notifService.notifyUserMessage( res );
+        this.isLoading.set( true );
+        await this.loadUsers();
+      }
+    };
+    this.#nzModalService.confirm( opts );
+  }
+
   async openCreateUserModal(): Promise<void> {
     const workspace = this.workspace();
     if ( !workspace ) return;
@@ -367,26 +410,39 @@ export class UsersTab implements OnInit, AfterViewInit {
     g.unshift( workspace );
 
     const defaultCultureName = languages[0]?.name ?? 'fr';
-    const formGroup: FormGroup = this.#formBuilder.group( {
-      email: new FormControl<string>( '', { nonNullable: true, validators: [Validators.required, Validators.email] } ),
-      cultureName: new FormControl<string>( defaultCultureName, { nonNullable: true, validators: [Validators.required] } ),
-      groups: new FormControl<Array<number>>( [], { nonNullable: true, validators: [Validators.required] } ),
-    } );
+    const formData: GenericFormData<unknown, unknown> = {
+      formControls: {
+        email: new FormControlConfig( 'text',
+          this.#translateService.instant( 'CK.Admin.UserManagement.User.Email' ),
+          '',
+          {
+            placeholder: this.#translateService.instant( 'CK.Admin.UserManagement.User.Email' ),
+            required: true,
+            validators: [Validators.required, Validators.email],
+            errorMessages: { email: this.#translateService.instant( 'CK.Admin.UserManagement.Form.InvalidEmail' ) }
+          } ),
+        cultureName: new FormControlConfig( 'select',
+          this.#translateService.instant( 'CK.Admin.UserManagement.Form.DefaultLanguage' ),
+          defaultCultureName,
+          {
+            required: true,
+            validators: [Validators.required],
+            options: languages.map( l => ( { label: l.nativeName, value: l.name } ) )
+          } ),
+      }
+    };
 
     const opts: ModalOptions = {
       nzTitle: this.#translateService.instant( 'CK.Admin.UserManagement.Modal.CreateUser' ),
       nzCancelText: this.#translateService.instant( 'Button.Cancel' ),
       nzOkText: this.#translateService.instant( 'Button.Confirm' ),
       nzContent: UserForm,
-      nzData: { userForm: formGroup, groupInfos: g.sort( ( a, b ) => a.groupId - b.groupId ), languages: languages, isPlatformCreation: false },
-      nzOnOk: async () => {
-        if ( !formGroup.valid ) return Promise.reject();
+      nzData: { formData, groupInfos: g.sort( ( a, b ) => a.groupId - b.groupId ), languages: languages },
+      nzOnOk: async ( cmp: UserForm ) => {
+        if ( !cmp.valid ) return Promise.reject();
+        const v = cmp.getValue();
         const createRes = await this.#crisEndpoint.sendOrThrowAsync(
-          new CreateInvitationCommand(
-            formGroup.get( 'email' )!.value,
-            formGroup.get( 'groups' )!.value,
-            formGroup.get( 'cultureName' )!.value
-          )
+          new CreateInvitationCommand( v.email, v.groups, v.cultureName )
         );
         this.#notifService.notifyUserMessage( createRes );
         await this.loadUsers();
@@ -397,37 +453,57 @@ export class UsersTab implements OnInit, AfterViewInit {
     this.#nzModalService.create( opts );
   }
 
-  async openUserEditModal(): Promise<void> {
+  async openUserEditModal( user: WorkspaceUser = this.selectedUsers[0] ): Promise<void> {
     const workspace = this.workspace();
     if ( !workspace ) return;
-
-    const user = this.selectedUsers[0];
-    const formGroup = this.#formBuilder.group( {
-      firstName: new FormControl<string>( user.firstName, { nonNullable: true, validators: [Validators.required] } ),
-      lastName: new FormControl<string>( user.lastName, { nonNullable: true, validators: [Validators.required] } ),
-      email: new FormControl<string>( user.userName, { nonNullable: true, validators: [Validators.required, Validators.email] } ),
-      password: new FormControl<string>( '', { nonNullable: false, validators: [Validators.minLength( 6 )] } ),
-      groups: new FormControl<Array<number>>( [], { nonNullable: true, validators: [Validators.required] } )
-    } );
+    if ( !user ) return;
+    const formData: GenericFormData<unknown, unknown> = {
+      formControls: {
+        firstName: new FormControlConfig( 'text',
+          this.#translateService.instant( 'CK.Admin.UserManagement.User.FirstName' ),
+          user.firstName,
+          {
+            placeholder: this.#translateService.instant( 'CK.Admin.UserManagement.User.FirstName' ),
+            required: true,
+            validators: [Validators.required]
+          } ),
+        lastName: new FormControlConfig( 'text',
+          this.#translateService.instant( 'CK.Admin.UserManagement.User.LastName' ),
+          user.lastName,
+          {
+            placeholder: this.#translateService.instant( 'CK.Admin.UserManagement.User.LastName' ),
+            required: true,
+            validators: [Validators.required]
+          } ),
+        email: new FormControlConfig( 'text',
+          this.#translateService.instant( 'CK.Admin.UserManagement.User.Email' ),
+          user.userName,
+          {
+            placeholder: this.#translateService.instant( 'CK.Admin.UserManagement.User.Email' ),
+            required: true,
+            validators: [Validators.required, Validators.email],
+            errorMessages: { email: this.#translateService.instant( 'CK.Admin.UserManagement.Form.InvalidEmail' ) }
+          } ),
+      }
+    };
 
     const opts: ModalOptions = {
       nzTitle: this.#translateService.instant( 'CK.Admin.UserManagement.Modal.EditUser' ),
       nzCancelText: this.#translateService.instant( 'Button.Cancel' ),
       nzOkText: this.#translateService.instant( 'Button.Confirm' ),
       nzContent: EditUserForm,
-      nzData: { user, workspace, userForm: formGroup },
-      nzOnOk: async () => {
-        if ( !formGroup.valid ) return Promise.reject();
+      nzData: { user, workspace, formData },
+      nzOnOk: async ( cmp: EditUserForm ) => {
+        if ( !cmp.valid ) return Promise.reject();
+        const v = cmp.getValue();
         const res = await this.#crisEndpoint.sendOrThrowAsync(
           new EditWorkspaceUserCommand(
             user.userId,
-            formGroup.get( 'firstName' )!.value,
-            formGroup.get( 'lastName' )!.value,
-            formGroup.get( 'email' )!.value,
-            formGroup.get( 'groups' )!.value,
-            formGroup.get( 'password' )!.value ?? undefined,
-            undefined,
-            this.#userService.userProfile()!.userId
+            v.firstName,
+            v.lastName,
+            v.email,
+            v.groups,
+            v.password ?? undefined
           )
         );
         this.#notifService.notifyUserMessage( res );

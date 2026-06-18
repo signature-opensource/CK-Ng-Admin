@@ -1,21 +1,7 @@
 <div class="platform-user-form-container">
-    <form nz-form [formGroup]="userForm" nzLayout="vertical">
-        <nz-form-item>
-            <nz-form-label class="form-label" nzRequired>{{'CK.Admin.UserManagement.User.Email' | translate}}</nz-form-label>
-            <nz-form-control [nzErrorTip]="'CK.Admin.UserManagement.Form.InvalidEmail' | translate">
-                <input type="text" nz-input formControlName="email" [placeholder]="'CK.Admin.UserManagement.User.Email' | translate" />
-            </nz-form-control>
-        </nz-form-item>
-        <nz-form-item>
-            <nz-form-label class="form-label" nzRequired>{{'CK.Admin.UserManagement.Form.DefaultLanguage' | translate}}</nz-form-label>
-            <nz-form-control>
-                <nz-select formControlName="cultureName">
-                    @for ( l of languages; track l.name ) {
-                        <nz-option [nzLabel]="l.nativeName" [nzValue]="l.name"></nz-option>
-                    }
-                </nz-select>
-            </nz-form-control>
-        </nz-form-item>
+    <ck-generic-form #formComp [inputFormData]="formData"></ck-generic-form>
+
+    <form nz-form [formGroup]="customForm" nzLayout="vertical">
         @if ( selectedOrg ) {
             <div class="groups">
                 <div class="form-label">{{ 'CK.Admin.UserManagement.Form.Groups' | translate }}</div>

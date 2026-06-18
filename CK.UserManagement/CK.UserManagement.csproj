@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
@@ -19,6 +19,8 @@
         <PackageReference Include="CK.DB.User.PreferredCulture" Version="0.4.2--ci.2" />
         <PackageReference Include="CK.DB.Actor.ActorEMail" Version="28.0.2--ci.2" />
         <PackageReference Include="CK.DB.TokenStore" Version="0.38.2--ci.2" />
+        <PackageReference Include="CK.DB.Globalization" Version="0.1.4--ci.6" />
+
 
         <!-- Invitation e-mail: Fluid templates rendered + sent via the CK-AppIdentity-configured mailer.
              Res/Templates/*.liquid are auto-embedded by CK.EmbeddedResources (buildTransitive). -->
@@ -27,8 +29,16 @@
         <PackageReference Include="CK.AppIdentity.Abstractions" Version="0.14.1" />
     </ItemGroup>
 
+
+    <ItemGroup>
+        <EmbeddedResource Include="**\*.sql" />
+        <EmbeddedResource Include="**\*.tql" />
+    </ItemGroup>
+
+
     <ItemGroup>
         <ProjectReference Include="..\CK.IO.UserManagement\CK.IO.UserManagement.csproj" />
+        <ProjectReference Include="..\CK.Mail.SharedLayout\CK.Mail.SharedLayout.csproj" />
     </ItemGroup>
 
 </Project>

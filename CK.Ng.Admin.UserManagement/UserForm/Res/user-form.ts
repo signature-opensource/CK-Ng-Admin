@@ -1,13 +1,12 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Component, OnInit, Signal, inject, viewChild } from '@angular/core';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import { GroupInfos, UserWorkspaceGroupPicker } from '@local/ck-gen';
+import { GenericForm, GenericFormData, GroupInfos, UserWorkspaceGroupPicker } from '@local/ck-gen';
 import { LocaleInfo } from '@local/ck-gen/ts-locales/locales';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { NZ_MODAL_DATA } from 'ng-zorro-antd/modal';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzSelectModule } from 'ng-zorro-antd/select';
-import { NzInputModule } from 'ng-zorro-antd/input';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
@@ -15,31 +14,58 @@ import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 @Component( {
   selector: 'ck-user-form',
   templateUrl: './user-form.html',
-  styleUrls: ['./user-form.less'],
-  imports: [TranslateModule, FormsModule, ReactiveFormsModule, NzFormModule, NzSelectModule, NzInputModule, FontAwesomeModule, NzTagModule, NzCheckboxModule, UserWorkspaceGroupPicker]
+  imports: [TranslateModule, FormsModule, ReactiveFormsModule, NzFormModule, NzSelectModule, FontAwesomeModule, NzTagModule, NzCheckboxModule, UserWorkspaceGroupPicker, GenericForm]
 } )
 export class UserForm implements OnInit {
-  readonly #translateService = inject( TranslateService );
-  readonly #nzModalData = inject( NZ_MODAL_DATA );
+  // <PreViewChildren revert />
+  readonly formComponent: Signal<GenericForm | undefined> = viewChild( 'formComp' );
+  // <PostViewChildren />
 
+  // <PreDependencyInjection revert />
+  readonly #nzModalData = inject( NZ_MODAL_DATA );
+  // <PostDependencyInjection />
+
+  // <PreInputOutput revert />
+  // <PostInputOutput />
+
+  // <PreIconsDefinition revert />
+  public icon = faArrowRight;
+  // <PostIconsDefinition />
+
+  // <PreLocalVariables revert />
   public isPlatformCreation: boolean = true;
-  public userForm: FormGroup;
   public groupInfos: Array<GroupInfos>;
   public languages: Array<LocaleInfo>;
-
-  #selectedGroups: Array<number> = [];
-  public icon = faArrowRight;
   public selectedOrg?: GroupInfos;
   public map: Map<number, { label: string, checked: boolean, value: number }> = new Map<number, { label: string, checked: boolean, value: number }>();
+  // Scalar-field config (email/cultureName) consumed by the GenericForm. The GenericForm also reads
+  // it from NZ_MODAL_DATA (modal mode); binding it satisfies its required input.
+  public formData: GenericFormData<unknown, unknown>;
+  // The bespoke org/role group hierarchy is not a GenericForm field type, so its value lives here.
+  public customForm: FormGroup;
+  #selectedGroups: Array<number> = [];
+  // <PostLocalVariables />
 
   constructor() {
-    this.userForm = this.#nzModalData.userForm;
     this.groupInfos = this.#nzModalData.groupInfos;
     this.languages = this.#nzModalData.languages;
+    this.formData = this.#nzModalData.formData;
+    this.customForm = new FormGroup( {
+      groups: new FormControl<Array<number>>( [], { nonNullable: true, validators: [Validators.required] } )
+    } );
   }
 
   get groupsControl(): FormControl<Array<number>> {
-    return this.userForm.get( 'groups' ) as FormControl<Array<number>>;
+    return this.customForm.get( 'groups' ) as FormControl<Array<number>>;
+  }
+
+  get valid(): boolean {
+    const scalarForm = this.formComponent()?.form();
+    return !!scalarForm && scalarForm.valid && this.customForm.valid;
+  }
+
+  getValue(): { email: string, cultureName: string, groups: Array<number> } {
+    return { ...this.formComponent()!.form()!.getRawValue(), ...this.customForm.getRawValue() };
   }
 
   async ngOnInit(): Promise<void> {
@@ -78,7 +104,7 @@ export class UserForm implements OnInit {
       this.#selectedGroups.push( id );
     }
 
-    this.userForm.patchValue( { 'groups': this.#selectedGroups } );
+    this.customForm.patchValue( { 'groups': this.#selectedGroups } );
   }
 
   selectAdminGroup( wId: number ): void {

@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <!-- Res/** is auto-embedded by CK.EmbeddedResources.Abstractions (buildTransitive .props/.targets).
+         signature-one-blanc.png is picked up with no explicit EmbeddedResource entry needed. -->
+
+    <ItemGroup>
+        <PackageReference Include="CK.AppIdentity.Abstractions" Version="0.14.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\CK.Mail.SharedLayout\CK.Mail.SharedLayout.csproj" />
+    </ItemGroup>
+
+</Project>

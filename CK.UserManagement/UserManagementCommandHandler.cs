@@ -3,6 +3,7 @@ using CK.Cris;
 using CK.DB.Actor;
 using CK.DB.User.NamedUser;
 using CK.DB.User.UserPassword;
+using CK.DB.Workspace;
 using CK.DB.Zone;
 using CK.IO.UserManagement;
 using CK.SqlServer;
@@ -197,31 +198,89 @@ public class UserManagementCommandHandler : IScopedAutoService
     }
 
     [CommandHandler]
-    public Task<SimpleUserMessage> ArchiveUsersAsync( ISqlCallContext ctx, IArchiveUsersCommand cmd )
+    public async Task<SimpleUserMessage> ArchiveUsersAsync( ISqlTransactionCallContext ctx,
+                                                            IArchiveUsersCommand cmd,
+                                                            UserTable userTable )
     {
         var actorId = cmd.ActorId.GetValueOrDefault();
         using( ctx.Monitor.OpenInfo( $"Handling {nameof( IArchiveUsersCommand )} command. (ActorId: {actorId}, Count: {cmd.UserIds.Count})" ) )
         {
-            if( cmd.UserIds.Count == 0 ) return Task.FromResult<SimpleUserMessage>( _currentCulture.CreateInvalidArgumentError() );
+            try
+            {
+                if( cmd.ActorId == 0 || cmd.UserIds.Count == 0 )
+                {
+                    ctx.Monitor.Error( $"Invalid arguments. (ActorId: {cmd.ActorId}, Ids: {string.Join( ", ", cmd.UserIds )})" );
+                    return _currentCulture.CreateInvalidArgumentError();
+                }
+                else
+                {
+                    //if( !await workspaceTable.IsUserWorkspaceAdminAsync( ctx, cmd.ActorId, cmd.WorkspaceId ) )
+                    //{
+                    //    return _currentCulture.CreateWorkspaceAdminOnlyError();
+                    //}
 
-            // NOTE: archiving is a soft-delete (BinDate). The standard CK.DB packages do not provide it
-            // (ODLM ships a custom sUserArchive proc). Wire a soft-delete here when that schema is added.
-            ctx.Monitor.Warn( $"User archiving requested but soft-delete is not wired (no standard support). (UserIds: {string.Join( ',', cmd.UserIds )})" );
-            return Task.FromResult<SimpleUserMessage>( _currentCulture.InfoMessage( "User successfully archived.", "CrisSuccess.UserArchived" ) );
+                    using( var transaction = ctx[userTable].BeginTransaction() )
+                    {
+                        foreach( var id in cmd.UserIds )
+                        {
+                            await userTable.ArchiveUserAsync( ctx, actorId, id );
+                            ctx.Monitor.Info( $"User sucessfully archived. (UserId: {id})" );
+                        }
+
+                        transaction.Commit();
+                        return _currentCulture.InfoMessage( "User successfully archived.", "CrisSuccess.UserArchived" );
+                    }
+                }
+            }
+            catch( Exception e )
+            {
+                ctx.Monitor.Error( e );
+                return _currentCulture.CreateGenericError();
+            }
         }
     }
 
     [CommandHandler]
-    public Task<SimpleUserMessage> RestoreUsersAsync( ISqlCallContext ctx, IRestoreUsersCommand cmd )
+    public async Task<SimpleUserMessage> RestoreUsersAsync( ISqlTransactionCallContext ctx,
+                                                            IRestoreUsersCommand cmd,
+                                                            UserTable userTable )
     {
         var actorId = cmd.ActorId.GetValueOrDefault();
         using( ctx.Monitor.OpenInfo( $"Handling {nameof( IRestoreUsersCommand )} command. (ActorId: {actorId}, Count: {cmd.UserIds.Count})" ) )
         {
-            if( cmd.UserIds.Count == 0 ) return Task.FromResult<SimpleUserMessage>( _currentCulture.CreateInvalidArgumentError() );
+            if( cmd.UserIds.Count == 0 ) return _currentCulture.CreateInvalidArgumentError();
 
-            // NOTE: see ArchiveUsersAsync — restore depends on the same soft-delete (BinDate) support.
-            ctx.Monitor.Warn( $"User restore requested but soft-delete is not wired (no standard support). (UserIds: {string.Join( ',', cmd.UserIds )})" );
-            return Task.FromResult<SimpleUserMessage>( _currentCulture.InfoMessage( "User successfully restored.", "CrisSuccess.UserRestored" ) );
+            try
+            {
+                if( cmd.ActorId == 0 || cmd.UserIds.Count == 0 )
+                {
+                    ctx.Monitor.Error( $"Invalid arguments. (ActorId: {cmd.ActorId}, Ids: {string.Join( ", ", cmd.UserIds )})" );
+                    return _currentCulture.CreateInvalidArgumentError();
+                }
+
+                //if( !await workspaceTable.IsUserWorkspaceAdminAsync( ctx, cmd.ActorId, cmd.WorkspaceId ) )
+                //{
+                //    return _currentCulture.CreateWorkspaceAdminOnlyError();
+                //}
+                //ctx.Monitor.Trace( "User is workspace admin. Continuing to restore users." );
+
+                using( var transaction = ctx[userTable].BeginTransaction() )
+                {
+                    foreach( var id in cmd.UserIds )
+                    {
+                        await userTable.RestoreUserAsync( ctx, actorId, id );
+                        ctx.Monitor.Info( $"User sucessfully restored. (UserId: {id})" );
+                    }
+
+                    transaction.Commit();
+                    return _currentCulture.InfoMessage( "User successfully restored.", "CrisSuccess.UserRestored" );
+                }
+            }
+            catch( Exception e )
+            {
+                ctx.Monitor.Error( e );
+                return _currentCulture.CreateGenericError();
+            }
         }
     }
 

@@ -1,23 +1,7 @@
 <div class="platform-user-form-container">
-    <form nz-form [formGroup]="userForm" nzLayout="vertical">
-        <nz-form-item>
-            <nz-form-label class="form-label" nzRequired>{{'CK.Admin.UserManagement.User.FirstName' | translate}}</nz-form-label>
-            <nz-form-control>
-                <input type="text" nz-input formControlName="firstName" [placeholder]="'CK.Admin.UserManagement.User.FirstName' | translate" />
-            </nz-form-control>
-        </nz-form-item>
-        <nz-form-item>
-            <nz-form-label class="form-label" nzRequired>{{'CK.Admin.UserManagement.User.LastName' | translate}}</nz-form-label>
-            <nz-form-control>
-                <input type="text" nz-input formControlName="lastName" [placeholder]="'CK.Admin.UserManagement.User.LastName' | translate" />
-            </nz-form-control>
-        </nz-form-item>
-        <nz-form-item>
-            <nz-form-label class="form-label" nzRequired>{{'CK.Admin.UserManagement.User.Email' | translate}}</nz-form-label>
-            <nz-form-control [nzErrorTip]="'CK.Admin.UserManagement.Form.InvalidEmail' | translate">
-                <input type="text" nz-input formControlName="email" [placeholder]="'CK.Admin.UserManagement.User.Email' | translate" />
-            </nz-form-control>
-        </nz-form-item>
+    <ck-generic-form #formComp [inputFormData]="formData"></ck-generic-form>
+
+    <form nz-form [formGroup]="customForm" nzLayout="vertical">
         <nz-form-item>
             <nz-form-label class="form-label" nzRequired>{{'CK.Admin.UserManagement.Form.Groups' | translate}}</nz-form-label>
             <nz-form-control>

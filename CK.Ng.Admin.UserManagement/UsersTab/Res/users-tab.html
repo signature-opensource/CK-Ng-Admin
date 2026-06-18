@@ -4,6 +4,7 @@
     [tableData]="users()"
     [dataUniqueKey]="'userId'"
     [columns]="columns"
+    [tableActions]="rowActions"
     [totalCount]="getTotalCount()"
     [totalCountLabel]="'CK.Admin.UserManagement.Tab.Users' | translate"
     (selectionChanged)="onTableSelection($event)">

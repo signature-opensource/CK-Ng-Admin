@@ -67,6 +67,7 @@ public class UserManagementService : IAutoService
         info.Active = true;
         info.ExpirationDateUtc = DateTime.UtcNow.AddDays( 3 );
 
+        //Todo : Replace by CK-DB-UserInvitation
         var result = await _tokenTable.CreateAsync( ctx, actorId, info );
         var payload = new InvitationPayload( cultureName, groups.Where( g => g > 0 ).ToList() );
         await _tokenTable.SetExtraDataAsync( ctx, actorId, result.TokenId, payload.Serialize() );
