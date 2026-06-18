@@ -12,7 +12,7 @@
         <PackageReference Include="CK.SqlServer.Transaction" Version="12.0.1" />
 
         <!-- Standard CK.DB building blocks used by the handlers. -->
-        <PackageReference Include="CK.DB.Workspace" Version="15.1.1--ci.7" />
+        <PackageReference Include="CK.DB.Workspace" Version="15.1.1--ci.8" />
         <PackageReference Include="CK.DB.Zone" Version="28.0.2--ci.3" />
         <PackageReference Include="CK.DB.User.NamedUser" Version="28.0.2--ci.2" />
         <PackageReference Include="CK.DB.User.UserPassword" Version="28.0.2--ci.2" />

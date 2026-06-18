@@ -16,31 +16,28 @@ namespace CK.UserManagement.Mail;
 /// </summary>
 public class UserManagementMailer : IUserManagementMailer
 {
-    // Used when no CK-AppIdentity:Local:FrontUrl is configured (e.g. dev without explicit config).
-    const string DefaultFrontUrl = "http://localhost:4200";
-
     readonly IFluidTemplateService _fluid;
     readonly PocoDirectory _pocoDir;
+    readonly IFrontUrlResolver _frontUrlResolver;
+
     readonly IDefaultEmailSender _emailSender;
     readonly IMailBrandingProvider _brandingProvider;
     readonly string _frontUrl;
 
     public UserManagementMailer( IFluidTemplateService fluid,
                                  PocoDirectory pocoDir,
+                                 IFrontUrlResolver frontUrlResolver,
                                  IDefaultEmailSender emailSender,
-                                 IApplicationIdentityService appIdentity,
                                  IMailBrandingProvider brandingProvider
                                )
     {
         _fluid = fluid;
         _pocoDir = pocoDir;
+        _frontUrlResolver = frontUrlResolver;
         _emailSender = emailSender;
         _brandingProvider = brandingProvider;
 
-        // FrontUrl lives at CK-AppIdentity:Local:FrontUrl (links must be absolute since invitation
-        // commands may run without an HTTP request context). Falls back to a dev default.
-        var configured = appIdentity.LocalConfiguration.Configuration["FrontUrl"];
-        _frontUrl = string.IsNullOrWhiteSpace( configured ) ? DefaultFrontUrl : configured.TrimEnd( '/' );
+        _frontUrl = _frontUrlResolver.ResolveFrontUrl();
     }
 
     public async Task SendUserInvitationAsync( IActivityMonitor monitor, string destination, string token, string cultureName )
