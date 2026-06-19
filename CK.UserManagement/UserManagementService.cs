@@ -29,6 +29,7 @@ public class UserManagementService : IAutoService
     readonly NamedUserTable _namedUserTable;
     readonly UserPasswordTable _passwordTable;
     readonly GroupTable _groupTable;
+    readonly UserTable _userTable;
     readonly CK.DB.Workspace.Package _workspacePackage;
     readonly UserManagementQueries _queries;
     readonly IUserManagementMailer _mailer;
@@ -40,6 +41,7 @@ public class UserManagementService : IAutoService
                                   NamedUserTable namedUserTable,
                                   UserPasswordTable passwordTable,
                                   GroupTable groupTable,
+                                  UserTable userTable,
                                   CK.DB.Workspace.Package workspacePackage,
                                   UserManagementQueries queries,
                                   IUserManagementMailer mailer )
@@ -51,6 +53,7 @@ public class UserManagementService : IAutoService
         _namedUserTable = namedUserTable;
         _passwordTable = passwordTable;
         _groupTable = groupTable;
+        _userTable = userTable;
         _workspacePackage = workspacePackage;
         _queries = queries;
         _mailer = mailer;
@@ -136,6 +139,10 @@ public class UserManagementService : IAutoService
         await _emailTable.AddEMailAsync( ctx, SystemActorId, userId, email, isPrimary: true );
         await _namedUserTable.SetNamesAsync( ctx, SystemActorId, userId, firstName, lastName );
         await _passwordTable.CreateOrUpdatePasswordUserAsync( ctx, SystemActorId, userId, password, UCLMode.CreateOnly );
+
+        var xlcid = NormalizedCultureInfo.EnsureNormalizedCultureInfo( cultureName ).Id;
+        await _userTable.SetExtendedCultureAsync( ctx, SystemActorId, userId, xlcid );
+        ctx.Monitor.Info( $"User's extended culture set. (UserId: {userId}, CultureName: {cultureName}, XLCID: {xlcid})" );
 
         foreach( var g in payload.Groups )
         {

@@ -63,7 +63,7 @@ export class EditUserForm implements OnInit {
         return !!scalarForm && scalarForm.valid && this.customForm.valid;
     }
 
-    getValue(): { firstName: string, lastName: string, email: string, password: string, groups: Array<number> } {
+    getValue(): { firstName: string, lastName: string, email: string, cultureName: string, password: string, groups: Array<number> } {
         return { ...this.formComponent()!.form()!.getRawValue(), ...this.customForm.getRawValue() };
     }
 

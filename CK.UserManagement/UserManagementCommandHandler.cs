@@ -214,11 +214,6 @@ public class UserManagementCommandHandler : IScopedAutoService
                 }
                 else
                 {
-                    //if( !await workspaceTable.IsUserWorkspaceAdminAsync( ctx, cmd.ActorId, cmd.WorkspaceId ) )
-                    //{
-                    //    return _currentCulture.CreateWorkspaceAdminOnlyError();
-                    //}
-
                     using( var transaction = ctx[userTable].BeginTransaction() )
                     {
                         foreach( var id in cmd.UserIds )
@@ -258,12 +253,6 @@ public class UserManagementCommandHandler : IScopedAutoService
                     return _currentCulture.CreateInvalidArgumentError();
                 }
 
-                //if( !await workspaceTable.IsUserWorkspaceAdminAsync( ctx, cmd.ActorId, cmd.WorkspaceId ) )
-                //{
-                //    return _currentCulture.CreateWorkspaceAdminOnlyError();
-                //}
-                //ctx.Monitor.Trace( "User is workspace admin. Continuing to restore users." );
-
                 using( var transaction = ctx[userTable].BeginTransaction() )
                 {
                     foreach( var id in cmd.UserIds )
@@ -291,6 +280,7 @@ public class UserManagementCommandHandler : IScopedAutoService
                                                                  NamedUserTable namedUserTable,
                                                                  UserPasswordTable userPasswordTable,
                                                                  CK.DB.Zone.GroupTable groupTable,
+                                                                 CK.DB.User.PreferredCulture.Package preferredCulturePackage,
                                                                  UserManagementQueries queries )
     {
         var actorId = cmd.ActorId.GetValueOrDefault();
@@ -303,6 +293,14 @@ public class UserManagementCommandHandler : IScopedAutoService
                 {
                     await userTable.UserNameSetAsync( ctx, actorId, cmd.UserId, cmd.UserName );
                     await namedUserTable.SetNamesAsync( ctx, actorId, cmd.UserId, cmd.FirstName, cmd.LastName );
+
+                    if( !string.IsNullOrWhiteSpace( cmd.CultureName ) )
+                    {
+                        var xlcid = NormalizedCultureInfo.EnsureNormalizedCultureInfo( cmd.CultureName ).Id;
+                        await userTable.SetExtendedCultureAsync( ctx, actorId, cmd.UserId, xlcid );
+                        await preferredCulturePackage.SetPreferredCultureNameAsync( ctx, actorId, cmd.UserId, cmd.CultureName );
+                        ctx.Monitor.Info( $"User's culture successfully set. (CultureName: {cmd.CultureName}, XLCID: {xlcid})" );
+                    }
 
                     if( !string.IsNullOrWhiteSpace( cmd.Password ) )
                     {

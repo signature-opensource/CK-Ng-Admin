@@ -457,6 +457,9 @@ export class UsersTab implements OnInit, AfterViewInit {
     const workspace = this.workspace();
     if ( !workspace ) return;
     if ( !user ) return;
+
+    const languages = Object.values( locales );
+    const currentCultureName = languages.find( l => l.id === user.extendedCultureId )?.name ?? languages[0]?.name ?? 'fr';
     const formData: GenericFormData<unknown, unknown> = {
       formControls: {
         firstName: new FormControlConfig( 'text',
@@ -484,6 +487,14 @@ export class UsersTab implements OnInit, AfterViewInit {
             validators: [Validators.required, Validators.email],
             errorMessages: { email: this.#translateService.instant( 'CK.Admin.UserManagement.Form.InvalidEmail' ) }
           } ),
+        cultureName: new FormControlConfig( 'select',
+          this.#translateService.instant( 'CK.Admin.UserManagement.Form.DefaultLanguage' ),
+          currentCultureName,
+          {
+            required: true,
+            validators: [Validators.required],
+            options: languages.map( l => ( { label: l.nativeName, value: l.name } ) )
+          } ),
       }
     };
 
@@ -502,6 +513,7 @@ export class UsersTab implements OnInit, AfterViewInit {
             v.firstName,
             v.lastName,
             v.email,
+            v.cultureName,
             v.groups,
             v.password ?? undefined
           )
