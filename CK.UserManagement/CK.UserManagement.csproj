@@ -18,7 +18,7 @@
         <PackageReference Include="CK.DB.User.UserPassword" Version="28.0.2--ci.2" />
         <PackageReference Include="CK.DB.User.PreferredCulture" Version="0.4.2--ci.2" />
         <PackageReference Include="CK.DB.Actor.ActorEMail" Version="28.0.2--ci.2" />
-        <PackageReference Include="CK.DB.TokenStore" Version="0.38.2--ci.2" />
+        <PackageReference Include="CK.DB.UserInvitation" Version="0.4.6--ci.5" />
         <PackageReference Include="CK.DB.Globalization" Version="0.1.4--ci.6" />
 
 

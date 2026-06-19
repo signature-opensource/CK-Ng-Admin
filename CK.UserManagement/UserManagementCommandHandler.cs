@@ -62,7 +62,7 @@ public class UserManagementCommandHandler : IScopedAutoService
         {
             try
             {
-                var invitations = await queries.GetPendingInvitationsAsync( ctx, UserManagementQueries.InvitationScopeLikePattern, useLikePattern: true );
+                var invitations = await queries.GetPendingInvitationsAsync( ctx );
                 return invitations.ToList();
             }
             catch( Exception e )
@@ -83,7 +83,7 @@ public class UserManagementCommandHandler : IScopedAutoService
         {
             try
             {
-                var invitations = await queries.GetPendingInvitationsAsync( ctx, UserManagementQueries.InvitationScope( workspaceId ) );
+                var invitations = await queries.GetPendingInvitationsAsync( ctx, workspaceId );
                 return invitations.ToList();
             }
             catch( Exception e )
@@ -155,7 +155,7 @@ public class UserManagementCommandHandler : IScopedAutoService
             {
                 using( var transaction = ctx[userTable].BeginTransaction() )
                 {
-                    await service.CreateInvitationAsync( ctx, actorId, cmd.CurrentWorkspaceId.GetValueOrDefault(), cmd.Email, cmd.CultureName, cmd.Groups );
+                    await service.CreateInvitationAsync( ctx, cmd.CurrentWorkspaceId.GetValueOrDefault(), cmd.Email, cmd.CultureName, cmd.Groups );
                     transaction.Commit();
                 }
                 return _currentCulture.InfoMessage( "Invitation successfully created.", "CrisSuccess.InvitationCreated" );
@@ -183,7 +183,7 @@ public class UserManagementCommandHandler : IScopedAutoService
                 {
                     foreach( var inv in cmd.Invitations )
                     {
-                        await service.ResendInvitationAsync( ctx, actorId, cmd.CurrentWorkspaceId.GetValueOrDefault(), inv.Email, inv.CultureName );
+                        await service.ResendInvitationAsync( ctx, inv.Email, inv.CultureName );
                     }
                     transaction.Commit();
                 }

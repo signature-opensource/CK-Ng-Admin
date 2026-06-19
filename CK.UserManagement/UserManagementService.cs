@@ -1,10 +1,12 @@
+using System.Text;
 using CK.Core;
 using CK.DB.Actor.ActorEMail;
 using CK.DB.Auth;
-using CK.DB.TokenStore;
 using CK.DB.User.NamedUser;
 using CK.DB.User.UserPassword;
+using CK.DB.UserInvitation;
 using CK.DB.Zone;
+using CK.IO.UserInvitation;
 using CK.IO.UserManagement;
 using CK.SqlServer;
 
@@ -12,18 +14,23 @@ namespace CK.UserManagement;
 
 /// <summary>
 /// Business logic for workspace invitations and user registration, built on the standard CK.DB
-/// packages. Invitations are persisted in <c>CK.DB.TokenStore</c>: the scope encodes the target
-/// workspace, the key is the invited e-mail and the <c>ExtraData</c> carries the
-/// <see cref="InvitationPayload"/> (culture + groups). Sending the actual e-mail is out of scope
-/// here and only logged — plug a real mailer where indicated.
+/// packages. Invitations are persisted by <c>CK.DB.UserInvitation</c> (<c>CK.tUserInvitation</c> and
+/// its group/provider satellite tables). The invitation is keyed by the invited e-mail
+/// (<c>UserTargetAddress</c>, unique platform-wide); the target culture and the groups the user will
+/// join are carried by the invitation itself. Every invitation is created on behalf of the system
+/// user so any administrator can list, resend or destroy it and the (anonymous) registration flow can
+/// finalize it. The workspace an invitation belongs to is derived from the zone of its groups.
+/// Sending the actual e-mail is delegated to <see cref="IUserManagementMailer"/>.
 /// </summary>
 public class UserManagementService : IAutoService
 {
-    // Every server-side action is performed on behalf of the system user.
+    // Every invitation action is performed on behalf of the system user (the invitation creator),
+    // so any administrator can manage it and the anonymous registration flow can destroy it.
     const int SystemActorId = 1;
 
     readonly PocoDirectory _pocoDir;
-    readonly TokenStoreTable _tokenTable;
+    readonly CK.DB.UserInvitation.Package _invitationPackage;
+    readonly UserInvitationTable _invitationTable;
     readonly CK.DB.User.PreferredCulture.Package _userPackage;
     readonly ActorEMailTable _emailTable;
     readonly NamedUserTable _namedUserTable;
@@ -35,7 +42,8 @@ public class UserManagementService : IAutoService
     readonly IUserManagementMailer _mailer;
 
     public UserManagementService( PocoDirectory pocoDir,
-                                  TokenStoreTable tokenTable,
+                                  CK.DB.UserInvitation.Package invitationPackage,
+                                  UserInvitationTable invitationTable,
                                   CK.DB.User.PreferredCulture.Package userPackage,
                                   ActorEMailTable emailTable,
                                   NamedUserTable namedUserTable,
@@ -47,7 +55,8 @@ public class UserManagementService : IAutoService
                                   IUserManagementMailer mailer )
     {
         _pocoDir = pocoDir;
-        _tokenTable = tokenTable;
+        _invitationPackage = invitationPackage;
+        _invitationTable = invitationTable;
         _userPackage = userPackage;
         _emailTable = emailTable;
         _namedUserTable = namedUserTable;
@@ -60,62 +69,79 @@ public class UserManagementService : IAutoService
     }
 
     /// <summary>
-    /// Creates a workspace invitation token and (would) send the invitation e-mail.
+    /// Creates (or replaces) the invitation for an e-mail and sends the invitation e-mail.
+    /// Because <c>UserTargetAddress</c> is unique platform-wide, any existing pending invitation for
+    /// the same e-mail is destroyed first so the culture and groups always reflect the latest input.
     /// </summary>
-    public async Task CreateInvitationAsync( ISqlCallContext ctx, int actorId, int workspaceId, string email, string cultureName, IReadOnlyList<int> groups )
+    public async Task CreateInvitationAsync( ISqlTransactionCallContext ctx, int workspaceId, string email, string cultureName, IReadOnlyList<int> groups )
     {
-        var info = _tokenTable.CreateInfo();
-        info.TokenScope = UserManagementQueries.InvitationScope( workspaceId );
-        info.TokenKey = email;
-        info.Active = true;
-        info.ExpirationDateUtc = DateTime.UtcNow.AddDays( 3 );
+        var existing = await _invitationPackage.GetUserInvitationAsync( ctx, SystemActorId, email );
+        if( existing is not null )
+        {
+            await DestroyInvitationAsync( ctx, existing.InvitationId );
+        }
 
-        //Todo : Replace by CK-DB-UserInvitation
-        var result = await _tokenTable.CreateAsync( ctx, actorId, info );
-        var payload = new InvitationPayload( cultureName, groups.Where( g => g > 0 ).ToList() );
-        await _tokenTable.SetExtraDataAsync( ctx, actorId, result.TokenId, payload.Serialize() );
+        var cultureId = NormalizedCultureInfo.EnsureNormalizedCultureInfo( cultureName ).Id;
+        var create = _pocoDir.Create<ICreateUserInvitationCommand>( c =>
+        {
+            c.ActorId = SystemActorId;
+            c.UserTargetAddress = email;
+            c.ExpirationDateUtc = DateTime.UtcNow.AddDays( 3 );
+            c.IsActive = true;
+            c.CultureId = cultureId;
+            foreach( var g in groups.Where( g => g > 0 ) ) c.GroupIdentifiers.Add( g );
+        } );
+        var invitation = await _invitationPackage.CreateUserInvitationAsync( ctx, create );
 
-        ctx.Monitor.Info( $"Invitation created. (Email: {email}, WorkspaceId: {workspaceId})" );
-        await _mailer.SendUserInvitationAsync( ctx.Monitor, email, result.Token, cultureName );
+        ctx.Monitor.Info( $"Invitation created. (Email: {email}, WorkspaceId: {workspaceId}, InvitationId: {invitation.InvitationId})" );
+        await SendInvitationMailAsync( ctx, invitation.InvitationId, email, cultureName );
     }
 
     /// <summary>
-    /// Re-activates a pending invitation (extends its expiration) and (would) resend the e-mail.
+    /// Re-activates a pending invitation (extends its expiration) and resends the e-mail.
     /// </summary>
-    public async Task ResendInvitationAsync( ISqlCallContext ctx, int actorId, int workspaceId, string email, string cultureName )
+    public async Task ResendInvitationAsync( ISqlCallContext ctx, string email, string cultureName )
     {
-        var scope = UserManagementQueries.InvitationScope( workspaceId );
-        var token = await _queries.GetInvitationRefAsync( ctx, scope, email );
-        if( token is null )
+        var invitation = await _invitationPackage.GetUserInvitationAsync( ctx, SystemActorId, email );
+        if( invitation is null )
         {
-            ctx.Monitor.Warn( $"No pending invitation to resend. (Email: {email}, WorkspaceId: {workspaceId})" );
+            ctx.Monitor.Warn( $"No pending invitation to resend. (Email: {email})" );
             return;
         }
 
-        await _tokenTable.ActivateAsync( ctx, actorId, token.Value.TokenId, active: true, expirationDateUtc: DateTime.UtcNow.AddDays( 3 ) );
+        await _invitationPackage.SetUserInvitationIsActiveAsync( ctx, _pocoDir.Create<ISetUserInvitationIsActiveCommand>( c =>
+        {
+            c.ActorId = SystemActorId;
+            c.InvitationId = invitation.InvitationId;
+            c.IsActive = true;
+        } ) );
+        await _invitationPackage.SetUserInvitationExpirationDateAsync( ctx, _pocoDir.Create<ISetUserInvitationExpirationDateCommand>( c =>
+        {
+            c.ActorId = SystemActorId;
+            c.InvitationId = invitation.InvitationId;
+            c.NewExpirationDate = DateTime.UtcNow.AddDays( 3 );
+        } ) );
+
         ctx.Monitor.Info( $"Invitation re-activated. (Email: {email})" );
-        await _mailer.SendUserInvitationAsync( ctx.Monitor, email, token.Value.Token, cultureName );
+        await SendInvitationMailAsync( ctx, invitation.InvitationId, email, cultureName );
     }
 
     /// <summary>
-    /// Validates an invitation token and returns the pending user (e-mail + default culture).
+    /// Validates an invitation secret and returns the pending user (e-mail + default culture).
     /// </summary>
     public async Task<IPendingUser> ValidateInvitationAsync( ISqlCallContext ctx, string token )
     {
-        var info = await CheckInvitationAsync( ctx, token );
-        var payload = InvitationPayload.Deserialize( info.ExtraData );
-        var xlcid = NormalizedCultureInfo.EnsureNormalizedCultureInfo( payload.CultureName ).Id;
-
+        var invitation = await CheckInvitationAsync( ctx, token );
         return _pocoDir.Create<IPendingUser>( u =>
         {
-            u.Email = info.TokenKey ?? string.Empty;
-            u.DefaultXLCID = xlcid;
+            u.Email = invitation.UserTargetAddress;
+            u.DefaultXLCID = invitation.CultureId;
         } );
     }
 
     /// <summary>
     /// Completes a registration: creates the user, sets names/password, joins the invitation groups,
-    /// sets the preferred workspace then destroys the invitation token.
+    /// sets the preferred workspace then destroys the invitation.
     /// </summary>
     public async Task CompleteRegistrationAsync( ISqlCallContext ctx,
                                                  string firstName,
@@ -125,8 +151,7 @@ public class UserManagementService : IAutoService
                                                  string password,
                                                  string cultureName )
     {
-        var info = await CheckInvitationAsync( ctx, token );
-        var payload = InvitationPayload.Deserialize( info.ExtraData );
+        var invitation = await CheckInvitationAsync( ctx, token );
 
         var userId = await _userPackage.CreateUserAsync( ctx, SystemActorId, email, cultureName );
         if( userId <= 0 )
@@ -144,41 +169,60 @@ public class UserManagementService : IAutoService
         await _userTable.SetExtendedCultureAsync( ctx, SystemActorId, userId, xlcid );
         ctx.Monitor.Info( $"User's extended culture set. (UserId: {userId}, CultureName: {cultureName}, XLCID: {xlcid})" );
 
-        foreach( var g in payload.Groups )
+        foreach( var g in invitation.GroupIdentifiers )
         {
             await _groupTable.AddUserAsync( ctx, SystemActorId, g, userId, autoAddUserInZone: true );
             ctx.Monitor.Trace( $"User added to group. (UserId: {userId}, GroupId: {g})" );
         }
 
-        var workspaceId = ParseWorkspaceId( info.TokenScope );
+        var workspaceId = await _queries.GetWorkspaceIdForGroupsAsync( ctx, invitation.GroupIdentifiers );
         if( workspaceId > 0 )
         {
             await _workspacePackage.SetUserPreferredWorkspaceAsync( ctx, SystemActorId, userId, workspaceId );
             ctx.Monitor.Trace( $"Preferred workspace set. (UserId: {userId}, WorkspaceId: {workspaceId})" );
         }
 
-        await _tokenTable.DestroyAsync( ctx, info.CreatedById, info.TokenId );
-        ctx.Monitor.Info( $"Invitation finalized and token destroyed. (TokenId: {info.TokenId})" );
+        await DestroyInvitationAsync( ctx, invitation.InvitationId );
+        ctx.Monitor.Info( $"Invitation finalized and destroyed. (InvitationId: {invitation.InvitationId})" );
     }
 
-    async Task<ITokenInfo> CheckInvitationAsync( ISqlCallContext ctx, string token )
+    /// <summary>
+    /// Resolves and validates an invitation from its secret. Mirrors the previous TokenStore check:
+    /// the invitation must exist, be active and not be expired.
+    /// </summary>
+    async Task<IUserInvitation> CheckInvitationAsync( ISqlCallContext ctx, string token )
     {
         if( string.IsNullOrWhiteSpace( token ) ) throw new InvalidOperationException( "User.InvitationError" );
 
-        var info = await _tokenTable.CheckAsync( ctx, SystemActorId, token );
-        if( info is null || info.TokenId <= 0 || !info.Active || info.ExpirationDateUtc < DateTime.UtcNow )
+        var invitation = await _invitationPackage.GetUserInvitationAsync( ctx, Encoding.UTF8.GetBytes( token ) );
+        if( invitation is null || !invitation.IsActive || invitation.ExpirationDateUtc < DateTime.UtcNow )
         {
             ctx.Monitor.Error( "Could not validate the invitation token." );
             throw new InvalidOperationException( "User.InvitationError" );
         }
-        return info;
+        return invitation;
     }
 
-    static int ParseWorkspaceId( string? tokenScope )
+    async Task DestroyInvitationAsync( ISqlCallContext ctx, int invitationId )
     {
-        // Scope shape: "WorkspaceInvitation.{workspaceId}".
-        if( tokenScope is null ) return 0;
-        var dot = tokenScope.LastIndexOf( '.' );
-        return dot >= 0 && int.TryParse( tokenScope.AsSpan( dot + 1 ), out var id ) ? id : 0;
+        await _invitationPackage.DestroyUserInvitationAsync( ctx, _pocoDir.Create<IDestroyUserInvitationCommand>( c =>
+        {
+            c.ActorId = SystemActorId;
+            c.InvitationId = invitationId;
+        } ) );
+    }
+
+    /// <summary>
+    /// Reads the invitation secret and dispatches the invitation e-mail with the registration link.
+    /// </summary>
+    async Task SendInvitationMailAsync( ISqlCallContext ctx, int invitationId, string email, string cultureName )
+    {
+        var secret = await _invitationTable.GetUserInvitationSecretAsync( ctx, SystemActorId, invitationId );
+        if( secret is null )
+        {
+            ctx.Monitor.Error( $"Could not read the invitation secret. (InvitationId: {invitationId})" );
+            return;
+        }
+        await _mailer.SendUserInvitationAsync( ctx.Monitor, email, Encoding.UTF8.GetString( secret ), cultureName );
     }
 }

@@ -1,7 +1,7 @@
-using System.Globalization;
-using System.Text.Json;
 using CK.Core;
 using CK.DB.Actor;
+using CK.DB.UserInvitation;
+using CK.IO.UserInvitation;
 using CK.IO.UserManagement;
 using CK.IO.UserProfile.Workspace;
 using CK.SqlServer;
@@ -12,25 +12,26 @@ namespace CK.UserManagement;
 /// <summary>
 /// Dapper read queries for the user-management handlers, written against the standard CK.DB
 /// schema (<c>CK.vUser</c>, <c>CK.tActorProfile</c>, <c>CK.vGroup</c>, <c>CK.vZone</c>,
-/// <c>CK.tWorkspace</c>, <c>CK.tTokenStore</c>). Results are projected to flat records and
-/// rebuilt as Pocos through the <see cref="PocoDirectory"/>.
+/// <c>CK.tWorkspace</c>, <c>CK.tCulture</c>). Pending invitations come from
+/// <c>CK.DB.UserInvitation</c>; the workspace an invitation belongs to is derived from the zone of
+/// its groups. Results are projected to flat records and rebuilt as Pocos through the
+/// <see cref="PocoDirectory"/>.
 /// </summary>
 public class UserManagementQueries : IAutoService
 {
+    // Invitations are created on behalf of the system user (see UserManagementService).
+    const int SystemActorId = 1;
+
     readonly PocoDirectory _pocoDir;
     readonly UserTable _userTable;
+    readonly CK.DB.UserInvitation.Package _invitationPackage;
 
-    public UserManagementQueries( PocoDirectory pocoDirectory, UserTable userTable )
+    public UserManagementQueries( PocoDirectory pocoDirectory, UserTable userTable, CK.DB.UserInvitation.Package invitationPackage )
     {
         _pocoDir = pocoDirectory;
         _userTable = userTable;
+        _invitationPackage = invitationPackage;
     }
-
-    /// <summary>The TokenStore scope under which a workspace invitation is stored.</summary>
-    public static string InvitationScope( int workspaceId ) => $"WorkspaceInvitation.{workspaceId}";
-
-    /// <summary>Matches every workspace invitation scope (platform-wide listing).</summary>
-    public const string InvitationScopeLikePattern = "WorkspaceInvitation.%";
 
     public async Task<IReadOnlyList<IWorkspaceUser>> GetWorkspaceUsersAsync( ISqlCallContext ctx, int workspaceId )
     {
@@ -118,48 +119,72 @@ public class UserManagementQueries : IAutoService
     }
 
     /// <summary>
-    /// Pending invitations stored in the TokenStore. When <paramref name="useLikePattern"/> is true,
-    /// <paramref name="scope"/> is matched with a <c>like</c> (platform-wide listing).
+    /// Pending (non-expired) invitations from <c>CK.DB.UserInvitation</c>. When
+    /// <paramref name="workspaceId"/> is provided, only invitations whose groups belong to that
+    /// workspace zone are returned; otherwise every pending invitation is returned (platform-wide).
     /// </summary>
-    public async Task<IReadOnlyList<IPendingInvitation>> GetPendingInvitationsAsync( ISqlCallContext ctx, string scope, bool useLikePattern = false )
+    public async Task<IReadOnlyList<IPendingInvitation>> GetPendingInvitationsAsync( ISqlCallContext ctx, int? workspaceId = null )
     {
-        var op = useLikePattern ? "like" : "=";
-        var rows = await ctx[_userTable].QueryAsync<FlatInvitation>(
-            $"""
-            select TokenKey
-                  ,Active
-                  ,ExpirationDateUtc
-                  ,ExtraData
-              from CK.tTokenStore
-              where TokenScope {op} @Scope and ExpirationDateUtc > sysutcdatetime();
-            """,
-            new { Scope = scope } );
+        var all = await _invitationPackage.GetUserInvitationsAsync( ctx, _pocoDir.Create<IGetUserInvitationsQCommand>( c => c.ActorId = SystemActorId ) );
+        var pending = all.Where( i => i.ExpirationDateUtc > DateTime.UtcNow ).ToList();
 
-        return rows.Select( r =>
+        if( workspaceId is > 0 )
         {
-            var payload = InvitationPayload.Deserialize( r.ExtraData );
-            return _pocoDir.Create<IPendingInvitation>( i =>
+            var groupIds = pending.SelectMany( i => i.GroupIdentifiers ).Distinct().ToList();
+            var groupWorkspaces = await GetGroupWorkspacesAsync( ctx, groupIds );
+            pending = pending.Where( i => i.GroupIdentifiers.Any( g => groupWorkspaces.TryGetValue( g, out var w ) && w == workspaceId.Value ) ).ToList();
+        }
+
+        var cultures = await GetCultureNamesAsync( ctx, pending.Select( i => i.CultureId ).Distinct().ToList() );
+
+        return pending.Select( i =>
+        {
+            cultures.TryGetValue( i.CultureId, out var culture );
+            return _pocoDir.Create<IPendingInvitation>( p =>
             {
-                i.Email = r.TokenKey;
-                i.Active = r.Active;
-                i.CultureName = payload.CultureName;
-                i.NativeName = ToNativeName( payload.CultureName );
-                i.ExpirationDateUtc = r.ExpirationDateUtc;
+                p.Email = i.UserTargetAddress;
+                p.Active = i.IsActive;
+                p.CultureName = culture?.Name ?? "fr";
+                p.NativeName = culture?.NativeName ?? "Français";
+                p.ExpirationDateUtc = i.ExpirationDateUtc;
             } );
         } ).ToList();
     }
 
-    /// <summary>Resolves the TokenStore identifier of a pending invitation from its scope and email.</summary>
-    public async Task<(int TokenId, string Token)?> GetInvitationRefAsync( ISqlCallContext ctx, string scope, string email )
+    /// <summary>
+    /// Derives the workspace an invitation targets from its groups.
+    /// Returns the first resolved workspace, or 0 when none can be resolved.
+    /// </summary>
+    public async Task<int> GetWorkspaceIdForGroupsAsync( ISqlCallContext ctx, IEnumerable<int> groupIds )
     {
-        var row = await ctx[_userTable].QuerySingleOrDefaultAsync<FlatTokenRef>(
-            """
-            select TokenId, Token
-              from CK.tTokenStore
-              where TokenScope = @Scope and TokenKey = @Email;
-            """,
-            new { Scope = scope, Email = email } );
-        return row is null ? null : (row.TokenId, row.Token);
+        var workspaces = await GetGroupWorkspacesAsync( ctx, groupIds );
+        return workspaces.Values.FirstOrDefault( w => w > 0 );
+    }
+
+    /// <summary>
+    /// Maps the given group ids to the workspace (zone) they belong to. A workspace is a zone, so a
+    /// zone group carries the workspace on its own <c>GroupId</c> (its <c>ZoneId</c> is 0), while a
+    /// regular group carries it on its <c>ZoneId</c>.
+    /// </summary>
+    async Task<Dictionary<int, int>> GetGroupWorkspacesAsync( ISqlCallContext ctx, IEnumerable<int> groupIds )
+    {
+        var ids = groupIds.ToList();
+        if( ids.Count == 0 ) return new();
+        var rows = await ctx[_userTable].QueryAsync<FlatGroupWorkspace>(
+            "select GroupId, WorkspaceId = case when IsZone = 1 then GroupId else ZoneId end from CK.vGroup where GroupId in @Ids;",
+            new { Ids = ids } );
+        return rows.ToDictionary( r => r.GroupId, r => r.WorkspaceId );
+    }
+
+    /// <summary>Resolves the culture name and native name for the given culture ids.</summary>
+    async Task<Dictionary<int, FlatCulture>> GetCultureNamesAsync( ISqlCallContext ctx, IEnumerable<int> cultureIds )
+    {
+        var ids = cultureIds.ToList();
+        if( ids.Count == 0 ) return new();
+        var rows = await ctx[_userTable].QueryAsync<FlatCulture>(
+            "select CultureId, Name, NativeName from CK.tCulture where CultureId in @Ids;",
+            new { Ids = ids } );
+        return rows.ToDictionary( r => r.CultureId, r => r );
     }
 
     IGroupInfos MapGroup( FlatGroup g ) => _pocoDir.Create<IGroupInfos>( gi =>
@@ -170,12 +195,6 @@ public class UserManagementQueries : IAutoService
         gi.ZoneId = g.ZoneId;
         gi.ZoneName = g.ZoneName;
     } );
-
-    static string ToNativeName( string cultureName )
-    {
-        try { return new CultureInfo( cultureName ).NativeName; }
-        catch( CultureNotFoundException ) { return cultureName; }
-    }
 
     record FlatWorkspaceUser
     {
@@ -197,32 +216,16 @@ public class UserManagementQueries : IAutoService
         public string ZoneName { get; init; } = string.Empty;
     }
 
-    record FlatInvitation
+    record FlatGroupWorkspace
     {
-        public string TokenKey { get; init; } = string.Empty;
-        public bool Active { get; init; }
-        public DateTime ExpirationDateUtc { get; init; }
-        public byte[]? ExtraData { get; init; }
+        public int GroupId { get; init; }
+        public int WorkspaceId { get; init; }
     }
 
-    record FlatTokenRef
+    record FlatCulture
     {
-        public int TokenId { get; init; }
-        public string Token { get; init; } = string.Empty;
-    }
-}
-
-/// <summary>
-/// Data carried by a workspace invitation, persisted as UTF-8 JSON in the TokenStore
-/// <c>ExtraData</c> column (the culture and the groups the invited user will join).
-/// </summary>
-public sealed record InvitationPayload( string CultureName, List<int> Groups )
-{
-    public byte[] Serialize() => JsonSerializer.SerializeToUtf8Bytes( this );
-
-    public static InvitationPayload Deserialize( byte[]? extraData )
-    {
-        if( extraData is null || extraData.Length == 0 ) return new InvitationPayload( "fr", new List<int>() );
-        return JsonSerializer.Deserialize<InvitationPayload>( extraData ) ?? new InvitationPayload( "fr", new List<int>() );
+        public int CultureId { get; init; }
+        public string Name { get; init; } = string.Empty;
+        public string NativeName { get; init; } = string.Empty;
     }
 }
