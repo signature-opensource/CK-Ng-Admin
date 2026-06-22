@@ -6,7 +6,7 @@ namespace CK.Ng.Admin.UserManagement;
 
 [NgComponent]
 [Package<UserManagementTSPackage>]
-[Requires<TableComponent>]
+[Requires<AdaptivePageLayoutComponent>]
 public sealed class InvitationsTableComponent : NgComponent
 {
 }

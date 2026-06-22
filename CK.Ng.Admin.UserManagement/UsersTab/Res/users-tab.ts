@@ -8,6 +8,7 @@ import { NzTagModule } from 'ng-zorro-antd/tag';
 import { faArrowRotateLeft, faEdit, faPlus, faRotate, faTrash } from '@fortawesome/free-solid-svg-icons';
 import {
   ActionBarContent,
+  AdaptivePageLayout,
   ArchiveUsersCommand,
   CreateInvitationCommand,
   EditUserForm,
@@ -24,7 +25,6 @@ import {
   SelectFilter,
   SimpleUserMessage,
   SwitchFilter,
-  Table,
   TableAction,
   TableCellContext,
   TableColumn,
@@ -38,15 +38,13 @@ import { locales } from '@local/ck-gen/ts-locales/locales';
 @Component( {
   selector: 'ck-users-tab',
   templateUrl: './users-tab.html',
-  imports: [TranslateModule, Table, NzModalModule, NzTagModule]
+  imports: [TranslateModule, AdaptivePageLayout, NzModalModule, NzTagModule]
 } )
 export class UsersTab implements OnInit, AfterViewInit {
-  readonly tableComponent = viewChild<Table<WorkspaceUser>>( 'table' );
+  readonly layout = viewChild<AdaptivePageLayout<WorkspaceUser>>( 'layout' );
   readonly roleCellTemplate = viewChild.required<TemplateRef<TableCellContext<WorkspaceUser>>>( 'roleCellTemplate' );
 
   readonly workspace = input<GroupInfos>();
-  readonly actionsChanged = output<ActionBarContent<WorkspaceUser>>();
-  readonly filtersChanged = output<Array<Filter<unknown>>>();
   readonly invitationCreated = output<void>();
 
   // <PreDependencyInjection revert />
@@ -63,18 +61,35 @@ export class UsersTab implements OnInit, AfterViewInit {
   protected users: WritableSignal<Array<WorkspaceUser>> = signal( [] );
   protected columns: Array<TableColumn<WorkspaceUser>> = [];
   protected rowActions: Array<TableAction<WorkspaceUser>> = [];
+  protected actions: WritableSignal<ActionBarContent<WorkspaceUser>> = signal( { left: [], right: [] } );
+  protected readonly filters: WritableSignal<Array<Filter<unknown>>> = signal( [] );
   protected pageSize: number = 10;
   protected selectedUsers: Array<WorkspaceUser> = [];
   #allUsers: Array<WorkspaceUser> = [];
-  #filters: Array<Filter<unknown>> = [];
-  #currentFilters: Array<Filter<unknown>> = [];
   #roleFilter!: SelectFilter<'admin' | 'member'>;
   #archivedFilter!: SwitchFilter;
   // <PostLocalVariables />
 
+  // Front search/filter run inside the adaptive layout: it calls these on every
+  // keystroke / filter toggle and uses the returned array as the displayed items.
+  protected readonly searchFunc = ( input: string ): Array<WorkspaceUser> => {
+    const q = input.trim().toLocaleLowerCase();
+    if ( !q ) return this.users();
+    return this.users().filter( u =>
+      u.userName.toLocaleLowerCase().startsWith( q ) ||
+      u.firstName.toLocaleLowerCase().startsWith( q ) ||
+      u.lastName.toLocaleLowerCase().startsWith( q )
+    );
+  };
+
+  protected readonly filterFunc = (): Array<WorkspaceUser> => {
+    const filtered = this.#computeFiltered();
+    this.users.set( filtered );
+    return filtered;
+  };
+
   async ngOnInit(): Promise<void> {
     this.initFilters();
-    this.filtersChanged.emit( this.#filters );
 
     this.#translateService.onLangChange
       .pipe( takeUntilDestroyed( this.#destroyRef ) )
@@ -117,6 +132,8 @@ export class UsersTab implements OnInit, AfterViewInit {
     this.#roleFilter.options[0].label = t['CK.Admin.UserManagement.Role.Administrator'];
     this.#roleFilter.options[1].label = t['CK.Admin.UserManagement.Role.Member'];
     this.#archivedFilter.label = t['CK.Admin.UserManagement.Filter.ShowArchived'];
+    // Re-emit a new array so the layout picks up the relabelled filters.
+    this.filters.set( [this.#roleFilter, this.#archivedFilter] );
   }
 
   async loadUsers(): Promise<void> {
@@ -125,11 +142,10 @@ export class UsersTab implements OnInit, AfterViewInit {
       const res = await this.#crisEndpoint.sendOrThrowAsync( new GetWorkspaceUsersQCommand() );
       if ( res ) {
         this.#allUsers = [...res];
-        this.users.set( [...res] );
       }
 
-      this.tableComponent()?.clearSelection();
-      this.applyFilters( this.#currentFilters );
+      this.layout()?.clearSelection();
+      this.users.set( this.#computeFiltered() );
     } catch {
       this.#notifService.notifyUserMessage( { level: UserMessageLevel.Error, message: this.#translateService.instant( 'CK.Admin.UserManagement.Data.ErrorWhileLoading' ) } as SimpleUserMessage );
     } finally {
@@ -137,18 +153,18 @@ export class UsersTab implements OnInit, AfterViewInit {
     }
   }
 
-  applyFilters( f: Array<Filter<unknown>> ): void {
-    this.#currentFilters = [...f];
+  // Applies the role / archived filters (archived hidden by default) to the full set.
+  #computeFiltered(): Array<WorkspaceUser> {
     let result = [...this.#allUsers];
 
-    if ( f.includes( this.#roleFilter ) ) {
+    if ( this.#roleFilter?.active ) {
       const values = ( this.#roleFilter.value as Array<'admin' | 'member'> | undefined ) ?? [];
       if ( values.length > 0 ) {
         result = result.filter( u => values.includes( u.isWorkspaceAdmin ? 'admin' : 'member' ) );
       }
     }
 
-    if ( f.includes( this.#archivedFilter ) ) {
+    if ( this.#archivedFilter?.active ) {
       result = this.#archivedFilter.value
         ? result.filter( u => !!u.binDate )
         : result.filter( u => !u.binDate );
@@ -157,30 +173,11 @@ export class UsersTab implements OnInit, AfterViewInit {
       result = result.filter( u => !u.binDate );
     }
 
-    this.users.set( result );
-  }
-
-  onFiltersCleared(): void {
-    this.users.set( [...this.#allUsers] );
-  }
-
-  onSearch( searchString: string ): void {
-    this.users.set( [...this.#allUsers] );
-    this.applyFilters( this.#currentFilters );
-    const s = searchString.toLocaleLowerCase();
-    this.users.set( this.users().filter( u =>
-      u.userName.toLocaleLowerCase().startsWith( s ) ||
-      u.firstName.toLocaleLowerCase().startsWith( s ) ||
-      u.lastName.toLocaleLowerCase().startsWith( s )
-    ) );
+    return result;
   }
 
   onTableSelection( users: Array<WorkspaceUser> ): void {
     this.selectedUsers = [...users];
-  }
-
-  getTotalCount(): number {
-    return this.#allUsers.length;
   }
 
   initColumns( t: Record<string, string> ): void {
@@ -207,10 +204,9 @@ export class UsersTab implements OnInit, AfterViewInit {
         filter: {
           visible: false,
           searchValue: '',
-          reset: () => this.applyFilters( this.#currentFilters ),
+          reset: () => this.users.set( this.#computeFiltered() ),
           search: ( s: string ) => {
-            this.applyFilters( this.#currentFilters );
-            this.users.set( this.users().filter( u => u.userName.trim().toLowerCase().includes( s.trim().toLowerCase() ) ) );
+            this.users.set( this.#computeFiltered().filter( u => u.userName.trim().toLowerCase().includes( s.trim().toLowerCase() ) ) );
           }
         }
       },
@@ -225,10 +221,9 @@ export class UsersTab implements OnInit, AfterViewInit {
         filter: {
           visible: false,
           searchValue: '',
-          reset: () => this.applyFilters( this.#currentFilters ),
+          reset: () => this.users.set( this.#computeFiltered() ),
           search: ( s: string ) => {
-            this.applyFilters( this.#currentFilters );
-            this.users.set( this.users().filter( u => u.firstName.trim().toLowerCase().includes( s.trim().toLowerCase() ) ) );
+            this.users.set( this.#computeFiltered().filter( u => u.firstName.trim().toLowerCase().includes( s.trim().toLowerCase() ) ) );
           }
         }
       },
@@ -243,10 +238,9 @@ export class UsersTab implements OnInit, AfterViewInit {
         filter: {
           visible: false,
           searchValue: '',
-          reset: () => this.applyFilters( this.#currentFilters ),
+          reset: () => this.users.set( this.#computeFiltered() ),
           search: ( s: string ) => {
-            this.applyFilters( this.#currentFilters );
-            this.users.set( this.users().filter( u => u.lastName.trim().toLowerCase().includes( s.trim().toLowerCase() ) ) );
+            this.users.set( this.#computeFiltered().filter( u => u.lastName.trim().toLowerCase().includes( s.trim().toLowerCase() ) ) );
           }
         }
       },
@@ -282,7 +276,7 @@ export class UsersTab implements OnInit, AfterViewInit {
       false,
       false
     );
-    this.#filters = [this.#roleFilter, this.#archivedFilter];
+    this.filters.set( [this.#roleFilter, this.#archivedFilter] );
   }
 
   initActions( t: Record<string, string> ): void {
@@ -333,7 +327,7 @@ export class UsersTab implements OnInit, AfterViewInit {
       ]
     };
     // </UsersTabActionsRegistration>
-    this.actionsChanged.emit( actions );
+    this.actions.set( actions );
   }
 
   initRowActions( t: Record<string, string> ): void {

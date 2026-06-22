@@ -1,13 +1,36 @@
-<ck-table
-        #table
-        [tableData]="invitations()"
-        [dataUniqueKey]="'email'"
+<ck-adaptive-page-layout
+        #layout
+        class="invitations-table-layout"
+        [title]="''"
+        [items]="invitations()"
+        [itemUniqueKey]="'email'"
         [columns]="columns()"
-        [tableActions]="rowActions()"
-        [totalCount]="invitations().length"
-        [totalCountLabel]="'CK.Admin.UserManagement.Tab.Invitations' | translate"
-        (selectionChanged)="getTableSelection($event)">
-</ck-table>
+        [itemActions]="rowActions()"
+        [actions]="actions()"
+        [filters]="filters()"
+        [pageSize]="pageSize"
+        [searchFunc]="searchFunc"
+        [filterFunc]="filterFunc"
+        [itemTemplateRef]="itemTemplate"
+        (tableSelectionChanged)="getTableSelection($event)" />
+
+<ng-template #itemTemplate let-inv>
+    <div class="ck-list-item-infos">
+        <span class="ck-list-item-primary-info">{{ inv.email }}</span>
+        <div class="ck-list-item-line">
+            <span>{{ 'CK.Admin.UserManagement.Column.IsInvitationActive' | translate }}</span>
+            @if ( inv.active ) {
+                <nz-tag nzColor="green">{{ 'CK.Admin.UserManagement.Invitation.Active' | translate }}</nz-tag>
+            } @else {
+                <nz-tag nzColor="red">{{ 'CK.Admin.UserManagement.Invitation.Expired' | translate }}</nz-tag>
+            }
+        </div>
+        <div class="ck-list-item-line">
+            <span>{{ 'CK.Admin.UserManagement.Column.ExpirationDate' | translate }}</span>
+            <span>{{ expirationDate( inv ) }}</span>
+        </div>
+    </div>
+</ng-template>
 
 <ng-template #activeCellTemplate let-inv="row">
     @if ( inv.active ) {

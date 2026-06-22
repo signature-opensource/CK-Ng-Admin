@@ -1,18 +1,13 @@
 <ck-backoffice-layout-content
     class="admin-layout"
     [headerTitle]="title()"
-    [actions]="currentActions()"
-    [filters]="currentFilters()"
-    (filtersApplied)="onFiltersApplied($event)"
-    (filtersCleared)="onFiltersCleared()">
+    [showFilters]="false">
     <div class="layout-content">
         <nz-tabset class="tabset" [nzSize]="'large'" [nzSelectedIndex]="selectedTabIndex()" (nzSelectedIndexChange)="onTabIndexChange($event)">
             <nz-tab [nzTitle]="'CK.Admin.UserManagement.Tab.Users' | translate">
                 <ck-users-tab
                     #usersTab
                     [workspace]="workspace()"
-                    (actionsChanged)="onUsersActionsChanged($event)"
-                    (filtersChanged)="onUsersFiltersChanged($event)"
                     (invitationCreated)="onInvitationCreated()" />
             </nz-tab>
             <nz-tab [nzTitle]="'CK.Admin.UserManagement.Tab.Invitations' | translate">
@@ -20,8 +15,7 @@
                     @if ( workspaceId() > 0 ) {
                         <ck-invitations-table
                             #invitationsTable
-                            [workspaceId]="workspaceId()"
-                            (actionsChanged)="onInvitationsActionsChanged($event)" />
+                            [workspaceId]="workspaceId()" />
                     }
                 </ng-template>
             </nz-tab>

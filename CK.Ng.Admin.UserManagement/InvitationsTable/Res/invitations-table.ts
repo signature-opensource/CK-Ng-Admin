@@ -8,14 +8,16 @@ import { ModalOptions, NzModalService } from 'ng-zorro-antd/modal';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import {
   ActionBarContent,
+  AdaptivePageLayout,
   DefaultTableColumn,
+  Filter,
   GetPlatformPendingInvitationsQCommand,
   GetWorkspacePendingInvitationsQCommand,
   HttpCrisEndpoint,
   NotificationService,
   PendingInvitation,
   ResendInvitationsCommand,
-  Table,
+  SelectFilter,
   TableAction,
   TableCellContext,
   TableColumn,
@@ -26,15 +28,14 @@ import {
 @Component( {
   selector: 'ck-invitations-table',
   templateUrl: './invitations-table.html',
-  imports: [Table, TranslateModule, NzTagModule]
+  imports: [AdaptivePageLayout, TranslateModule, NzTagModule]
 } )
 export class InvitationsTable {
-  readonly tableComponent = viewChild<Table<PendingInvitation>>( 'table' );
+  readonly layout = viewChild<AdaptivePageLayout<PendingInvitation>>( 'layout' );
   readonly activeCellTemplate = viewChild.required<TemplateRef<TableCellContext<PendingInvitation>>>( 'activeCellTemplate' );
 
   readonly workspaceId = input<number>();
   readonly selectionChanged = output<Array<PendingInvitation>>();
-  readonly actionsChanged = output<ActionBarContent<PendingInvitation>>();
 
   // <PreDependencyInjection revert />
   readonly #translateService = inject( TranslateService );
@@ -48,6 +49,28 @@ export class InvitationsTable {
   readonly pageSize = 10;
   readonly invitations = signal<Array<PendingInvitation>>( [] );
   readonly selectedItems = signal<Array<PendingInvitation>>( [] );
+  readonly actions = signal<ActionBarContent<PendingInvitation>>( { left: [], right: [] } );
+  readonly filters = signal<Array<Filter<unknown>>>( [] );
+  #allInvitations: Array<PendingInvitation> = [];
+  #stateFilter?: SelectFilter<'active' | 'expired'>;
+
+  // Front search/filter run inside the adaptive layout: it calls these on every
+  // keystroke / filter toggle and uses the returned array as the displayed items.
+  readonly searchFunc = ( input: string ): Array<PendingInvitation> => {
+    const q = input.trim().toLocaleLowerCase();
+    if ( !q ) return this.invitations();
+    return this.invitations().filter( i => i.email.toLocaleLowerCase().includes( q ) );
+  };
+
+  readonly filterFunc = (): Array<PendingInvitation> => {
+    const filtered = this.#computeFiltered();
+    this.invitations.set( filtered );
+    return filtered;
+  };
+
+  protected expirationDate( inv: PendingInvitation ): string {
+    return utcDateToLocal( inv.expirationDateUtc.toString() );
+  }
   readonly #labels = toSignal(
     this.#translateService.onLangChange.pipe(
       startWith( null ),
@@ -55,6 +78,10 @@ export class InvitationsTable {
         'CK.Admin.UserManagement.User.Email',
         'CK.Admin.UserManagement.Column.IsInvitationActive',
         'CK.Admin.UserManagement.Column.ExpirationDate',
+        'CK.Admin.UserManagement.Filter.State',
+        'CK.Admin.UserManagement.Filter.SelectState',
+        'CK.Admin.UserManagement.Invitation.Active',
+        'CK.Admin.UserManagement.Invitation.Expired',
         'Button.ResendInvitation',
         'Button.Refresh'
       ] ) )
@@ -176,7 +203,32 @@ export class InvitationsTable {
         ]
       };
       // </InvitationsActionsRegistration>
-      this.actionsChanged.emit( actions );
+      this.actions.set( actions );
+    } );
+
+    // Build / relabel the Active-Expired filter whenever translations change.
+    effect( () => {
+      const t = this.#labels();
+      if ( !this.#stateFilter ) {
+        this.#stateFilter = new SelectFilter<'active' | 'expired'>(
+          'multiple',
+          t['CK.Admin.UserManagement.Filter.State'] ?? '',
+          [
+            { label: t['CK.Admin.UserManagement.Invitation.Active'] ?? '', value: 'active' },
+            { label: t['CK.Admin.UserManagement.Invitation.Expired'] ?? '', value: 'expired' }
+          ],
+          {
+            defaultValue: [],
+            placeholder: t['CK.Admin.UserManagement.Filter.SelectState'] ?? ''
+          }
+        );
+      } else {
+        this.#stateFilter.label = t['CK.Admin.UserManagement.Filter.State'] ?? '';
+        this.#stateFilter.placeholder = t['CK.Admin.UserManagement.Filter.SelectState'] ?? '';
+        this.#stateFilter.options[0].label = t['CK.Admin.UserManagement.Invitation.Active'] ?? '';
+        this.#stateFilter.options[1].label = t['CK.Admin.UserManagement.Invitation.Expired'] ?? '';
+      }
+      this.filters.set( [this.#stateFilter] );
     } );
 
     effect( () => {
@@ -193,7 +245,20 @@ export class InvitationsTable {
     const res = wsId
       ? await this.#crisEndpoint.sendOrThrowAsync( new GetWorkspacePendingInvitationsQCommand() )
       : await this.#crisEndpoint.sendOrThrowAsync( new GetPlatformPendingInvitationsQCommand() );
-    if ( res ) this.invitations.set( [...res] );
+    if ( res ) this.#allInvitations = [...res];
+    this.invitations.set( this.#computeFiltered() );
+  }
+
+  // Applies the Active / Expired filter (shows everything when inactive) to the full set.
+  #computeFiltered(): Array<PendingInvitation> {
+    let result = [...this.#allInvitations];
+    if ( this.#stateFilter?.active ) {
+      const values = ( this.#stateFilter.value as Array<'active' | 'expired'> | undefined ) ?? [];
+      if ( values.length > 0 ) {
+        result = result.filter( i => values.includes( i.active ? 'active' : 'expired' ) );
+      }
+    }
+    return result;
   }
 
   getTableSelection( invs: Array<PendingInvitation> ): void {
@@ -202,7 +267,7 @@ export class InvitationsTable {
   }
 
   clearSelection(): void {
-    this.tableComponent()?.clearSelection();
+    this.layout()?.clearSelection();
     this.selectedItems.set( [] );
   }
 }

@@ -29,6 +29,7 @@ public class UserManagementService : IAutoService
     const int SystemActorId = 1;
 
     readonly PocoDirectory _pocoDir;
+    readonly CurrentCultureInfo _currentCulture;
     readonly CK.DB.UserInvitation.Package _invitationPackage;
     readonly UserInvitationTable _invitationTable;
     readonly CK.DB.User.PreferredCulture.Package _userPackage;
@@ -42,6 +43,7 @@ public class UserManagementService : IAutoService
     readonly IUserManagementMailer _mailer;
 
     public UserManagementService( PocoDirectory pocoDir,
+                                  CurrentCultureInfo currentCulture,
                                   CK.DB.UserInvitation.Package invitationPackage,
                                   UserInvitationTable invitationTable,
                                   CK.DB.User.PreferredCulture.Package userPackage,
@@ -55,6 +57,7 @@ public class UserManagementService : IAutoService
                                   IUserManagementMailer mailer )
     {
         _pocoDir = pocoDir;
+        _currentCulture = currentCulture;
         _invitationPackage = invitationPackage;
         _invitationTable = invitationTable;
         _userPackage = userPackage;
@@ -69,16 +72,19 @@ public class UserManagementService : IAutoService
     }
 
     /// <summary>
-    /// Creates (or replaces) the invitation for an e-mail and sends the invitation e-mail.
-    /// Because <c>UserTargetAddress</c> is unique platform-wide, any existing pending invitation for
-    /// the same e-mail is destroyed first so the culture and groups always reflect the latest input.
+    /// Creates the invitation for an e-mail and sends the invitation e-mail, returning the
+    /// <see cref="SimpleUserMessage"/> describing the outcome. Because <c>UserTargetAddress</c> is
+    /// unique platform-wide, an e-mail can only have a single pending invitation: when one already
+    /// exists the invitation is left untouched and an error message is returned (use
+    /// <see cref="ResendInvitationAsync"/> to re-activate it instead).
     /// </summary>
-    public async Task CreateInvitationAsync( ISqlTransactionCallContext ctx, int workspaceId, string email, string cultureName, IReadOnlyList<int> groups )
+    public async Task<SimpleUserMessage> CreateInvitationAsync( ISqlTransactionCallContext ctx, int workspaceId, string email, string cultureName, IReadOnlyList<int> groups )
     {
         var existing = await _invitationPackage.GetUserInvitationAsync( ctx, SystemActorId, email );
         if( existing is not null )
         {
-            await DestroyInvitationAsync( ctx, existing.InvitationId );
+            ctx.Monitor.Warn( $"An invitation already exists for this e-mail. (Email: {email}, InvitationId: {existing.InvitationId})" );
+            return _currentCulture.ErrorMessage( "An invitation already exists for this e-mail address.", "User.InvitationAlreadyExists" );
         }
 
         var cultureId = NormalizedCultureInfo.EnsureNormalizedCultureInfo( cultureName ).Id;
@@ -95,6 +101,8 @@ public class UserManagementService : IAutoService
 
         ctx.Monitor.Info( $"Invitation created. (Email: {email}, WorkspaceId: {workspaceId}, InvitationId: {invitation.InvitationId})" );
         await SendInvitationMailAsync( ctx, invitation.InvitationId, email, cultureName );
+
+        return _currentCulture.InfoMessage( "Invitation successfully created.", "CrisSuccess.InvitationCreated" );
     }
 
     /// <summary>

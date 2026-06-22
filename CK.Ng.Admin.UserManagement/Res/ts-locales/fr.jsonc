@@ -5,6 +5,8 @@
     "CK.Admin.UserManagement.Filter.Role": "Rôle",
     "CK.Admin.UserManagement.Filter.SelectRole": "Sélectionner un rôle",
     "CK.Admin.UserManagement.Filter.ShowArchived": "Afficher les archivés",
+    "CK.Admin.UserManagement.Filter.State": "État",
+    "CK.Admin.UserManagement.Filter.SelectState": "Sélectionner un état",
     "CK.Admin.UserManagement.Role.Administrator": "Administrateur",
     "CK.Admin.UserManagement.Role.Member": "Membre",
     "CK.Admin.UserManagement.Role.AdministratorValue": "Administrateur",

@@ -1,14 +1,40 @@
-<ck-table
-    class="users-tab-table"
-    #table
-    [tableData]="users()"
-    [dataUniqueKey]="'userId'"
+<ck-adaptive-page-layout
+    #layout
+    class="users-tab-layout"
+    [title]="''"
+    [items]="users()"
+    [itemUniqueKey]="'userId'"
     [columns]="columns"
-    [tableActions]="rowActions"
-    [totalCount]="getTotalCount()"
-    [totalCountLabel]="'CK.Admin.UserManagement.Tab.Users' | translate"
-    (selectionChanged)="onTableSelection($event)">
-</ck-table>
+    [itemActions]="rowActions"
+    [actions]="actions()"
+    [filters]="filters()"
+    [pageSize]="pageSize"
+    [searchFunc]="searchFunc"
+    [filterFunc]="filterFunc"
+    [itemTemplateRef]="itemTemplate"
+    (tableSelectionChanged)="onTableSelection($event)" />
+
+<ng-template #itemTemplate let-user>
+    <div class="ck-list-item-infos">
+        <span class="ck-list-item-primary-info">{{ user.userName }}</span>
+        <div class="ck-list-item-line">
+            <span>{{ 'CK.Admin.UserManagement.User.FirstName' | translate }}</span>
+            <span>{{ user.firstName }}</span>
+        </div>
+        <div class="ck-list-item-line">
+            <span>{{ 'CK.Admin.UserManagement.User.LastName' | translate }}</span>
+            <span>{{ user.lastName }}</span>
+        </div>
+        <div class="ck-list-item-line">
+            <span>{{ 'CK.Admin.UserManagement.Column.Role' | translate }}</span>
+            @if ( user.isWorkspaceAdmin ) {
+                <nz-tag nzColor="geekblue">{{ 'CK.Admin.UserManagement.Role.Administrator' | translate }}</nz-tag>
+            } @else {
+                <nz-tag>{{ 'CK.Admin.UserManagement.Role.Member' | translate }}</nz-tag>
+            }
+        </div>
+    </div>
+</ng-template>
 
 <ng-template #roleCellTemplate let-user="row">
     @if ( user.isWorkspaceAdmin ) {

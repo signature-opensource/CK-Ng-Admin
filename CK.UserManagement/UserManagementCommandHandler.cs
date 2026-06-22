@@ -155,10 +155,10 @@ public class UserManagementCommandHandler : IScopedAutoService
             {
                 using( var transaction = ctx[userTable].BeginTransaction() )
                 {
-                    await service.CreateInvitationAsync( ctx, cmd.CurrentWorkspaceId.GetValueOrDefault(), cmd.Email, cmd.CultureName, cmd.Groups );
+                    var message = await service.CreateInvitationAsync( ctx, cmd.CurrentWorkspaceId.GetValueOrDefault(), cmd.Email, cmd.CultureName, cmd.Groups );
                     transaction.Commit();
+                    return message;
                 }
-                return _currentCulture.InfoMessage( "Invitation successfully created.", "CrisSuccess.InvitationCreated" );
             }
             catch( Exception e )
             {

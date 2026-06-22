@@ -4,15 +4,11 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { first } from 'rxjs';
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import {
-  ActionBarContent,
-  Filter,
   GroupInfos,
   InvitationsTable,
   LayoutContent,
-  PendingInvitation,
   UserService,
-  UsersTab,
-  WorkspaceUser
+  UsersTab
 } from '@local/ck-gen';
 
 type AdminTab = 'users' | 'invitations';
@@ -38,17 +34,6 @@ export class UserManagementPage {
   protected selectedTab: WritableSignal<AdminTab> = signal( 'users' );
   protected selectedTabIndex = computed( () => this.selectedTab() === 'users' ? 0 : 1 );
   protected workspaceId = computed( () => this.workspace()?.groupId ?? 0 );
-
-  protected usersActions: WritableSignal<ActionBarContent<WorkspaceUser>> = signal( { left: [], right: [] } );
-  protected usersFilters: WritableSignal<Array<Filter<unknown>>> = signal( [] );
-  protected invitationsActions: WritableSignal<ActionBarContent<PendingInvitation>> = signal( { left: [], right: [] } );
-
-  protected currentActions = computed<ActionBarContent<any>>( () =>
-    this.selectedTab() === 'users' ? this.usersActions() : this.invitationsActions()
-  );
-  protected currentFilters = computed<Array<Filter<unknown>>>( () =>
-    this.selectedTab() === 'users' ? this.usersFilters() : []
-  );
   // <PostLocalVariables />
 
   constructor() {
@@ -67,26 +52,6 @@ export class UserManagementPage {
 
   onTabIndexChange( index: number ): void {
     this.selectedTab.set( index === 0 ? 'users' : 'invitations' );
-  }
-
-  onUsersActionsChanged( actions: ActionBarContent<WorkspaceUser> ): void {
-    this.usersActions.set( actions );
-  }
-
-  onUsersFiltersChanged( filters: Array<Filter<unknown>> ): void {
-    this.usersFilters.set( filters );
-  }
-
-  onInvitationsActionsChanged( actions: ActionBarContent<PendingInvitation> ): void {
-    this.invitationsActions.set( actions );
-  }
-
-  onFiltersApplied( filters: Array<Filter<unknown>> ): void {
-    this.usersTab()?.applyFilters( filters );
-  }
-
-  onFiltersCleared(): void {
-    this.usersTab()?.onFiltersCleared();
   }
 
   async onInvitationCreated(): Promise<void> {
