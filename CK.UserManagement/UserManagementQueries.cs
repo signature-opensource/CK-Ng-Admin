@@ -1,7 +1,5 @@
 using CK.Core;
 using CK.DB.Actor;
-using CK.DB.UserInvitation;
-using CK.IO.UserInvitation;
 using CK.IO.UserManagement;
 using CK.IO.UserProfile.Workspace;
 using CK.SqlServer;
@@ -12,25 +10,21 @@ namespace CK.UserManagement;
 /// <summary>
 /// Dapper read queries for the user-management handlers, written against the standard CK.DB
 /// schema (<c>CK.vUser</c>, <c>CK.tActorProfile</c>, <c>CK.vGroup</c>, <c>CK.vZone</c>,
-/// <c>CK.tWorkspace</c>, <c>CK.tCulture</c>). Pending invitations come from
-/// <c>CK.DB.UserInvitation</c>; the workspace an invitation belongs to is derived from the zone of
-/// its groups. Results are projected to flat records and rebuilt as Pocos through the
+/// <c>CK.tWorkspace</c>, <c>CK.tCulture</c>). Pending invitations are read directly from
+/// <c>CK.tUserInvitation</c> (and its group satellite) so every invitation is visible regardless of
+/// the administrator who created it; the workspace an invitation belongs to is derived from the zone
+/// of its groups. Results are projected to flat records and rebuilt as Pocos through the
 /// <see cref="PocoDirectory"/>.
 /// </summary>
 public class UserManagementQueries : IAutoService
 {
-    // Invitations are created on behalf of the system user (see UserManagementService).
-    const int SystemActorId = 1;
-
     readonly PocoDirectory _pocoDir;
     readonly UserTable _userTable;
-    readonly CK.DB.UserInvitation.Package _invitationPackage;
 
-    public UserManagementQueries( PocoDirectory pocoDirectory, UserTable userTable, CK.DB.UserInvitation.Package invitationPackage )
+    public UserManagementQueries( PocoDirectory pocoDirectory, UserTable userTable )
     {
         _pocoDir = pocoDirectory;
         _userTable = userTable;
-        _invitationPackage = invitationPackage;
     }
 
     public async Task<IReadOnlyList<IWorkspaceUser>> GetWorkspaceUsersAsync( ISqlCallContext ctx, int workspaceId )
@@ -119,14 +113,42 @@ public class UserManagementQueries : IAutoService
     }
 
     /// <summary>
-    /// Pending (non-expired) invitations from <c>CK.DB.UserInvitation</c>. When
-    /// <paramref name="workspaceId"/> is provided, only invitations whose groups belong to that
-    /// workspace zone are returned; otherwise every pending invitation is returned (platform-wide).
+    /// Pending (non-expired) invitations read directly from <c>CK.tUserInvitation</c>, regardless of
+    /// the administrator who created them. When <paramref name="workspaceId"/> is provided, only
+    /// invitations whose groups belong to that workspace zone are returned; otherwise every pending
+    /// invitation is returned (platform-wide).
     /// </summary>
     public async Task<IReadOnlyList<IPendingInvitation>> GetPendingInvitationsAsync( ISqlCallContext ctx, int? workspaceId = null )
     {
-        var all = await _invitationPackage.GetUserInvitationsAsync( ctx, _pocoDir.Create<IGetUserInvitationsQCommand>( c => c.ActorId = SystemActorId ) );
-        var pending = all.Where( i => i.ExpirationDateUtc > DateTime.UtcNow ).ToList();
+        var rows = await ctx[_userTable].QueryAsync<FlatInvitation>(
+            """
+            select ui.InvitationId
+                  ,ui.UserTargetAddress
+                  ,ui.IsActive
+                  ,ui.ExpirationDateUtc
+                  ,ui.CultureId
+                  ,uig.GroupId
+              from CK.tUserInvitation ui
+                  left outer join CK.tUserInvitationGroup uig on uig.InvitationId = ui.InvitationId
+              where ui.InvitationId > 0 and ui.ExpirationDateUtc > @Now;
+            """,
+            new { Now = DateTime.UtcNow } );
+
+        var pending = rows
+            .GroupBy( r => r.InvitationId )
+            .Select( g =>
+            {
+                var first = g.First();
+                return new
+                {
+                    first.UserTargetAddress,
+                    first.IsActive,
+                    first.ExpirationDateUtc,
+                    first.CultureId,
+                    GroupIdentifiers = g.Where( r => r.GroupId.HasValue ).Select( r => r.GroupId!.Value ).ToList()
+                };
+            } )
+            .ToList();
 
         if( workspaceId is > 0 )
         {
@@ -149,6 +171,35 @@ public class UserManagementQueries : IAutoService
                 p.ExpirationDateUtc = i.ExpirationDateUtc;
             } );
         } ).ToList();
+    }
+
+    /// <summary>
+    /// Reads a single invitation by its target e-mail (unique platform-wide), regardless of the
+    /// administrator who created it. Returns <c>null</c> when no invitation exists for that e-mail.
+    /// </summary>
+    public Task<FlatInvitationByEmail?> GetInvitationByEmailAsync( ISqlCallContext ctx, string email )
+    {
+        return ctx[_userTable].QuerySingleOrDefaultAsync<FlatInvitationByEmail?>(
+            """
+            select top 1 InvitationId
+                        ,CreatedById
+                        ,IsActive
+                        ,ExpirationDateUtc
+                        ,CultureId
+              from CK.tUserInvitation
+              where UserTargetAddress = @Email and InvitationId > 0;
+            """,
+            new { Email = email } );
+    }
+
+    /// <summary>
+    /// Reads the secret of an invitation by its id, regardless of the administrator who created it.
+    /// </summary>
+    public Task<byte[]?> GetInvitationSecretAsync( ISqlCallContext ctx, int invitationId )
+    {
+        return ctx[_userTable].QuerySingleOrDefaultAsync<byte[]?>(
+            "select [Secret] from CK.tUserInvitation where InvitationId = @InvitationId;",
+            new { InvitationId = invitationId } );
     }
 
     /// <summary>
@@ -220,6 +271,25 @@ public class UserManagementQueries : IAutoService
     {
         public int GroupId { get; init; }
         public int WorkspaceId { get; init; }
+    }
+
+    record FlatInvitation
+    {
+        public int InvitationId { get; init; }
+        public string UserTargetAddress { get; init; } = string.Empty;
+        public bool IsActive { get; init; }
+        public DateTime ExpirationDateUtc { get; init; }
+        public int CultureId { get; init; }
+        public int? GroupId { get; init; }
+    }
+
+    public record FlatInvitationByEmail
+    {
+        public int InvitationId { get; init; }
+        public int CreatedById { get; init; }
+        public bool IsActive { get; init; }
+        public DateTime ExpirationDateUtc { get; init; }
+        public int CultureId { get; init; }
     }
 
     record FlatCulture

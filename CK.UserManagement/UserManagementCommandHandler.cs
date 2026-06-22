@@ -155,7 +155,7 @@ public class UserManagementCommandHandler : IScopedAutoService
             {
                 using( var transaction = ctx[userTable].BeginTransaction() )
                 {
-                    var message = await service.CreateInvitationAsync( ctx, cmd.CurrentWorkspaceId.GetValueOrDefault(), cmd.Email, cmd.CultureName, cmd.Groups );
+                    var message = await service.CreateInvitationAsync( ctx, actorId, cmd.CurrentWorkspaceId.GetValueOrDefault(), cmd.Email, cmd.CultureName, cmd.Groups );
                     transaction.Commit();
                     return message;
                 }
@@ -183,7 +183,7 @@ public class UserManagementCommandHandler : IScopedAutoService
                 {
                     foreach( var inv in cmd.Invitations )
                     {
-                        await service.ResendInvitationAsync( ctx, inv.Email, inv.CultureName );
+                        await service.ResendInvitationAsync( ctx, actorId, inv.Email, inv.CultureName );
                     }
                     transaction.Commit();
                 }

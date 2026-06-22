@@ -4,7 +4,6 @@ using CK.DB.Actor.ActorEMail;
 using CK.DB.Auth;
 using CK.DB.User.NamedUser;
 using CK.DB.User.UserPassword;
-using CK.DB.UserInvitation;
 using CK.DB.Zone;
 using CK.IO.UserInvitation;
 using CK.IO.UserManagement;
@@ -17,21 +16,22 @@ namespace CK.UserManagement;
 /// packages. Invitations are persisted by <c>CK.DB.UserInvitation</c> (<c>CK.tUserInvitation</c> and
 /// its group/provider satellite tables). The invitation is keyed by the invited e-mail
 /// (<c>UserTargetAddress</c>, unique platform-wide); the target culture and the groups the user will
-/// join are carried by the invitation itself. Every invitation is created on behalf of the system
-/// user so any administrator can list, resend or destroy it and the (anonymous) registration flow can
-/// finalize it. The workspace an invitation belongs to is derived from the zone of its groups.
-/// Sending the actual e-mail is delegated to <see cref="IUserManagementMailer"/>.
+/// join are carried by the invitation itself. Each invitation is created on behalf of the
+/// administrator who performs the request (its <c>CreatedById</c>), while reads go through
+/// <see cref="UserManagementQueries"/> with creator-agnostic queries so any administrator can list
+/// or resend any invitation. The (anonymous) registration flow finalizes an invitation by destroying
+/// it on behalf of its original creator. The workspace an invitation belongs to is derived from the
+/// zone of its groups. Sending the actual e-mail is delegated to <see cref="IUserManagementMailer"/>.
 /// </summary>
 public class UserManagementService : IAutoService
 {
-    // Every invitation action is performed on behalf of the system user (the invitation creator),
-    // so any administrator can manage it and the anonymous registration flow can destroy it.
+    // The anonymous registration flow has no requesting actor: user provisioning steps that are not
+    // tied to a specific administrator are performed on behalf of the system user.
     const int SystemActorId = 1;
 
     readonly PocoDirectory _pocoDir;
     readonly CurrentCultureInfo _currentCulture;
     readonly CK.DB.UserInvitation.Package _invitationPackage;
-    readonly UserInvitationTable _invitationTable;
     readonly CK.DB.User.PreferredCulture.Package _userPackage;
     readonly ActorEMailTable _emailTable;
     readonly NamedUserTable _namedUserTable;
@@ -45,7 +45,6 @@ public class UserManagementService : IAutoService
     public UserManagementService( PocoDirectory pocoDir,
                                   CurrentCultureInfo currentCulture,
                                   CK.DB.UserInvitation.Package invitationPackage,
-                                  UserInvitationTable invitationTable,
                                   CK.DB.User.PreferredCulture.Package userPackage,
                                   ActorEMailTable emailTable,
                                   NamedUserTable namedUserTable,
@@ -59,7 +58,6 @@ public class UserManagementService : IAutoService
         _pocoDir = pocoDir;
         _currentCulture = currentCulture;
         _invitationPackage = invitationPackage;
-        _invitationTable = invitationTable;
         _userPackage = userPackage;
         _emailTable = emailTable;
         _namedUserTable = namedUserTable;
@@ -78,9 +76,9 @@ public class UserManagementService : IAutoService
     /// exists the invitation is left untouched and an error message is returned (use
     /// <see cref="ResendInvitationAsync"/> to re-activate it instead).
     /// </summary>
-    public async Task<SimpleUserMessage> CreateInvitationAsync( ISqlTransactionCallContext ctx, int workspaceId, string email, string cultureName, IReadOnlyList<int> groups )
+    public async Task<SimpleUserMessage> CreateInvitationAsync( ISqlTransactionCallContext ctx, int actorId, int workspaceId, string email, string cultureName, IReadOnlyList<int> groups )
     {
-        var existing = await _invitationPackage.GetUserInvitationAsync( ctx, SystemActorId, email );
+        var existing = await _queries.GetInvitationByEmailAsync( ctx, email );
         if( existing is not null )
         {
             ctx.Monitor.Warn( $"An invitation already exists for this e-mail. (Email: {email}, InvitationId: {existing.InvitationId})" );
@@ -90,7 +88,7 @@ public class UserManagementService : IAutoService
         var cultureId = NormalizedCultureInfo.EnsureNormalizedCultureInfo( cultureName ).Id;
         var create = _pocoDir.Create<ICreateUserInvitationCommand>( c =>
         {
-            c.ActorId = SystemActorId;
+            c.ActorId = actorId;
             c.UserTargetAddress = email;
             c.ExpirationDateUtc = DateTime.UtcNow.AddDays( 3 );
             c.IsActive = true;
@@ -108,9 +106,9 @@ public class UserManagementService : IAutoService
     /// <summary>
     /// Re-activates a pending invitation (extends its expiration) and resends the e-mail.
     /// </summary>
-    public async Task ResendInvitationAsync( ISqlCallContext ctx, string email, string cultureName )
+    public async Task ResendInvitationAsync( ISqlCallContext ctx, int actorId, string email, string cultureName )
     {
-        var invitation = await _invitationPackage.GetUserInvitationAsync( ctx, SystemActorId, email );
+        var invitation = await _queries.GetInvitationByEmailAsync( ctx, email );
         if( invitation is null )
         {
             ctx.Monitor.Warn( $"No pending invitation to resend. (Email: {email})" );
@@ -119,13 +117,13 @@ public class UserManagementService : IAutoService
 
         await _invitationPackage.SetUserInvitationIsActiveAsync( ctx, _pocoDir.Create<ISetUserInvitationIsActiveCommand>( c =>
         {
-            c.ActorId = SystemActorId;
+            c.ActorId = actorId;
             c.InvitationId = invitation.InvitationId;
             c.IsActive = true;
         } ) );
         await _invitationPackage.SetUserInvitationExpirationDateAsync( ctx, _pocoDir.Create<ISetUserInvitationExpirationDateCommand>( c =>
         {
-            c.ActorId = SystemActorId;
+            c.ActorId = actorId;
             c.InvitationId = invitation.InvitationId;
             c.NewExpirationDate = DateTime.UtcNow.AddDays( 3 );
         } ) );
@@ -190,7 +188,9 @@ public class UserManagementService : IAutoService
             ctx.Monitor.Trace( $"Preferred workspace set. (UserId: {userId}, WorkspaceId: {workspaceId})" );
         }
 
-        await DestroyInvitationAsync( ctx, invitation.InvitationId );
+        // The registration flow is anonymous: destroy on behalf of the invitation's original creator
+        // because CK.sUserInvitationDestroy only allows the creator to delete it.
+        await DestroyInvitationAsync( ctx, invitation.CreatedById, invitation.InvitationId );
         ctx.Monitor.Info( $"Invitation finalized and destroyed. (InvitationId: {invitation.InvitationId})" );
     }
 
@@ -211,11 +211,11 @@ public class UserManagementService : IAutoService
         return invitation;
     }
 
-    async Task DestroyInvitationAsync( ISqlCallContext ctx, int invitationId )
+    async Task DestroyInvitationAsync( ISqlCallContext ctx, int actorId, int invitationId )
     {
         await _invitationPackage.DestroyUserInvitationAsync( ctx, _pocoDir.Create<IDestroyUserInvitationCommand>( c =>
         {
-            c.ActorId = SystemActorId;
+            c.ActorId = actorId;
             c.InvitationId = invitationId;
         } ) );
     }
@@ -225,7 +225,7 @@ public class UserManagementService : IAutoService
     /// </summary>
     async Task SendInvitationMailAsync( ISqlCallContext ctx, int invitationId, string email, string cultureName )
     {
-        var secret = await _invitationTable.GetUserInvitationSecretAsync( ctx, SystemActorId, invitationId );
+        var secret = await _queries.GetInvitationSecretAsync( ctx, invitationId );
         if( secret is null )
         {
             ctx.Monitor.Error( $"Could not read the invitation secret. (InvitationId: {invitationId})" );
