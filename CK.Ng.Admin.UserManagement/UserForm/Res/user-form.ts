@@ -50,9 +50,13 @@ export class UserForm implements OnInit {
     this.groupInfos = this.#nzModalData.groupInfos;
     this.languages = this.#nzModalData.languages;
     this.formData = this.#nzModalData.formData;
+    // <PreCustomFormDefinition revert />
     this.customForm = new FormGroup( {
+      // <PreGroupsFormControlDefinition revert />
       groups: new FormControl<Array<number>>( [], { nonNullable: true, validators: [Validators.required] } )
+      // <PostGroupsFormControlDefinition />
     } );
+    // <PostCustomFormDefinition />
   }
 
   get groupsControl(): FormControl<Array<number>> {
@@ -69,6 +73,7 @@ export class UserForm implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    // <PreUserFormInit revert />
     if ( this.isPlatformCreation ) {
       this.selectedOrg = this.groupInfos.find( g => g.groupName === 'Platform Zone' )!;
       this.getOrgs().forEach( g => {
@@ -87,6 +92,7 @@ export class UserForm implements OnInit {
         this.selectedOrg = org;
       }
     }
+    // <PostUserFormInit />
   }
 
   getOrgs(): Array<GroupInfos> {

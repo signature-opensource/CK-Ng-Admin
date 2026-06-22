@@ -14,6 +14,7 @@
         [itemTemplateRef]="itemTemplate"
         (tableSelectionChanged)="getTableSelection($event)" />
 
+<!-- <PreItemTemplate revert /> -->
 <ng-template #itemTemplate let-inv>
     <div class="ck-list-item-infos">
         <span class="ck-list-item-primary-info">{{ inv.email }}</span>
@@ -31,7 +32,9 @@
         </div>
     </div>
 </ng-template>
+<!-- <PostItemTemplate /> -->
 
+<!-- <PreActiveCellTemplate revert /> -->
 <ng-template #activeCellTemplate let-inv="row">
     @if ( inv.active ) {
         <nz-tag nzColor="green">{{ 'CK.Admin.UserManagement.Invitation.Active' | translate }}</nz-tag>
@@ -39,3 +42,4 @@
         <nz-tag nzColor="red">{{ 'CK.Admin.UserManagement.Invitation.Expired' | translate }}</nz-tag>
     }
 </ng-template>
+<!-- <PostActiveCellTemplate /> -->

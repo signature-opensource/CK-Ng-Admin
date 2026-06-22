@@ -31,11 +31,18 @@ import {
   imports: [AdaptivePageLayout, TranslateModule, NzTagModule]
 } )
 export class InvitationsTable {
+  // <PreViewChildren revert />
   readonly layout = viewChild<AdaptivePageLayout<PendingInvitation>>( 'layout' );
   readonly activeCellTemplate = viewChild.required<TemplateRef<TableCellContext<PendingInvitation>>>( 'activeCellTemplate' );
+  // <PostViewChildren />
 
+  // <PreInputOutput revert />
   readonly workspaceId = input<number>();
   readonly selectionChanged = output<Array<PendingInvitation>>();
+  // <PostInputOutput />
+
+  // <PreIconsDefinition revert />
+  // <PostIconsDefinition />
 
   // <PreDependencyInjection revert />
   readonly #translateService = inject( TranslateService );

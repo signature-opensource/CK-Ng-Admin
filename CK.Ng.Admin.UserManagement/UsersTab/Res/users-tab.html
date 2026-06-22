@@ -14,6 +14,7 @@
     [itemTemplateRef]="itemTemplate"
     (tableSelectionChanged)="onTableSelection($event)" />
 
+<!-- <PreItemTemplate revert /> -->
 <ng-template #itemTemplate let-user>
     <div class="ck-list-item-infos">
         <span class="ck-list-item-primary-info">{{ user.userName }}</span>
@@ -35,7 +36,9 @@
         </div>
     </div>
 </ng-template>
+<!-- <PostItemTemplate /> -->
 
+<!-- <PreRoleCellTemplate revert /> -->
 <ng-template #roleCellTemplate let-user="row">
     @if ( user.isWorkspaceAdmin ) {
         <nz-tag nzColor="geekblue">{{ 'CK.Admin.UserManagement.Role.Administrator' | translate }}</nz-tag>
@@ -43,3 +46,4 @@
         <nz-tag>{{ 'CK.Admin.UserManagement.Role.Member' | translate }}</nz-tag>
     }
 </ng-template>
+<!-- <PostRoleCellTemplate /> -->

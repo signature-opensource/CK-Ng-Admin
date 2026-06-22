@@ -2,6 +2,7 @@
     <ck-generic-form #formComp [inputFormData]="formData"></ck-generic-form>
 
     <form nz-form [formGroup]="customForm" nzLayout="vertical">
+        <!-- <PreGroupsFormItem revert /> -->
         <nz-form-item>
             <nz-form-label class="form-label" nzRequired>{{'CK.Admin.UserManagement.Form.Groups' | translate}}</nz-form-label>
             <nz-form-control>
@@ -10,6 +11,8 @@
                     [groups]="workspaceGroups" />
             </nz-form-control>
         </nz-form-item>
+        <!-- <PostGroupsFormItem /> -->
+        <!-- <PrePasswordFormItem revert /> -->
         <nz-form-item>
             <nz-form-label class="form-label" nzRequired>{{'CK.Admin.UserManagement.User.Password' | translate}}</nz-form-label>
             <nz-form-control [nzErrorTip]="'CK.Admin.UserManagement.Form.PasswordRequired' | translate">
@@ -25,5 +28,6 @@
                 </ng-template>
             </nz-form-control>
         </nz-form-item>
+        <!-- <PostPasswordFormItem /> -->
     </form>
 </div>

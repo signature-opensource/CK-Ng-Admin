@@ -7,4 +7,9 @@ import { RouterOutlet } from '@angular/router';
     templateUrl: './admin-page.html'
 } )
 export class AdminPage {
+    // <PreDependencyInjection revert />
+    // <PostDependencyInjection />
+
+    // <PreLocalVariables revert />
+    // <PostLocalVariables />
 }

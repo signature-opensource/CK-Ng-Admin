@@ -56,6 +56,10 @@ import { LocaleInfo, LocaleService, locales } from '@local/ck-gen/ts-locales/loc
   ]
 } )
 export class Register implements OnInit {
+  // <PreViewChildren revert />
+  // <PostViewChildren />
+
+  // <PreDependencyInjection revert />
   readonly #crisEndpoint = inject( HttpCrisEndpoint );
   readonly #formBuilder = inject( FormBuilder );
   readonly #notifService = inject( NotificationService );
@@ -63,14 +67,21 @@ export class Register implements OnInit {
   readonly #router = inject( Router );
   readonly #translateService = inject( TranslateService );
   readonly #localeService = inject( LocaleService );
+  // <PostDependencyInjection />
 
+  // <PreInputOutput revert />
+  // <PostInputOutput />
+
+  // <PreIconsDefinition revert />
   protected readonly eyeIcon = faEye;
   protected readonly eyeSlashIcon = faEyeSlash;
   protected readonly passwordIcon = faLock;
   protected readonly userIcon = faUser;
   protected readonly emailIcon = faEnvelope;
   protected readonly langIcon = faLanguage;
+  // <PostIconsDefinition />
 
+  // <PreLocalVariables revert />
   protected readonly loading = signal( true );
   protected readonly tokenError = signal<string | null>( null );
   protected readonly submitting = signal( false );
@@ -80,20 +91,33 @@ export class Register implements OnInit {
 
   protected readonly registerForm: FormGroup = this.#formBuilder.group(
     {
+      // <PreEmailFormControlDefinition revert />
       email: new FormControl<string>( { value: '', disabled: true }, { nonNullable: true, validators: [Validators.required, Validators.email] } ),
+      // <PostEmailFormControlDefinition />
+      // <PreFirstNameFormControlDefinition revert />
       firstName: new FormControl<string>( '', { nonNullable: true, validators: [Validators.required] } ),
+      // <PostFirstNameFormControlDefinition />
+      // <PreLastNameFormControlDefinition revert />
       lastName: new FormControl<string>( '', { nonNullable: true, validators: [Validators.required] } ),
+      // <PostLastNameFormControlDefinition />
+      // <PreCultureNameFormControlDefinition revert />
       cultureName: new FormControl<string>( 'fr', { nonNullable: true, validators: [Validators.required] } ),
+      // <PostCultureNameFormControlDefinition />
+      // <PrePasswordFormControlDefinition revert />
       password: new FormControl<string>( '', {
         nonNullable: true,
         validators: [Validators.required, Validators.minLength( PASSWORD_MIN_LENGTH ), passwordComplexityValidator]
       } ),
+      // <PostPasswordFormControlDefinition />
+      // <PreConfirmPasswordFormControlDefinition revert />
       confirmPassword: new FormControl<string>( '', { nonNullable: true, validators: [Validators.required] } )
+      // <PostConfirmPasswordFormControlDefinition />
     },
     { validators: [passwordsMatchValidator( 'password', 'confirmPassword' )] }
   );
 
   #token = '';
+  // <PostLocalVariables />
 
   constructor() {
     // Keep the app locale (ngx-translate + ng-zorro i18n) in sync with the
@@ -106,6 +130,7 @@ export class Register implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    // <PreValidateInvitationToken revert />
     this.#token = this.#route.snapshot.paramMap.get( 'token' ) ?? '';
     if ( !this.#token ) {
       this.tokenError.set( this.#translateService.instant( 'CK.Admin.Register.InvalidToken' ) );
@@ -135,9 +160,11 @@ export class Register implements OnInit {
     } finally {
       this.loading.set( false );
     }
+    // <PostValidateInvitationToken />
   }
 
   async submit(): Promise<void> {
+    // <PreCompleteRegistration revert />
     if ( !this.registerForm.valid || this.submitting() ) return;
     this.submitting.set( true );
 
@@ -151,6 +178,7 @@ export class Register implements OnInit {
     } finally {
       this.submitting.set( false );
     }
+    // <PostCompleteRegistration />
   }
 
   toggleShowPassword(): void {

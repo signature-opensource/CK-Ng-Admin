@@ -4,12 +4,16 @@
     [showFilters]="false">
     <div class="layout-content">
         <nz-tabset class="tabset" [nzSize]="'large'" [nzSelectedIndex]="selectedTabIndex()" (nzSelectedIndexChange)="onTabIndexChange($event)">
+            <!-- <PreUserManagementTabsRegistration revert /> -->
+            <!-- <PreUsersTab revert /> -->
             <nz-tab [nzTitle]="'CK.Admin.UserManagement.Tab.Users' | translate">
                 <ck-users-tab
                     #usersTab
                     [workspace]="workspace()"
                     (invitationCreated)="onInvitationCreated()" />
             </nz-tab>
+            <!-- <PostUsersTab /> -->
+            <!-- <PreInvitationsTab revert /> -->
             <nz-tab [nzTitle]="'CK.Admin.UserManagement.Tab.Invitations' | translate">
                 <ng-template nz-tab>
                     @if ( workspaceId() > 0 ) {
@@ -19,6 +23,8 @@
                     }
                 </ng-template>
             </nz-tab>
+            <!-- <PostInvitationsTab /> -->
+            <!-- <PostUserManagementTabsRegistration /> -->
         </nz-tabset>
     </div>
 </ck-backoffice-layout-content>

@@ -19,8 +19,16 @@ type AdminTab = 'users' | 'invitations';
   imports: [LayoutContent, NzTabsModule, TranslateModule, UsersTab, InvitationsTable]
 } )
 export class UserManagementPage {
+  // <PreViewChildren revert />
   readonly usersTab = viewChild<UsersTab>( 'usersTab' );
   readonly invitationsTable = viewChild<InvitationsTable>( 'invitationsTable' );
+  // <PostViewChildren />
+
+  // <PreInputOutput revert />
+  // <PostInputOutput />
+
+  // <PreIconsDefinition revert />
+  // <PostIconsDefinition />
 
   // <PreDependencyInjection revert />
   readonly #translateService = inject( TranslateService );
@@ -45,9 +53,11 @@ export class UserManagementPage {
   }
 
   #refreshTitle(): void {
+    // <PreRefreshTitle revert />
     this.#translateService.get( 'CK.Admin.UserManagement.Title' )
       .pipe( first() )
       .subscribe( t => this.title.set( t ) );
+    // <PostRefreshTitle />
   }
 
   onTabIndexChange( index: number ): void {
@@ -55,10 +65,12 @@ export class UserManagementPage {
   }
 
   async onInvitationCreated(): Promise<void> {
+    // <PreOnInvitationCreated revert />
     const invTable = this.invitationsTable();
     if ( invTable ) {
       await invTable.getInvitations();
       invTable.clearSelection();
     }
+    // <PostOnInvitationCreated />
   }
 }

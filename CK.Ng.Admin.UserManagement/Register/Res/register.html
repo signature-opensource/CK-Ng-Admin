@@ -11,6 +11,7 @@
     </div>
 
     <form nz-form [formGroup]="registerForm" class="ck-register-form" (ngSubmit)="submit()">
+        <!-- <PreEmailFormItem revert /> -->
         <nz-form-item>
             <nz-form-control nzHasFeedback>
                 <nz-input-group>
@@ -19,7 +20,9 @@
                 </nz-input-group>
             </nz-form-control>
         </nz-form-item>
+        <!-- <PostEmailFormItem /> -->
 
+        <!-- <PreFirstNameFormItem revert /> -->
         <nz-form-item>
             <nz-form-control nzHasFeedback [nzErrorTip]="firstNameError">
                 <nz-input-group>
@@ -28,12 +31,16 @@
                 </nz-input-group>
             </nz-form-control>
             <ng-template #firstNameError>
+                <!-- <PreFirstNameError revert /> -->
                 @if ( registerForm.get( 'firstName' )!.hasError( 'required' ) ) {
                     <span>{{ 'CK.Admin.Register.FirstName.Required' | translate }}</span>
                 }
+                <!-- <PostFirstNameError /> -->
             </ng-template>
         </nz-form-item>
+        <!-- <PostFirstNameFormItem /> -->
 
+        <!-- <PreLastNameFormItem revert /> -->
         <nz-form-item>
             <nz-form-control nzHasFeedback [nzErrorTip]="lastNameError">
                 <nz-input-group>
@@ -42,12 +49,16 @@
                 </nz-input-group>
             </nz-form-control>
             <ng-template #lastNameError>
+                <!-- <PreLastNameError revert /> -->
                 @if ( registerForm.get( 'lastName' )!.hasError( 'required' ) ) {
                     <span>{{ 'CK.Admin.Register.LastName.Required' | translate }}</span>
                 }
+                <!-- <PostLastNameError /> -->
             </ng-template>
         </nz-form-item>
+        <!-- <PostLastNameFormItem /> -->
 
+        <!-- <PreCultureNameFormItem revert /> -->
         <nz-form-item>
             <nz-form-control>
                 <nz-input-group>
@@ -60,7 +71,9 @@
                 </nz-input-group>
             </nz-form-control>
         </nz-form-item>
+        <!-- <PostCultureNameFormItem /> -->
 
+        <!-- <PrePasswordFormItem revert /> -->
         <nz-form-item>
             <nz-form-control nzHasFeedback [nzErrorTip]="passwordError">
                 <nz-input-group [nzSuffix]="passwordSuffix">
@@ -72,6 +85,7 @@
                 </ng-template>
             </nz-form-control>
             <ng-template #passwordError>
+                <!-- <PrePasswordError revert /> -->
                 @if ( registerForm.get( 'password' )!.hasError( 'required' ) ) {
                     <span>{{ 'CK.Admin.Register.Password.Required' | translate }}</span>
                 } @else if ( registerForm.get( 'password' )!.hasError( 'minlength' ) ) {
@@ -79,9 +93,12 @@
                 } @else if ( registerForm.get( 'password' )!.hasError( 'passwordComplexity' ) ) {
                     <span>{{ 'CK.Admin.Register.Password.Complexity' | translate }}</span>
                 }
+                <!-- <PostPasswordError /> -->
             </ng-template>
         </nz-form-item>
+        <!-- <PostPasswordFormItem /> -->
 
+        <!-- <PreConfirmPasswordFormItem revert /> -->
         <nz-form-item>
             <nz-form-control nzHasFeedback [nzErrorTip]="confirmError">
                 <nz-input-group [nzSuffix]="confirmSuffix">
@@ -93,13 +110,16 @@
                 </ng-template>
             </nz-form-control>
             <ng-template #confirmError>
+                <!-- <PreConfirmPasswordError revert /> -->
                 @if ( registerForm.get( 'confirmPassword' )!.hasError( 'required' ) ) {
                     <span>{{ 'CK.Admin.Register.ConfirmPassword.Required' | translate }}</span>
                 } @else if ( registerForm.get( 'confirmPassword' )!.hasError( 'passwordMismatch' ) ) {
                     <span>{{ 'CK.Admin.Register.ConfirmPassword.Mismatch' | translate }}</span>
                 }
+                <!-- <PostConfirmPasswordError /> -->
             </ng-template>
         </nz-form-item>
+        <!-- <PostConfirmPasswordFormItem /> -->
 
         <button nz-button nzType="primary" nzSize="large" class="ck-register-submit" [disabled]="registerForm.invalid || submitting()" [nzLoading]="submitting()" type="submit">
             {{ 'CK.Admin.Register.Submit' | translate }}

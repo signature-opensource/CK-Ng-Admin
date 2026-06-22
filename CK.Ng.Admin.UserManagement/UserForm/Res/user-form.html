@@ -2,6 +2,7 @@
     <ck-generic-form #formComp [inputFormData]="formData"></ck-generic-form>
 
     <form nz-form [formGroup]="customForm" nzLayout="vertical">
+        <!-- <PreOrgGroupSelection revert /> -->
         @if ( selectedOrg ) {
             <div class="groups">
                 <div class="form-label">{{ 'CK.Admin.UserManagement.Form.Groups' | translate }}</div>
@@ -52,6 +53,7 @@
                 }
             </div>
         } @else {
+            <!-- <PreGroupPickerFallback revert /> -->
             <nz-form-item>
                 <nz-form-label class="form-label" nzRequired>{{'CK.Admin.UserManagement.Form.Groups' | translate}}</nz-form-label>
                 <nz-form-control>
@@ -60,6 +62,8 @@
                         [groups]="groupInfos" />
                 </nz-form-control>
             </nz-form-item>
+            <!-- <PostGroupPickerFallback /> -->
         }
+        <!-- <PostOrgGroupSelection /> -->
     </form>
 </div>

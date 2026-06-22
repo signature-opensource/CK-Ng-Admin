@@ -41,11 +41,18 @@ import { locales } from '@local/ck-gen/ts-locales/locales';
   imports: [TranslateModule, AdaptivePageLayout, NzModalModule, NzTagModule]
 } )
 export class UsersTab implements OnInit, AfterViewInit {
+  // <PreViewChildren revert />
   readonly layout = viewChild<AdaptivePageLayout<WorkspaceUser>>( 'layout' );
   readonly roleCellTemplate = viewChild.required<TemplateRef<TableCellContext<WorkspaceUser>>>( 'roleCellTemplate' );
+  // <PostViewChildren />
 
+  // <PreInputOutput revert />
   readonly workspace = input<GroupInfos>();
   readonly invitationCreated = output<void>();
+  // <PostInputOutput />
+
+  // <PreIconsDefinition revert />
+  // <PostIconsDefinition />
 
   // <PreDependencyInjection revert />
   readonly #translateService = inject( TranslateService );
@@ -137,6 +144,7 @@ export class UsersTab implements OnInit, AfterViewInit {
   }
 
   async loadUsers(): Promise<void> {
+    // <PreLoadUsers revert />
     try {
       this.isLoading.set( true );
       const res = await this.#crisEndpoint.sendOrThrowAsync( new GetWorkspaceUsersQCommand() );
@@ -151,6 +159,7 @@ export class UsersTab implements OnInit, AfterViewInit {
     } finally {
       this.isLoading.set( false );
     }
+    // <PostLoadUsers />
   }
 
   // Applies the role / archived filters (archived hidden by default) to the full set.

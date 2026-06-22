@@ -48,10 +48,16 @@ export class EditUserForm implements OnInit {
         this.user = this.#nzModalData.user;
         this.workspace = this.#nzModalData.workspace;
         this.formData = this.#nzModalData.formData;
+        // <PreCustomFormDefinition revert />
         this.customForm = new FormGroup({
+            // <PrePasswordFormControlDefinition revert />
             password: new FormControl<string>('', { nonNullable: false, validators: [Validators.minLength(6)] }),
+            // <PostPasswordFormControlDefinition />
+            // <PreGroupsFormControlDefinition revert />
             groups: new FormControl<Array<number>>([], { nonNullable: true, validators: [Validators.required] })
+            // <PostGroupsFormControlDefinition />
         });
+        // <PostCustomFormDefinition />
     }
 
     get groupsControl(): FormControl<Array<number>> {
@@ -72,6 +78,7 @@ export class EditUserForm implements OnInit {
     }
 
     async getEditUserData(): Promise<void> {
+        // <PreGetEditUserData revert />
         const res = await this.#crisEndpoint.sendOrThrowAsync(new GetWorkspaceUserEditDataQCommand(this.user.userId));
         if (res) {
             const groups = [...res.workspaceGroups];
@@ -90,5 +97,6 @@ export class EditUserForm implements OnInit {
             this.customForm.patchValue({ groups: userGroups.map(g => g.groupId) });
             this.workspaceGroups = [...groups];
         }
+        // <PostGetEditUserData />
     }
 }

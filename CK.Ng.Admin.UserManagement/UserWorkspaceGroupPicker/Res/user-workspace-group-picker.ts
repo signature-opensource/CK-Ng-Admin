@@ -10,10 +10,23 @@ import { GroupInfos } from '@local/ck-gen';
   imports: [ReactiveFormsModule, TranslateModule, NzSelectModule]
 } )
 export class UserWorkspaceGroupPicker {
+  // <PreViewChildren revert />
+  // <PostViewChildren />
+
+  // <PreInputOutput revert />
   readonly control = input.required<FormControl<Array<number>>>();
   readonly groups = input.required<Array<GroupInfos>>();
+  // <PostInputOutput />
 
+  // <PreDependencyInjection revert />
   readonly #translateService = inject( TranslateService );
+  // <PostDependencyInjection />
+
+  // <PreIconsDefinition revert />
+  // <PostIconsDefinition />
+
+  // <PreLocalVariables revert />
+  // <PostLocalVariables />
 
   protected dropdownLabel( group: GroupInfos ): string {
     const role = this.#roleLabel( group );
