@@ -297,7 +297,7 @@ public class UserManagementCommandHandler : IScopedAutoService
                     if( !string.IsNullOrWhiteSpace( cmd.CultureName ) )
                     {
                         var xlcid = NormalizedCultureInfo.EnsureNormalizedCultureInfo( cmd.CultureName ).Id;
-                        await userTable.SetExtendedCultureAsync( ctx, actorId, cmd.UserId, xlcid );
+                        await preferredCulturePackage.SetExtendedCultureAsync( ctx, actorId, cmd.UserId, xlcid );
                         await preferredCulturePackage.SetPreferredCultureNameAsync( ctx, actorId, cmd.UserId, cmd.CultureName );
                         ctx.Monitor.Info( $"User's culture successfully set. (CultureName: {cmd.CultureName}, XLCID: {xlcid})" );
                     }

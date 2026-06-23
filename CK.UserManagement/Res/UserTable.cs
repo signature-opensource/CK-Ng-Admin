@@ -39,15 +39,4 @@ public abstract class UserTable : DB.Actor.UserTable
     /// <returns>An awaitable.</returns>
     [SqlProcedure( "sUserRestore" )]
     public abstract Task RestoreUserAsync( ISqlCallContext ctx, int actorId, int userId );
-
-    /// <summary>
-    /// Sets the user's extended culture (XLCID, referencing <c>CK.tCulture</c>).
-    /// </summary>
-    /// <param name="ctx">The call context.</param>
-    /// <param name="actorId">The acting actor identifier.</param>
-    /// <param name="userId">The user identifier.</param>
-    /// <param name="extendedCultureId">The extended culture identifier (XLCID). Must exist in <c>CK.tCulture</c>.</param>
-    /// <returns>An awaitable.</returns>
-    [SqlProcedure( "sUserExtendedCultureSet" )]
-    public abstract Task SetExtendedCultureAsync( ISqlCallContext ctx, int actorId, int userId, int extendedCultureId );
 }

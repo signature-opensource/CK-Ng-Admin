@@ -15,7 +15,7 @@
       
     <PackageReference Include="CK.DB.AspNet.Auth" Version="31.0.2--ci.2" />
     <PackageReference Include="CK.DB.User.NamedUser" Version="28.0.2--ci.2" />
-    <PackageReference Include="CK.DB.User.PreferredCulture" Version="0.4.2--ci.2" />
+    <PackageReference Include="CK.DB.User.PreferredCulture" Version="0.4.3--ci.2" />
     <PackageReference Include="CK.DB.User.UserPassword" Version="28.0.2--ci.2" />
     <PackageReference Include="CK.DB.Workspace" Version="15.1.1--ci.8" />
       

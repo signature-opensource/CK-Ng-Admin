@@ -172,7 +172,7 @@ public class UserManagementService : IAutoService
         await _passwordTable.CreateOrUpdatePasswordUserAsync( ctx, SystemActorId, userId, password, UCLMode.CreateOnly );
 
         var xlcid = NormalizedCultureInfo.EnsureNormalizedCultureInfo( cultureName ).Id;
-        await _userTable.SetExtendedCultureAsync( ctx, SystemActorId, userId, xlcid );
+        await _userPackage.SetExtendedCultureAsync( ctx, SystemActorId, userId, xlcid );
         ctx.Monitor.Info( $"User's extended culture set. (UserId: {userId}, CultureName: {cultureName}, XLCID: {xlcid})" );
 
         foreach( var g in invitation.GroupIdentifiers )
