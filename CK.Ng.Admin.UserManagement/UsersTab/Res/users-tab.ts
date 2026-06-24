@@ -30,7 +30,6 @@ import {
   TableColumn,
   UserForm,
   UserMessageLevel,
-  UserService,
   WorkspaceUser
 } from '@local/ck-gen';
 import { locales } from '@local/ck-gen/ts-locales/locales';
@@ -57,7 +56,6 @@ export class UsersTab implements OnInit, AfterViewInit {
   // <PreDependencyInjection revert />
   readonly #translateService = inject( TranslateService );
   readonly #crisEndpoint = inject( HttpCrisEndpoint );
-  readonly #userService = inject( UserService );
   readonly #notifService = inject( NotificationService );
   readonly #nzModalService = inject( NzModalService );
   readonly #destroyRef = inject( DestroyRef );
@@ -378,8 +376,10 @@ export class UsersTab implements OnInit, AfterViewInit {
     const opts: ModalOptions = {
       nzTitle: `${this.#translateService.instant( 'CK.Admin.UserManagement.Modal.ArchiveUsers' )} : ${users.map( i => i.userName ).join( ' ,' )} ?`,
       nzOnOk: async () => {
-        const res = await this.#crisEndpoint.sendOrThrowAsync( new ArchiveUsersCommand( users.map( i => i.userId ), undefined, this.#userService.userProfile()!.userId ) );
-        this.#notifService.notifyUserMessage( res );
+        const cmd = new ArchiveUsersCommand();
+        cmd.userIds = users.map( i => i.userId );
+        const res = await this.#crisEndpoint.sendOrThrowAsync( cmd );
+        res?.userMessages.forEach( m => this.#notifService.notifyUserMessage( m ) );
         this.isLoading.set( true );
         await this.loadUsers();
       }
@@ -392,8 +392,10 @@ export class UsersTab implements OnInit, AfterViewInit {
     const opts: ModalOptions = {
       nzTitle: `${this.#translateService.instant( 'CK.Admin.UserManagement.Modal.RestoreUsers' )} : ${users.map( i => i.userName ).join( ' ,' )} ?`,
       nzOnOk: async () => {
-        const res = await this.#crisEndpoint.sendOrThrowAsync( new RestoreUsersCommand( users.map( i => i.userId ), undefined, this.#userService.userProfile()!.userId ) );
-        this.#notifService.notifyUserMessage( res );
+        const cmd = new RestoreUsersCommand();
+        cmd.userIds = users.map( i => i.userId );
+        const res = await this.#crisEndpoint.sendOrThrowAsync( cmd );
+        res?.userMessages.forEach( m => this.#notifService.notifyUserMessage( m ) );
         this.isLoading.set( true );
         await this.loadUsers();
       }

@@ -9,6 +9,8 @@
     <ItemGroup>
       <PackageReference Include="CK.IO.Globalization" Version="0.1.4--ci.6" />
       <PackageReference Include="CK.IO.UserProfile.Workspace" Version="15.1.1--ci.8" />
+      <!-- Base Archive/Restore commands extended locally with the workspace/admin context. -->
+      <PackageReference Include="CK.IO.User.BinnedUser" Version="0.0.0" />
     </ItemGroup>
 
     <ItemGroup>

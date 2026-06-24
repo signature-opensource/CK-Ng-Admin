@@ -11,6 +11,9 @@
         <PackageReference Include="CK.SqlServer.Dapper" Version="15.0.1" />
         <PackageReference Include="CK.SqlServer.Transaction" Version="12.0.1" />
 
+        <!-- Soft-delete / recycle-bin for users (BinDate, sUserArchive/sUserRestore, vUser transform). -->
+        <PackageReference Include="CK.DB.User.BinnedUser" Version="0.0.0" />
+
         <!-- Standard CK.DB building blocks used by the handlers. -->
         <PackageReference Include="CK.DB.Workspace" Version="15.1.1--ci.8" />
         <PackageReference Include="CK.DB.Zone" Version="28.0.2--ci.3" />

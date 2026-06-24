@@ -198,78 +198,82 @@ public class UserManagementCommandHandler : IScopedAutoService
     }
 
     [CommandHandler]
-    public async Task<SimpleUserMessage> ArchiveUsersAsync( ISqlTransactionCallContext ctx,
-                                                            IArchiveUsersCommand cmd,
-                                                            UserTable userTable )
+    public async Task<ICrisBasicCommandResult> ArchiveUsersAsync( ISqlTransactionCallContext ctx,
+                                                                  UserMessageCollector collector,
+                                                                  IArchiveUsersAdminCommand cmd,
+                                                                  UserTable userTable )
     {
-        var actorId = cmd.ActorId.GetValueOrDefault();
-        using( ctx.Monitor.OpenInfo( $"Handling {nameof( IArchiveUsersCommand )} command. (ActorId: {actorId}, Count: {cmd.UserIds.Count})" ) )
+        int actorId = cmd.ActorId.GetValueOrDefault();
+        int workspaceId = cmd.CurrentWorkspaceId.GetValueOrDefault();
+        using( ctx.Monitor.OpenInfo( $"Handling {nameof( IArchiveUsersAdminCommand )} command. (ActorId: {actorId}, WorkspaceId: {workspaceId}, Count: {cmd.UserIds.Count})" ) )
         {
+            var res = cmd.CreateResult();
+            if( cmd.UserIds.Count == 0 )
+            {
+                collector.Error( "No user identifier provided.", "BinnedUser.NoUserId" );
+                res.SetUserMessages( collector );
+                return res;
+            }
             try
             {
-                if( cmd.ActorId == 0 || cmd.UserIds.Count == 0 )
-                {
-                    ctx.Monitor.Error( $"Invalid arguments. (ActorId: {cmd.ActorId}, Ids: {string.Join( ", ", cmd.UserIds )})" );
-                    return _currentCulture.CreateInvalidArgumentError();
-                }
-                else
-                {
-                    using( var transaction = ctx[userTable].BeginTransaction() )
-                    {
-                        foreach( var id in cmd.UserIds )
-                        {
-                            await userTable.ArchiveUserAsync( ctx, actorId, id );
-                            ctx.Monitor.Info( $"User sucessfully archived. (UserId: {id})" );
-                        }
-
-                        transaction.Commit();
-                        return _currentCulture.InfoMessage( "User successfully archived.", "CrisSuccess.UserArchived" );
-                    }
-                }
-            }
-            catch( Exception e )
-            {
-                ctx.Monitor.Error( e );
-                return _currentCulture.CreateGenericError();
-            }
-        }
-    }
-
-    [CommandHandler]
-    public async Task<SimpleUserMessage> RestoreUsersAsync( ISqlTransactionCallContext ctx,
-                                                            IRestoreUsersCommand cmd,
-                                                            UserTable userTable )
-    {
-        var actorId = cmd.ActorId.GetValueOrDefault();
-        using( ctx.Monitor.OpenInfo( $"Handling {nameof( IRestoreUsersCommand )} command. (ActorId: {actorId}, Count: {cmd.UserIds.Count})" ) )
-        {
-            if( cmd.UserIds.Count == 0 ) return _currentCulture.CreateInvalidArgumentError();
-
-            try
-            {
-                if( cmd.ActorId == 0 || cmd.UserIds.Count == 0 )
-                {
-                    ctx.Monitor.Error( $"Invalid arguments. (ActorId: {cmd.ActorId}, Ids: {string.Join( ", ", cmd.UserIds )})" );
-                    return _currentCulture.CreateInvalidArgumentError();
-                }
-
                 using( var transaction = ctx[userTable].BeginTransaction() )
                 {
                     foreach( var id in cmd.UserIds )
                     {
-                        await userTable.RestoreUserAsync( ctx, actorId, id );
-                        ctx.Monitor.Info( $"User sucessfully restored. (UserId: {id})" );
+                        await userTable.ArchiveUserAsync( ctx, actorId, id, workspaceId );
+                        ctx.Monitor.Info( $"User successfully archived. (UserId: {id})" );
                     }
-
                     transaction.Commit();
-                    return _currentCulture.InfoMessage( "User successfully restored.", "CrisSuccess.UserRestored" );
                 }
+                collector.Info( $"{cmd.UserIds.Count} user(s) successfully archived.", "BinnedUser.UsersArchived" );
             }
             catch( Exception e )
             {
                 ctx.Monitor.Error( e );
-                return _currentCulture.CreateGenericError();
+                collector.Error( "An error occurred while archiving users.", "BinnedUser.ArchiveFailed" );
             }
+            res.SetUserMessages( collector );
+            return res;
+        }
+    }
+
+    [CommandHandler]
+    public async Task<ICrisBasicCommandResult> RestoreUsersAsync( ISqlTransactionCallContext ctx,
+                                                                  UserMessageCollector collector,
+                                                                  IRestoreUsersAdminCommand cmd,
+                                                                  UserTable userTable )
+    {
+        int actorId = cmd.ActorId.GetValueOrDefault();
+        int workspaceId = cmd.CurrentWorkspaceId.GetValueOrDefault();
+        using( ctx.Monitor.OpenInfo( $"Handling {nameof( IRestoreUsersAdminCommand )} command. (ActorId: {actorId}, WorkspaceId: {workspaceId}, Count: {cmd.UserIds.Count})" ) )
+        {
+            var res = cmd.CreateResult();
+            if( cmd.UserIds.Count == 0 )
+            {
+                collector.Error( "No user identifier provided.", "BinnedUser.NoUserId" );
+                res.SetUserMessages( collector );
+                return res;
+            }
+            try
+            {
+                using( var transaction = ctx[userTable].BeginTransaction() )
+                {
+                    foreach( var id in cmd.UserIds )
+                    {
+                        await userTable.RestoreUserAsync( ctx, actorId, id, workspaceId );
+                        ctx.Monitor.Info( $"User successfully restored. (UserId: {id})" );
+                    }
+                    transaction.Commit();
+                }
+                collector.Info( $"{cmd.UserIds.Count} user(s) successfully restored.", "BinnedUser.UsersRestored" );
+            }
+            catch( Exception e )
+            {
+                ctx.Monitor.Error( e );
+                collector.Error( "An error occurred while restoring users.", "BinnedUser.RestoreFailed" );
+            }
+            res.SetUserMessages( collector );
+            return res;
         }
     }
 

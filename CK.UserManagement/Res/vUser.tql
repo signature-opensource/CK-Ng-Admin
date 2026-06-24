@@ -1,5 +1,0 @@
-create transformer on CK.vUser
-as
-begin
-    add column u.BinDate;
-end
