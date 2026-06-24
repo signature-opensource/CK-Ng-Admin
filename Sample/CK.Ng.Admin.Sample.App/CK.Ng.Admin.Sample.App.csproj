@@ -11,16 +11,16 @@
     <PackageReference Include="CK.AppIdentity.Hosting" Version="0.14.1" />
     <PackageReference Include="CK.Cris.AspNet" Version="0.55.2" />
     <PackageReference Include="CK.Cris.Auth" Version="0.43.1" />
-    <PackageReference Include="CK.Cris.Workspace" Version="15.1.1--ci.8" />
+    <PackageReference Include="CK.Cris.Workspace" Version="15.1.1" />
       
-    <PackageReference Include="CK.DB.AspNet.Auth" Version="31.0.2--ci.2" />
-    <PackageReference Include="CK.DB.User.NamedUser" Version="28.0.2--ci.2" />
-    <PackageReference Include="CK.DB.User.PreferredCulture" Version="0.4.3--ci.2" />
-    <PackageReference Include="CK.DB.User.UserPassword" Version="28.0.2--ci.2" />
-    <PackageReference Include="CK.DB.Workspace" Version="15.1.1--ci.8" />
+    <PackageReference Include="CK.DB.AspNet.Auth" Version="31.0.2" />
+    <PackageReference Include="CK.DB.User.NamedUser" Version="28.0.2" />
+    <PackageReference Include="CK.DB.User.PreferredCulture" Version="0.4.3--ci.3" />
+    <PackageReference Include="CK.DB.User.UserPassword" Version="28.0.2" />
+    <PackageReference Include="CK.DB.Workspace" Version="15.1.1" />
       
     <PackageReference Include="CK.Ng.AspNet.Auth.Basic" Version="0.31.2" />
-    <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="0.6.4--ci.2" />
+    <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="0.6.5--ci.3" />
     <PackageReference Include="CK.Ng.Cris.AspNet.Auth" Version="0.55.2" />
 
     <PackageReference Include="CK.SqlServer.Dapper" Version="15.0.1" />

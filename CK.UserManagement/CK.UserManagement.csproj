@@ -15,13 +15,13 @@
         <PackageReference Include="CK.DB.User.BinnedUser" Version="0.0.0" />
 
         <!-- Standard CK.DB building blocks used by the handlers. -->
-        <PackageReference Include="CK.DB.Workspace" Version="15.1.1--ci.8" />
-        <PackageReference Include="CK.DB.Zone" Version="28.0.2--ci.3" />
-        <PackageReference Include="CK.DB.User.NamedUser" Version="28.0.2--ci.2" />
-        <PackageReference Include="CK.DB.User.UserPassword" Version="28.0.2--ci.2" />
-        <PackageReference Include="CK.DB.User.PreferredCulture" Version="0.4.3--ci.2" />
-        <PackageReference Include="CK.DB.Actor.ActorEMail" Version="28.0.2--ci.2" />
-        <PackageReference Include="CK.DB.UserInvitation" Version="0.4.6--ci.5" />
+        <PackageReference Include="CK.DB.Workspace" Version="15.1.1" />
+        <PackageReference Include="CK.DB.Zone" Version="28.0.2" />
+        <PackageReference Include="CK.DB.User.NamedUser" Version="28.0.2" />
+        <PackageReference Include="CK.DB.User.UserPassword" Version="28.0.2" />
+        <PackageReference Include="CK.DB.User.PreferredCulture" Version="0.4.3--ci.3" />
+        <PackageReference Include="CK.DB.Actor.ActorEMail" Version="28.0.2" />
+        <PackageReference Include="CK.DB.UserInvitation" Version="0.4.6" />
         <PackageReference Include="CK.DB.Globalization" Version="0.1.4" />
 
 
