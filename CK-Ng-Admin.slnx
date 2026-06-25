@@ -1,6 +1,5 @@
 <Solution>
   <Folder Name="/CK-Ng-Admin/">
-    <Project Path="CK.Mail.SharedLayout/CK.Mail.SharedLayout.csproj" />
     <Project Path="SLog.Mail.Branding/SLog.Mail.Branding.csproj" />
   </Folder>
   <Folder Name="/Sample/">
@@ -18,9 +17,6 @@
     <Project Path="Tests/CK.UserManagement.Tests/CK.UserManagement.Tests.csproj" />
     <Project Path="Tests/CK.Ng.Admin.UserManagement.Tests/CK.Ng.Admin.UserManagement.Tests.csproj" />
   </Folder>
-  <Project Path="CK.IO.Admin/CK.IO.Admin.csproj" />
-  <Project Path="CK.IO.UserManagement/CK.IO.UserManagement.csproj" />
   <Project Path="CK.Ng.Admin.UserManagement/CK.Ng.Admin.UserManagement.csproj" Id="55bb900f-4ba3-489c-8caf-648691ee653c" />
   <Project Path="CK.Ng.Admin/CK.Ng.Admin.csproj" />
-  <Project Path="CK.UserManagement/CK.UserManagement.csproj" />
 </Solution>

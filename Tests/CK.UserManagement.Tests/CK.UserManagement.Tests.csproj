@@ -38,7 +38,4 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.5.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="6.2.0" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\CK.UserManagement\CK.UserManagement.csproj" />
-  </ItemGroup>
 </Project>

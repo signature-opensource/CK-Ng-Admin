@@ -13,8 +13,4 @@
         <PackageReference Include="CK.AppIdentity.Abstractions" Version="0.14.1" />
     </ItemGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\CK.Mail.SharedLayout\CK.Mail.SharedLayout.csproj" />
-    </ItemGroup>
-
 </Project>
