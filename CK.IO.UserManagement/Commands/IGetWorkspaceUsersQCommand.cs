@@ -3,6 +3,6 @@ using CK.IO.Admin;
 
 namespace CK.IO.UserManagement;
 
-public interface IGetWorkspaceUsersQCommand : ICommand<List<IWorkspaceUser>>, ICommandAdmin
+public interface IGetWorkspaceUsersQCommand : ICommand<List<IWorkspaceUser>>, ICommandWorkspaceAdmin
 {
 }

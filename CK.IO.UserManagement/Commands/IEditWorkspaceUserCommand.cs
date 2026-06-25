@@ -4,7 +4,7 @@ using CK.IO.Admin;
 
 namespace CK.IO.UserManagement;
 
-public interface IEditWorkspaceUserCommand : ICommand<SimpleUserMessage>, ICommandCurrentCulture, ICommandAdmin
+public interface IEditWorkspaceUserCommand : ICommand<SimpleUserMessage>, ICommandCurrentCulture, ICommandWorkspaceAdmin
 {
     public int UserId { get; set; }
     public string FirstName { get; set; }

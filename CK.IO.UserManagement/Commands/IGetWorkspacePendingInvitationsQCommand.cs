@@ -3,6 +3,6 @@ using CK.IO.Admin;
 
 namespace CK.IO.UserManagement;
 
-public interface IGetWorkspacePendingInvitationsQCommand : ICommand<List<IPendingInvitation>>, ICommandAdmin
+public interface IGetWorkspacePendingInvitationsQCommand : ICommand<List<IPendingInvitation>>, ICommandWorkspaceAdmin
 {
 }

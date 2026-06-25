@@ -11,6 +11,6 @@ namespace CK.IO.Admin;
 /// workspace).
 /// </summary>
 [CKTypeDefiner]
-public interface ICommandAdmin : ICommandWorkspace, ICommandAuthNormal
+public interface ICommandWorkspaceAdmin : ICommandWorkspace, ICommandAuthNormal
 {
 }

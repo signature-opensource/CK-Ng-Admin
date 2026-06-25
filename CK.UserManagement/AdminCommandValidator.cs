@@ -7,7 +7,7 @@ using CK.SqlServer;
 namespace CK.UserManagement;
 
 /// <summary>
-/// Guards every <see cref="ICommandAdmin"/> handling by ensuring the
+/// Guards every <see cref="ICommandWorkspaceAdmin"/> handling by ensuring the
 /// caller is a workspace administrator OR a platform administrator
 /// (platform admins implicitly administer every workspace).
 /// </summary>
@@ -36,7 +36,7 @@ public class AdminCommandValidator : IAutoService
     }
 
     [CommandHandlingValidator]
-    public async Task ValidateAdminCommandAsync( ISqlCallContext ctx, UserMessageCollector collector, ICommandAdmin cmd )
+    public async Task ValidateAdminCommandAsync( ISqlCallContext ctx, UserMessageCollector collector, ICommandWorkspaceAdmin cmd )
     {
         var actorId = cmd.ActorId.GetValueOrDefault();
         if( actorId <= 0 )
