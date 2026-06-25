@@ -29,11 +29,11 @@
     <PackageReference Include="CK.AppIdentity.Hosting" Version="0.14.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.5.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="6.2.0" />
+    <!-- Backend command handlers/services exercised by the integration spec, now consumed as a published package. -->
+    <PackageReference Include="CK.UserManagement" Version="0.0.0--ci.2" />
   </ItemGroup>
   <ItemGroup>
     <!-- NG components (UsersTab, forms, ...) + IO contracts. -->
     <ProjectReference Include="..\..\CK.Ng.Admin.UserManagement\CK.Ng.Admin.UserManagement.csproj" />
-    <!-- Backend command handlers/services exercised by the integration spec. -->
-    <ProjectReference Include="..\..\CK.UserManagement\CK.UserManagement.csproj" />
   </ItemGroup>
 </Project>

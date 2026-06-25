@@ -26,6 +26,8 @@
     <PackageReference Include="CK.SqlServer.Dapper" Version="15.0.1" />
     <PackageReference Include="CK.SqlServer.Transaction" Version="12.0.1" />
 
+    <PackageReference Include="CK.UserManagement" Version="0.0.0--ci.2" />
+
     <ProjectReference Include="..\..\CK.Ng.Admin.UserManagement\CK.Ng.Admin.UserManagement.csproj" />
     <ProjectReference Include="..\..\SLog.Mail.Branding\SLog.Mail.Branding.csproj" />
   </ItemGroup>
