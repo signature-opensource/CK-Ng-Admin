@@ -11,10 +11,10 @@
     <PackageReference Include="CK.DB.AspNet.Auth" Version="31.0.2" />
     <PackageReference Include="CK.DB.User.UserPassword" Version="28.0.2" />
     <PackageReference Include="CK.DB.Workspace" Version="15.1.1" />
+    <PackageReference Include="CK.DB.Acl" Version="28.0.2" />
     <PackageReference Include="CK.Ng.AspNet.Auth.Basic" Version="0.31.2" />
     <PackageReference Include="CK.DB.Tests.NUnit" Version="33.0.2" />
     <PackageReference Include="CK.SqlServer.Dapper" Version="15.0.1" />
-
     <PackageReference Include="CK.SqlServer.Transaction" Version="12.0.1" />
     <PackageReference Include="CK.Ng.Cris.AspNet.Auth" Version="0.55.2" />
     <PackageReference Include="CK.Testing.AspNetServer.Auth" Version="30.0.1" />
@@ -23,10 +23,17 @@
     <PackageReference Include="CK.Testing.SqlServerEngine" Version="33.0.2" />
     <PackageReference Include="CK.Testing.TypeScriptEngine" Version="0.31.2" />
     <PackageReference Include="CK.TS.Angular.Engine" Version="0.31.2" />
+    <!-- Engine-side assembly for the user-invitation Fluid mail templates. -->
+    <PackageReference Include="CK.Template.Fluid.Engine" Version="0.0.0" />
+    <!-- CK.UserManagement pulls CK.Mailer -> CK.AppIdentity; the host must provide its configuration. -->
+    <PackageReference Include="CK.AppIdentity.Hosting" Version="0.14.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.5.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="6.2.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\CK.Ng.Admin\CK.Ng.Admin.csproj" />
+    <!-- NG components (UsersTab, forms, ...) + IO contracts. -->
+    <ProjectReference Include="..\..\CK.Ng.Admin.UserManagement\CK.Ng.Admin.UserManagement.csproj" />
+    <!-- Backend command handlers/services exercised by the integration spec. -->
+    <ProjectReference Include="..\..\CK.UserManagement\CK.UserManagement.csproj" />
   </ItemGroup>
 </Project>
