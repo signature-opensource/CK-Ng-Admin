@@ -1,0 +1,39 @@
+.users-tab-layout {
+  height: 100%;
+}
+
+// Mobile list-view item rendered through #itemTemplate.
+.ck-list-item-infos {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ck-list-item-primary-info {
+  font-weight: 700;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.ck-list-item-line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+
+  // Label on the left.
+  > span:first-child {
+    flex: 0 0 auto;
+    color: rgba(0, 0, 0, 0.45);
+  }
+
+  // Value on the right: right-aligned and wraps onto several lines when long.
+  > span:last-child,
+  .value {
+    flex: 0 1 auto;
+    min-width: 0;
+    text-align: right;
+    overflow-wrap: anywhere;
+  }
+}

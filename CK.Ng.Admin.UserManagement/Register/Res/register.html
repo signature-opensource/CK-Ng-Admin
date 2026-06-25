@@ -1,0 +1,128 @@
+@if ( loading() ) {
+    <div class="ck-register-loading">
+        <nz-spin nzSimple />
+    </div>
+} @else if ( tokenError() ) {
+    <nz-alert nzType="error" [nzMessage]="'CK.Admin.Register.InvalidTokenTitle' | translate" [nzDescription]="tokenError()!" nzShowIcon />
+} @else {
+    <div class="ck-register-welcome">
+        <span class="header">{{ 'CK.Admin.Register.Title' | translate }}</span>
+        <span class="sub">{{ 'CK.Admin.Register.SubTitle' | translate }}</span>
+    </div>
+
+    <form nz-form [formGroup]="registerForm" class="ck-register-form" (ngSubmit)="submit()">
+        <!-- <PreEmailFormItem revert /> -->
+        <nz-form-item>
+            <nz-form-control nzHasFeedback>
+                <nz-input-group>
+                    <fa-icon class="ck-btn-icon" [icon]="emailIcon" />
+                    <input nz-input type="email" formControlName="email" [placeholder]="'CK.Admin.Register.Email.Placeholder' | translate" />
+                </nz-input-group>
+            </nz-form-control>
+        </nz-form-item>
+        <!-- <PostEmailFormItem /> -->
+
+        <!-- <PreFirstNameFormItem revert /> -->
+        <nz-form-item>
+            <nz-form-control nzHasFeedback [nzErrorTip]="firstNameError">
+                <nz-input-group>
+                    <fa-icon class="ck-btn-icon" [icon]="userIcon" />
+                    <input nz-input type="text" autocomplete="given-name" formControlName="firstName" [placeholder]="'CK.Admin.Register.FirstName.Placeholder' | translate" />
+                </nz-input-group>
+            </nz-form-control>
+            <ng-template #firstNameError>
+                <!-- <PreFirstNameError revert /> -->
+                @if ( registerForm.get( 'firstName' )!.hasError( 'required' ) ) {
+                    <span>{{ 'CK.Admin.Register.FirstName.Required' | translate }}</span>
+                }
+                <!-- <PostFirstNameError /> -->
+            </ng-template>
+        </nz-form-item>
+        <!-- <PostFirstNameFormItem /> -->
+
+        <!-- <PreLastNameFormItem revert /> -->
+        <nz-form-item>
+            <nz-form-control nzHasFeedback [nzErrorTip]="lastNameError">
+                <nz-input-group>
+                    <fa-icon class="ck-btn-icon" [icon]="userIcon" />
+                    <input nz-input type="text" autocomplete="family-name" formControlName="lastName" [placeholder]="'CK.Admin.Register.LastName.Placeholder' | translate" />
+                </nz-input-group>
+            </nz-form-control>
+            <ng-template #lastNameError>
+                <!-- <PreLastNameError revert /> -->
+                @if ( registerForm.get( 'lastName' )!.hasError( 'required' ) ) {
+                    <span>{{ 'CK.Admin.Register.LastName.Required' | translate }}</span>
+                }
+                <!-- <PostLastNameError /> -->
+            </ng-template>
+        </nz-form-item>
+        <!-- <PostLastNameFormItem /> -->
+
+        <!-- <PreCultureNameFormItem revert /> -->
+        <nz-form-item>
+            <nz-form-control>
+                <nz-input-group>
+                    <fa-icon class="ck-btn-icon" [icon]="langIcon" />
+                    <nz-select formControlName="cultureName" class="ck-register-select">
+                        @for ( lang of languages; track lang.id ) {
+                            <nz-option [nzValue]="lang.name" [nzLabel]="lang.nativeName" />
+                        }
+                    </nz-select>
+                </nz-input-group>
+            </nz-form-control>
+        </nz-form-item>
+        <!-- <PostCultureNameFormItem /> -->
+
+        <!-- <PrePasswordFormItem revert /> -->
+        <nz-form-item>
+            <nz-form-control nzHasFeedback [nzErrorTip]="passwordError">
+                <nz-input-group [nzSuffix]="passwordSuffix">
+                    <fa-icon class="ck-btn-icon" [icon]="passwordIcon" />
+                    <input nz-input autocomplete="new-password" [type]="showPassword() ? 'text' : 'password'" formControlName="password" [placeholder]="'CK.Admin.Register.Password.Placeholder' | translate" />
+                </nz-input-group>
+                <ng-template #passwordSuffix>
+                    <fa-icon class="ck-register-eye" [icon]="showPassword() ? eyeIcon : eyeSlashIcon" (click)="toggleShowPassword()" />
+                </ng-template>
+            </nz-form-control>
+            <ng-template #passwordError>
+                <!-- <PrePasswordError revert /> -->
+                @if ( registerForm.get( 'password' )!.hasError( 'required' ) ) {
+                    <span>{{ 'CK.Admin.Register.Password.Required' | translate }}</span>
+                } @else if ( registerForm.get( 'password' )!.hasError( 'minlength' ) ) {
+                    <span>{{ 'CK.Admin.Register.Password.MinLength' | translate }}</span>
+                } @else if ( registerForm.get( 'password' )!.hasError( 'passwordComplexity' ) ) {
+                    <span>{{ 'CK.Admin.Register.Password.Complexity' | translate }}</span>
+                }
+                <!-- <PostPasswordError /> -->
+            </ng-template>
+        </nz-form-item>
+        <!-- <PostPasswordFormItem /> -->
+
+        <!-- <PreConfirmPasswordFormItem revert /> -->
+        <nz-form-item>
+            <nz-form-control nzHasFeedback [nzErrorTip]="confirmError">
+                <nz-input-group [nzSuffix]="confirmSuffix">
+                    <fa-icon class="ck-btn-icon" [icon]="passwordIcon" />
+                    <input nz-input autocomplete="new-password" [type]="showConfirmPassword() ? 'text' : 'password'" formControlName="confirmPassword" [placeholder]="'CK.Admin.Register.ConfirmPassword.Placeholder' | translate" />
+                </nz-input-group>
+                <ng-template #confirmSuffix>
+                    <fa-icon class="ck-register-eye" [icon]="showConfirmPassword() ? eyeIcon : eyeSlashIcon" (click)="toggleShowConfirmPassword()" />
+                </ng-template>
+            </nz-form-control>
+            <ng-template #confirmError>
+                <!-- <PreConfirmPasswordError revert /> -->
+                @if ( registerForm.get( 'confirmPassword' )!.hasError( 'required' ) ) {
+                    <span>{{ 'CK.Admin.Register.ConfirmPassword.Required' | translate }}</span>
+                } @else if ( registerForm.get( 'confirmPassword' )!.hasError( 'passwordMismatch' ) ) {
+                    <span>{{ 'CK.Admin.Register.ConfirmPassword.Mismatch' | translate }}</span>
+                }
+                <!-- <PostConfirmPasswordError /> -->
+            </ng-template>
+        </nz-form-item>
+        <!-- <PostConfirmPasswordFormItem /> -->
+
+        <button nz-button nzType="primary" nzSize="large" class="ck-register-submit" [disabled]="registerForm.invalid || submitting()" [nzLoading]="submitting()" type="submit">
+            {{ 'CK.Admin.Register.Submit' | translate }}
+        </button>
+    </form>
+}

@@ -1,0 +1,12 @@
+<!-- <PreGroupPicker revert /> -->
+<nz-select [formControl]="control()" nzMode="multiple">
+    @for ( group of groups(); track group.groupId ) {
+        <nz-option
+            [nzValue]="group.groupId"
+            nzCustomContent
+            [nzLabel]="selectedLabel(group)">
+            <div [innerHtml]="dropdownLabel(group)"></div>
+        </nz-option>
+    }
+</nz-select>
+<!-- <PostGroupPicker /> -->

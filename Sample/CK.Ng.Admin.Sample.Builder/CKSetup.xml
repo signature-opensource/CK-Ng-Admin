@@ -1,0 +1,16 @@
+<Setup>
+    <Aspect Type="CK.Setup.SetupableAspectConfiguration, CK.Setupable.Model" Version="1" />
+    <Aspect Type="CK.Setup.SqlSetupAspectConfiguration, CK.SqlServer.Setup.Model">
+        <DefaultDatabaseConnectionString>Server=.;Database=AdminSampleDB_LOCAL;Integrated Security=True;TrustServerCertificate=true</DefaultDatabaseConnectionString>
+    </Aspect>
+    <Aspect Type="CK.Setup.TypeScriptAspectConfiguration, CK.TypeScript" />
+    <Aspect Type="CK.Setup.FluidAspectConfiguration, CK.Template.Fluid" />
+    <BinPaths>
+        <BinPath>
+            <TypeScript IntegrationMode="Inline" TargetProjectPath="{ProjectPath}/Admin.Sample.Web" DefaultCulture="fr" ActiveCultures="fr-CA, de-be, nl-BE, zh">
+                <Types>
+                </Types>
+            </TypeScript>
+        </BinPath>
+    </BinPaths>
+</Setup>

@@ -1,0 +1,19 @@
+{
+    "CK.Admin.Register.Title": "Complete your registration",
+    "CK.Admin.Register.SubTitle": "Fill in your information to finalize your account.",
+    "CK.Admin.Register.Email.Placeholder": "Email",
+    "CK.Admin.Register.FirstName.Placeholder": "First name",
+    "CK.Admin.Register.FirstName.Required": "First name is required.",
+    "CK.Admin.Register.LastName.Placeholder": "Last name",
+    "CK.Admin.Register.LastName.Required": "Last name is required.",
+    "CK.Admin.Register.Password.Placeholder": "Password",
+    "CK.Admin.Register.Password.Required": "Password is required.",
+    "CK.Admin.Register.Password.MinLength": "Password must be at least 8 characters long.",
+    "CK.Admin.Register.Password.Complexity": "Password must include at least three of: uppercase, lowercase, digit, special character.",
+    "CK.Admin.Register.ConfirmPassword.Placeholder": "Confirm password",
+    "CK.Admin.Register.ConfirmPassword.Required": "Please confirm your password.",
+    "CK.Admin.Register.ConfirmPassword.Mismatch": "Passwords do not match.",
+    "CK.Admin.Register.Submit": "Complete registration",
+    "CK.Admin.Register.InvalidToken": "This invitation link is no longer valid. Please contact your administrator for a new invitation.",
+    "CK.Admin.Register.InvalidTokenTitle": "Invitation invalid"
+}
