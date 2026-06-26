@@ -14,7 +14,7 @@ import {
   GetWorkspaceInvitationDataQCommand,
   GetWorkspacePendingInvitationsQCommand
 } from '@local/ck-gen';
-import { locales } from '@local/ck-gen/ts-locales/locales';
+import { DEFAULT_LOCALE_INFO } from '@local/ck-gen/ts-locales/locales';
 
 if ( process.env["VSCODE_INSPECTOR_OPTIONS"] ) jest.setTimeout( 30 * 60 * 1000 ); // 30 minutes
 
@@ -60,7 +60,7 @@ describe( 'user-management integration', () => {
     const groups = invitationData.groups.length > 0 ? [invitationData.groups[0].groupId] : [];
 
     const email = `um-invite-${Date.now()}@test.local`;
-    const message = await cris.sendOrThrowAsync( new CreateInvitationCommand( email, groups, locales['fr'].id ) );
+    const message = await cris.sendOrThrowAsync( new CreateInvitationCommand( email, groups, DEFAULT_LOCALE_INFO.id ) );
     expect( message.level ).not.toBe( UserMessageLevel.Error );
 
     const users = await cris.sendOrThrowAsync( new GetWorkspaceUsersQCommand() );
@@ -76,10 +76,10 @@ describe( 'user-management integration', () => {
     await userService.refreshUserProfileAsync();
 
     const email = `um-dup-${Date.now()}@test.local`;
-    const first = await cris.sendOrThrowAsync( new CreateInvitationCommand( email, [], locales['fr'].id ) );
+    const first = await cris.sendOrThrowAsync( new CreateInvitationCommand( email, [], DEFAULT_LOCALE_INFO.id ) );
     expect( first.level ).not.toBe( UserMessageLevel.Error );
 
-    const second = await cris.sendOrThrowAsync( new CreateInvitationCommand( email, [], locales['fr'].id ) );
+    const second = await cris.sendOrThrowAsync( new CreateInvitationCommand( email, [], DEFAULT_LOCALE_INFO.id ) );
     expect( second.level ).toBe( UserMessageLevel.Error );
   } );
 
@@ -92,7 +92,7 @@ describe( 'user-management integration', () => {
     // UMMember belongs to the workspace but is not an administrator: AdminCommandValidator rejects
     // the command, which surfaces as a thrown CrisResultError.
     await expect(
-      cris.sendOrThrowAsync( new CreateInvitationCommand( `um-forbidden-${Date.now()}@test.local`, [], locales['fr'].id ) )
+      cris.sendOrThrowAsync( new CreateInvitationCommand( `um-forbidden-${Date.now()}@test.local`, [], DEFAULT_LOCALE_INFO.id ) )
     ).rejects.toBeDefined();
   } );
 
