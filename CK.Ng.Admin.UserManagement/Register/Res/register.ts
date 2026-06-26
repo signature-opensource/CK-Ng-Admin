@@ -170,8 +170,9 @@ export class Register implements OnInit {
 
     const raw = this.registerForm.getRawValue();
     try {
+      const extendedCultureId = this.languages.find( l => l.name === raw.cultureName )?.id ?? this.languages[0]?.id ?? 0;
       const res = await this.#crisEndpoint.sendOrThrowAsync(
-        new CompleteRegistrationCommand( raw.email, raw.firstName, raw.lastName, raw.cultureName, raw.password, this.#token )
+        new CompleteRegistrationCommand( raw.email, raw.firstName, raw.lastName, extendedCultureId, raw.password, this.#token )
       );
       if ( res ) this.#notifService.notifyUserMessage( res );
       await this.#router.navigate( ['/auth'] );

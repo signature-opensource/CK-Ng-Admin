@@ -446,8 +446,9 @@ export class UsersTab implements OnInit, AfterViewInit {
       nzOnOk: async ( cmp: UserForm ) => {
         if ( !cmp.valid ) return Promise.reject();
         const v = cmp.getValue();
+        const extendedCultureId = languages.find( l => l.name === v.cultureName )?.id ?? languages[0]?.id ?? 0;
         const createRes = await this.#crisEndpoint.sendOrThrowAsync(
-          new CreateInvitationCommand( v.email, v.groups, v.cultureName )
+          new CreateInvitationCommand( v.email, v.groups, extendedCultureId )
         );
         this.#notifService.notifyUserMessage( createRes );
         await this.loadUsers();
@@ -512,13 +513,14 @@ export class UsersTab implements OnInit, AfterViewInit {
       nzOnOk: async ( cmp: EditUserForm ) => {
         if ( !cmp.valid ) return Promise.reject();
         const v = cmp.getValue();
+        const extendedCultureId = languages.find( l => l.name === v.cultureName )?.id ?? languages[0]?.id ?? 0;
         const res = await this.#crisEndpoint.sendOrThrowAsync(
           new EditWorkspaceUserCommand(
             user.userId,
             v.firstName,
             v.lastName,
             v.email,
-            v.cultureName,
+            extendedCultureId,
             v.groups,
             v.password ?? undefined
           )

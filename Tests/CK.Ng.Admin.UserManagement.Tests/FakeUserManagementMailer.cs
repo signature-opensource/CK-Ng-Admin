@@ -11,7 +11,7 @@ namespace CK.Ng.Admin.UserManagement.Tests;
 [ReplaceAutoService( typeof( UserManagementMailer ) )]
 public sealed class FakeUserManagementMailer : IUserManagementMailer
 {
-    public Task SendUserInvitationAsync( IActivityMonitor monitor, string destination, string token, string cultureName )
+    public Task SendUserInvitationAsync( IActivityMonitor monitor, string destination, string token, int extendedCultureId )
     {
         monitor.Info( $"[FakeMailer] Invitation captured. (Email: {destination})" );
         return Task.CompletedTask;
