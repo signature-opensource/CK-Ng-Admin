@@ -18,6 +18,8 @@ namespace CK.Ng.Admin.UserManagement;
 
 // Commands
 [RegisterTypeScriptType( typeof( IResendInvitationsCommand ) )]
+[RegisterTypeScriptType( typeof( IDeactivateInvitationsCommand ) )]
+[RegisterTypeScriptType( typeof( IDestroyInvitationsCommand ) )]
 [RegisterTypeScriptType( typeof( IArchiveUsersAdminCommand ) )]
 [RegisterTypeScriptType( typeof( ICreateInvitationCommand ) )]
 [RegisterTypeScriptType( typeof( IEditWorkspaceUserCommand ) )]

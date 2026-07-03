@@ -3,13 +3,15 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { DateTime } from 'luxon';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { startWith, switchMap } from 'rxjs';
-import { faEnvelope, faRotate } from '@fortawesome/free-solid-svg-icons';
+import { faBan, faEnvelope, faRotate, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ModalOptions, NzModalService } from 'ng-zorro-antd/modal';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import {
   ActionBarContent,
   AdaptivePageLayout,
+  DeactivateInvitationsCommand,
   DefaultTableColumn,
+  DestroyInvitationsCommand,
   Filter,
   GetPlatformPendingInvitationsQCommand,
   GetWorkspacePendingInvitationsQCommand,
@@ -90,6 +92,8 @@ export class InvitationsTable {
         'CK.Admin.UserManagement.Invitation.Active',
         'CK.Admin.UserManagement.Invitation.Expired',
         'Button.ResendInvitation',
+        'Button.Deactivate',
+        'Button.Destroy',
         'Button.Refresh'
       ] ) )
     ),
@@ -164,6 +168,46 @@ export class InvitationsTable {
           this.#nzModalService.confirm( modalOpts );
         },
         shouldBeDisplayed: () => true
+      },
+      {
+        name: 'deactivate',
+        icon: faBan,
+        isDanger: false,
+        type: 'text',
+        tooltip: t['Button.Deactivate'] ?? '',
+        execute: ( inv: PendingInvitation ) => {
+          const modalOpts: ModalOptions = {
+            nzTitle: this.#translateService.instant( 'CK.Admin.UserManagement.Modal.DeactivateInvitation' ),
+            nzContent: `${this.#translateService.instant( 'CK.Admin.UserManagement.Modal.DeactivateInvitationContent' )} : ${inv.email}`,
+            nzOnOk: async () => {
+              const res = await this.#crisEndpoint.sendOrThrowAsync( new DeactivateInvitationsCommand( [inv] ) );
+              this.#notifService.notifyUserMessage( res );
+              await this.getInvitations();
+            }
+          };
+          this.#nzModalService.confirm( modalOpts );
+        },
+        shouldBeDisplayed: ( inv: PendingInvitation ) => inv.active
+      },
+      {
+        name: 'destroy',
+        icon: faTrash,
+        isDanger: true,
+        type: 'text',
+        tooltip: t['Button.Destroy'] ?? '',
+        execute: ( inv: PendingInvitation ) => {
+          const modalOpts: ModalOptions = {
+            nzTitle: this.#translateService.instant( 'CK.Admin.UserManagement.Modal.DestroyInvitation' ),
+            nzContent: `${this.#translateService.instant( 'CK.Admin.UserManagement.Modal.DestroyInvitationContent' )} : ${inv.email}`,
+            nzOnOk: async () => {
+              const res = await this.#crisEndpoint.sendOrThrowAsync( new DestroyInvitationsCommand( [inv] ) );
+              this.#notifService.notifyUserMessage( res );
+              await this.getInvitations();
+            }
+          };
+          this.#nzModalService.confirm( modalOpts );
+        },
+        shouldBeDisplayed: () => true
       }
     ];
     // </InvitationsRowActionsRegistration>
@@ -186,7 +230,47 @@ export class InvitationsTable {
                 nzTitle: this.#translateService.instant( 'CK.Admin.UserManagement.Modal.ResendInvitation' ),
                 nzContent: `${this.#translateService.instant( 'CK.Admin.UserManagement.Modal.ResendInvitationContent' )} : ${this.selectedItems().map( i => i.email ).join( ', ' )}`,
                 nzOnOk: async () => {
-                  const res = await this.#crisEndpoint.sendOrThrowAsync( new ResendInvitationsCommand( this.selectedItems(), undefined, this.#userService.userProfile()!.userId ) );
+                  const res = await this.#crisEndpoint.sendOrThrowAsync( new ResendInvitationsCommand( this.selectedItems() ) );
+                  this.#notifService.notifyUserMessage( res );
+                  await this.getInvitations();
+                  this.clearSelection();
+                }
+              };
+              this.#nzModalService.confirm( modalOpts );
+            },
+            shouldBeDisplayed: () => this.selectedItems().length > 0
+          },
+          {
+            name: 'deactivate',
+            displayName: t['Button.Deactivate'] ?? '',
+            icon: faBan,
+            isDanger: false,
+            execute: () => {
+              const modalOpts: ModalOptions = {
+                nzTitle: this.#translateService.instant( 'CK.Admin.UserManagement.Modal.DeactivateInvitation' ),
+                nzContent: `${this.#translateService.instant( 'CK.Admin.UserManagement.Modal.DeactivateInvitationContent' )} : ${this.selectedItems().map( i => i.email ).join( ', ' )}`,
+                nzOnOk: async () => {
+                  const res = await this.#crisEndpoint.sendOrThrowAsync( new DeactivateInvitationsCommand( this.selectedItems() ) );
+                  this.#notifService.notifyUserMessage( res );
+                  await this.getInvitations();
+                  this.clearSelection();
+                }
+              };
+              this.#nzModalService.confirm( modalOpts );
+            },
+              shouldBeDisplayed: () => this.selectedItems().length > 0 && this.selectedItems().every(i => i.active)
+          },
+          {
+            name: 'destroy',
+            displayName: t['Button.Destroy'] ?? '',
+            icon: faTrash,
+            isDanger: true,
+            execute: () => {
+              const modalOpts: ModalOptions = {
+                nzTitle: this.#translateService.instant( 'CK.Admin.UserManagement.Modal.DestroyInvitation' ),
+                nzContent: `${this.#translateService.instant( 'CK.Admin.UserManagement.Modal.DestroyInvitationContent' )} : ${this.selectedItems().map( i => i.email ).join( ', ' )}`,
+                nzOnOk: async () => {
+                  const res = await this.#crisEndpoint.sendOrThrowAsync( new DestroyInvitationsCommand( this.selectedItems(), undefined, this.#userService.userProfile()!.userId ) );
                   this.#notifService.notifyUserMessage( res );
                   await this.getInvitations();
                   this.clearSelection();
