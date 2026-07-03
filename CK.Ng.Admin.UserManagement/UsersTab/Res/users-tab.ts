@@ -82,6 +82,7 @@ export class UsersTab implements OnInit, AfterViewInit {
     if ( !q ) return this.users();
     return this.users().filter( u =>
       u.userName.toLocaleLowerCase().startsWith( q ) ||
+      u.email.toLocaleLowerCase().startsWith( q ) ||
       u.firstName.toLocaleLowerCase().startsWith( q ) ||
       u.lastName.toLocaleLowerCase().startsWith( q )
     );
@@ -110,6 +111,7 @@ export class UsersTab implements OnInit, AfterViewInit {
   #refreshLabels(): void {
     this.#translateService.get( [
       'CK.Admin.UserManagement.User.UserName',
+      'CK.Admin.UserManagement.User.Email',
       'CK.Admin.UserManagement.User.FirstName',
       'CK.Admin.UserManagement.User.LastName',
       'CK.Admin.UserManagement.Column.Role',
@@ -214,6 +216,23 @@ export class UsersTab implements OnInit, AfterViewInit {
           reset: () => this.users.set( this.#computeFiltered() ),
           search: ( s: string ) => {
             this.users.set( this.#computeFiltered().filter( u => u.userName.trim().toLowerCase().includes( s.trim().toLowerCase() ) ) );
+          }
+        }
+      },
+      {
+        name: 'email',
+        displayedName: t['CK.Admin.UserManagement.User.Email'],
+        sortable: true,
+        showInMobile: true,
+        sortDirections: ['ascend', 'descend'],
+        hidden: false,
+        sortFn: ( a: WorkspaceUser, b: WorkspaceUser ) => a.email.localeCompare( b.email ),
+        filter: {
+          visible: false,
+          searchValue: '',
+          reset: () => this.users.set( this.#computeFiltered() ),
+          search: ( s: string ) => {
+            this.users.set( this.#computeFiltered().filter( u => u.email.trim().toLowerCase().includes( s.trim().toLowerCase() ) ) );
           }
         }
       },
@@ -484,9 +503,17 @@ export class UsersTab implements OnInit, AfterViewInit {
             required: true,
             validators: [Validators.required]
           } ),
+        userName: new FormControlConfig( 'text',
+          this.#translateService.instant( 'CK.Admin.UserManagement.User.UserName' ),
+          user.userName,
+          {
+            placeholder: this.#translateService.instant( 'CK.Admin.UserManagement.User.UserName' ),
+            required: true,
+            validators: [Validators.required]
+          } ),
         email: new FormControlConfig( 'text',
           this.#translateService.instant( 'CK.Admin.UserManagement.User.Email' ),
-          user.userName,
+          user.email,
           {
             placeholder: this.#translateService.instant( 'CK.Admin.UserManagement.User.Email' ),
             required: true,
@@ -514,17 +541,17 @@ export class UsersTab implements OnInit, AfterViewInit {
         if ( !cmp.valid ) return Promise.reject();
         const v = cmp.getValue();
         const extendedCultureId = languages.find( l => l.name === v.cultureName )?.id ?? languages[0]?.id ?? 0;
-        const res = await this.#crisEndpoint.sendOrThrowAsync(
-          new EditWorkspaceUserCommand(
-            user.userId,
-            v.firstName,
-            v.lastName,
-            v.email,
-            extendedCultureId,
-            v.groups,
-            v.password ?? undefined
-          )
+        const editCommand = new EditWorkspaceUserCommand(
+          user.userId,
+          v.firstName,
+          v.lastName,
+          v.userName,
+          extendedCultureId,
+          v.groups
         );
+        // Set by property: the generated ctor appends Email after the ambient culture parameter.
+        editCommand.email = v.email;
+        const res = await this.#crisEndpoint.sendOrThrowAsync( editCommand );
         this.#notifService.notifyUserMessage( res );
         await this.loadUsers();
         return undefined;

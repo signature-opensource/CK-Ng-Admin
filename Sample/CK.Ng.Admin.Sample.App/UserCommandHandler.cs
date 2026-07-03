@@ -14,7 +14,9 @@ public class UserCommandHandler : IRealObject
                                                                  IUpdateUserCommand cmd,
                                                                  UserTable table,
                                                                  ICrisCommandContext commandCtx,
-                                                                 PocoDirectory pocoDir )
+                                                                 PocoDirectory pocoDir,
+                                                                 CurrentCultureInfo currentCultureInfo
+        )
     {
         var result = cmd.CreateResult<IUpdateUserCommandResult>();
         using( var transaction = ctx[table].BeginTransaction() )

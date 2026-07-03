@@ -22,6 +22,17 @@
         </nz-form-item>
         <!-- <PostEmailFormItem /> -->
 
+        <!-- <PreUserNameFormItem revert /> -->
+        <nz-form-item>
+            <nz-form-control>
+                <nz-input-group>
+                    <fa-icon class="ck-btn-icon" [icon]="userIcon" />
+                    <input nz-input type="text" autocomplete="username" formControlName="userName" [placeholder]="'CK.Admin.Register.UserName.Placeholder' | translate" />
+                </nz-input-group>
+            </nz-form-control>
+        </nz-form-item>
+        <!-- <PostUserNameFormItem /> -->
+
         <!-- <PreFirstNameFormItem revert /> -->
         <nz-form-item>
             <nz-form-control nzHasFeedback [nzErrorTip]="firstNameError">

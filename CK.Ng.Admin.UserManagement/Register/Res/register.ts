@@ -94,6 +94,10 @@ export class Register implements OnInit {
       // <PreEmailFormControlDefinition revert />
       email: new FormControl<string>( { value: '', disabled: true }, { nonNullable: true, validators: [Validators.required, Validators.email] } ),
       // <PostEmailFormControlDefinition />
+      // <PreUserNameFormControlDefinition revert />
+      // Optional nickname. When left blank the backend uses the e-mail as the user name.
+      userName: new FormControl<string>( '', { nonNullable: true } ),
+      // <PostUserNameFormControlDefinition />
       // <PreFirstNameFormControlDefinition revert />
       firstName: new FormControl<string>( '', { nonNullable: true, validators: [Validators.required] } ),
       // <PostFirstNameFormControlDefinition />
@@ -171,9 +175,11 @@ export class Register implements OnInit {
     const raw = this.registerForm.getRawValue();
     try {
       const extendedCultureId = this.languages.find( l => l.name === raw.cultureName )?.id ?? this.languages[0]?.id ?? 0;
-      const res = await this.#crisEndpoint.sendOrThrowAsync(
-        new CompleteRegistrationCommand( raw.email, raw.firstName, raw.lastName, extendedCultureId, raw.password, this.#token )
-      );
+      const command = new CompleteRegistrationCommand( raw.email, raw.firstName, raw.lastName, extendedCultureId, raw.password, this.#token );
+      // Optional nickname: leave unset when blank so the backend falls back to the e-mail. Set by
+      // property (not positional) because the generated ctor places the ambient culture parameter last.
+      command.userName = raw.userName?.trim() || undefined;
+      const res = await this.#crisEndpoint.sendOrThrowAsync( command );
       if ( res ) this.#notifService.notifyUserMessage( res );
       await this.#router.navigate( ['/auth'] );
     } finally {

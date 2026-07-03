@@ -25,6 +25,6 @@ public class GetUserProfileCommandHandler : IAutoService, ICommandHandler<IGetUs
     }
 
     [CommandHandler]
-    public Task<CK.IO.UserProfile.Workspace.IUserProfile?> GetUserProfileAsync( ISqlCallContext ctx, IGetUserProfileQCommand cmd )
+    public Task<IUserProfile?> GetUserProfileAsync( ISqlCallContext ctx, IGetUserProfileQCommand cmd )
         => _queries.GetUserProfileAsync( ctx, cmd.UserId );
 }

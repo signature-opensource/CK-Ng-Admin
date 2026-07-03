@@ -2,6 +2,7 @@
     "CK.Admin.Register.Title": "Complete your registration",
     "CK.Admin.Register.SubTitle": "Fill in your information to finalize your account.",
     "CK.Admin.Register.Email.Placeholder": "Email",
+    "CK.Admin.Register.UserName.Placeholder": "Username (optional)",
     "CK.Admin.Register.FirstName.Placeholder": "First name",
     "CK.Admin.Register.FirstName.Required": "First name is required.",
     "CK.Admin.Register.LastName.Placeholder": "Last name",

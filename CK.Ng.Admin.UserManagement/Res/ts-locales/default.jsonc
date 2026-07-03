@@ -28,11 +28,9 @@
     "CK.Admin.UserManagement.Form.DefaultLanguage": "Default language",
     "CK.Admin.UserManagement.Form.Groups": "Groups",
     "CK.Admin.UserManagement.Form.InvalidEmail": "Invalid email address.",
-    "CK.Admin.UserManagement.Form.PasswordRequired": "Please enter a password.",
     "CK.Admin.UserManagement.User.FirstName": "First name",
     "CK.Admin.UserManagement.User.LastName": "Last name",
     "CK.Admin.UserManagement.User.UserName": "Username",
     "CK.Admin.UserManagement.User.Email": "Email",
-    "CK.Admin.UserManagement.User.Password": "Password",
     "CK.Admin.UserManagement.Data.ErrorWhileLoading": "An error occurred while loading data."
 }

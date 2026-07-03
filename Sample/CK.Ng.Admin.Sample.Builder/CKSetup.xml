@@ -3,10 +3,13 @@
     <Aspect Type="CK.Setup.SqlSetupAspectConfiguration, CK.SqlServer.Setup.Model">
         <DefaultDatabaseConnectionString>Server=.;Database=AdminSampleDB_LOCAL;Integrated Security=True;TrustServerCertificate=true</DefaultDatabaseConnectionString>
     </Aspect>
+    <Aspect Type="CK.Setup.GlobalizationAspectConfiguration, CK.Globalization.Engine" />
     <Aspect Type="CK.Setup.TypeScriptAspectConfiguration, CK.TypeScript" />
+
     <Aspect Type="CK.Setup.FluidAspectConfiguration, CK.Template.Fluid" />
     <BinPaths>
         <BinPath>
+            <Globalization ActiveCultures="fr" />
             <TypeScript IntegrationMode="Inline" TargetProjectPath="{ProjectPath}/Admin.Sample.Web" DefaultCulture="fr" ActiveCultures="fr-CA, de-be, nl-BE, zh">
                 <Types>
                 </Types>

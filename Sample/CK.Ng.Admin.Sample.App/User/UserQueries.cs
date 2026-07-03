@@ -32,6 +32,7 @@ public class UserQueries : IAutoService
                    u.UserId
                   ,u.UserName
                   ,u.PreferredWorkspaceId
+                  ,u.ExtendedCultureId
                   ,GroupId    = isnull( g.GroupId, 0 )
                   ,GroupName  = isnull( g.GroupName, '' )
                   ,IsZone     = isnull( g.IsZone, cast( 0 as bit ) )
@@ -58,6 +59,7 @@ public class UserQueries : IAutoService
                     up.UserId = user.UserId;
                     up.UserName = user.UserName;
                     up.PreferredWorkspaceId = user.PreferredWorkspaceId;
+                    up.ExtendedCultureId = user.ExtendedCultureId;
                     foreach( var g in u.Where( r => r.GroupId != 0 ).DistinctBy( r => r.GroupId ) )
                     {
                         up.Groups.Add( _pocoDirectory.Create<IUserGroup>( ug =>
@@ -84,6 +86,7 @@ record FlatUserProfile
     public int UserId { get; init; }
     public string UserName { get; init; } = string.Empty;
     public int PreferredWorkspaceId { get; init; }
+    public int ExtendedCultureId { get; init; }
     public int GroupId { get; init; }
     public string GroupName { get; init; } = string.Empty;
     public bool IsZone { get; init; }
