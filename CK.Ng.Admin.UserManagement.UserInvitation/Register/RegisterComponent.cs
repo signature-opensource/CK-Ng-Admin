@@ -5,7 +5,7 @@ using CK.TS.Angular;
 namespace CK.Ng.Admin.UserManagement;
 
 [NgRoutedComponent<AuthenticationPageComponent>( Route = "register/:token", RegistrationMode = RouteRegistrationMode.Lazy )]
-[Package<UserManagementTSPackage>]
+[Package<UserInvitation.UserManagementUserInvitationPackage>]
 public sealed class RegisterComponent : NgRoutedComponent
 {
 }

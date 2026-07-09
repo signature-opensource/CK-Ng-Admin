@@ -33,6 +33,8 @@
     <PackageReference Include="CK.UserManagement.UserInvitation" Version="0.1.0--ci.21" />
 
     <ProjectReference Include="..\..\CK.Ng.Admin.UserManagement\CK.Ng.Admin.UserManagement.csproj" />
+    <ProjectReference Include="..\..\CK.Ng.Admin.UserManagement.BinnedUser\CK.Ng.Admin.UserManagement.BinnedUser.csproj" />
+    <ProjectReference Include="..\..\CK.Ng.Admin.UserManagement.UserInvitation\CK.Ng.Admin.UserManagement.UserInvitation.csproj" />
     <ProjectReference Include="..\..\SLog.Mail.Branding\SLog.Mail.Branding.csproj" />
   </ItemGroup>
 </Project>

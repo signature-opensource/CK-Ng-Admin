@@ -1,5 +1,4 @@
 using CK.Core;
-using CK.IO.Actor;
 using CK.IO.UserManagement;
 using CK.Ng.Zorro;
 using CK.TypeScript;
@@ -9,23 +8,17 @@ namespace CK.Ng.Admin.UserManagement;
 [TypeScriptPackage]
 [Requires<AdminTSPackage>]
 
+// Base workspace-user management: direct (basic) user creation + listing + edit. Invitation and
+// archived-user features are brought by the CK.Ng.Admin.UserManagement.{UserInvitation,BinnedUser}
+// sibling packages, which register their own command types.
+
 // Q Commands
 [RegisterTypeScriptType( typeof( IGetWorkspaceUserEditDataQCommand ) )]
-[RegisterTypeScriptType( typeof( IGetPlatformPendingInvitationsQCommand ) )]
-[RegisterTypeScriptType( typeof( IGetWorkspacePendingInvitationsQCommand ) )]
-[RegisterTypeScriptType( typeof( IGetWorkspaceInvitationDataQCommand ) )]
 [RegisterTypeScriptType( typeof( IGetWorkspaceUsersQCommand ) )]
 
 // Commands
-[RegisterTypeScriptType( typeof( IResendInvitationsCommand ) )]
-[RegisterTypeScriptType( typeof( IDeactivateInvitationsCommand ) )]
-[RegisterTypeScriptType( typeof( IDestroyInvitationsCommand ) )]
-[RegisterTypeScriptType( typeof( IArchiveUsersAdminCommand ) )]
-[RegisterTypeScriptType( typeof( ICreateInvitationCommand ) )]
+[RegisterTypeScriptType( typeof( ICreateWorkspaceUserCommand ) )]
 [RegisterTypeScriptType( typeof( IEditWorkspaceUserCommand ) )]
-[RegisterTypeScriptType( typeof( IRestoreUsersAdminCommand ) )]
-[RegisterTypeScriptType( typeof( IValidateInvitationTokenCommand ) )]
-[RegisterTypeScriptType( typeof( ICompleteRegistrationCommand ) )]
 
 public class UserManagementTSPackage : TypeScriptPackage
 {

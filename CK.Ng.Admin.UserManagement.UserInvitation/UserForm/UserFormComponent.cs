@@ -6,7 +6,7 @@ using CK.TypeScript;
 namespace CK.Ng.Admin.UserManagement;
 
 [NgComponent]
-[Package<UserManagementTSPackage>]
+[Package<UserInvitation.UserManagementUserInvitationPackage>]
 public sealed class UserFormComponent : NgComponent
 {
 }

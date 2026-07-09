@@ -1,0 +1,17 @@
+{
+    "CK.Admin.UserManagement.Tab.Invitations": "Invitations",
+    "CK.Admin.UserManagement.Filter.State": "State",
+    "CK.Admin.UserManagement.Filter.SelectState": "Select a state",
+    "CK.Admin.UserManagement.Column.IsInvitationActive": "Active",
+    "CK.Admin.UserManagement.Column.ExpirationDate": "Expiration date",
+    "CK.Admin.UserManagement.Invitation.Active": "Active",
+    "CK.Admin.UserManagement.Invitation.Expired": "Expired",
+    "CK.Admin.UserManagement.Modal.ResendInvitation": "Resend invitation",
+    "CK.Admin.UserManagement.Modal.ResendInvitationContent": "Resend invitations for",
+    "CK.Admin.UserManagement.Modal.DeactivateInvitation": "Deactivate invitation",
+    "CK.Admin.UserManagement.Modal.DeactivateInvitationContent": "Deactivate invitations for",
+    "CK.Admin.UserManagement.Modal.DestroyInvitation": "Delete invitation",
+    "CK.Admin.UserManagement.Modal.DestroyInvitationContent": "Delete invitations for",
+    "CK.Admin.UserManagement.Form.InvalidEmail": "Invalid email address.",
+    "CK.Admin.UserManagement.User.Email": "Email"
+}
