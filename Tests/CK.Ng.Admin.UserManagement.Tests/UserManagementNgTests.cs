@@ -58,6 +58,8 @@ public class UserManagementNgTests
             "CK.Ng.Admin",
             "CK.Ng.Admin.UserManagement",
             "CK.UserManagement",
+            "CK.UserManagement.BinnedUser",
+            "CK.UserManagement.UserInvitation",
             "CK.SqlServer.Transaction"
         ] );
 
@@ -65,7 +67,12 @@ public class UserManagementNgTests
         // FakeUserManagementMailer (replaces the real mailer so invitation commands succeed).
         configuration.FirstBinPath.Types.Add( typeof( FakeUserManagementMailer ),
                                               typeof( User.UserQueries ),
-                                              typeof( User.GetUserProfileCommandHandler ) );
+                                              typeof( User.GetUserProfileCommandHandler ),
+                                              // Combined workspace-user listing (BinDate + e-mail): supersedes the two
+                                              // package list handlers via [ReplaceAutoService]. Mirrors Sample.App.
+                                              typeof( WorkspaceUsers.ICombinedWorkspaceUser ),
+                                              typeof( WorkspaceUsers.WorkspaceUsersQueries ),
+                                              typeof( WorkspaceUsers.GetWorkspaceUsersCommandHandler ) );
 
         var tsConfig = configuration.FirstBinPath.EnsureTypeScriptConfigurationAspect( targetProjectPath,
             typeof( IO.UserProfile.Workspace.ISetPreferredWorkspaceIdCommand ),
