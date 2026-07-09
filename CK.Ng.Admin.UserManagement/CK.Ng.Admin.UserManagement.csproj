@@ -9,6 +9,8 @@
     <ItemGroup>
         <PackageReference Include="CK.IO.UserInvitation" Version="0.4.7--ci.1" />
         <PackageReference Include="CK.IO.UserManagement" Version="0.1.0--ci.20" />
+        <PackageReference Include="CK.IO.UserManagement.BinnedUser" Version="0.1.0--ci.20" />
+        <PackageReference Include="CK.IO.UserManagement.UserInvitation" Version="0.1.0--ci.20" />
         <PackageReference Include="CK.Ng.UserProfile.UserPassword" Version="0.8.0--ci.12" />
         <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="0.7.0--ci.9" />
     </ItemGroup>

@@ -29,6 +29,8 @@
     <PackageReference Include="CK.SqlServer.Transaction" Version="12.0.1" />
 
     <PackageReference Include="CK.UserManagement" Version="0.1.0--ci.20" />
+    <PackageReference Include="CK.UserManagement.BinnedUser" Version="0.1.0--ci.20" />
+    <PackageReference Include="CK.UserManagement.UserInvitation" Version="0.1.0--ci.20" />
 
     <ProjectReference Include="..\..\CK.Ng.Admin.UserManagement\CK.Ng.Admin.UserManagement.csproj" />
     <ProjectReference Include="..\..\SLog.Mail.Branding\SLog.Mail.Branding.csproj" />

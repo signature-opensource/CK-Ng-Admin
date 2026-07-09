@@ -1,6 +1,6 @@
 using CK.Core;
 using CK.IO.UserManagement;
-using CK.UserManagement.Mail;
+using CK.UserManagement.UserInvitation.Mail;
 
 namespace CK.Ng.Admin.UserManagement.Tests;
 
