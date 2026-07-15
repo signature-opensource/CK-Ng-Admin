@@ -11,8 +11,13 @@
     "CK.Admin.UserManagement.Modal.EditUser": "Modifier l'utilisateur",
     "CK.Admin.UserManagement.Form.DefaultLanguage": "Langue par défaut",
     "CK.Admin.UserManagement.Form.Groups": "Groupes",
+    "CK.Admin.UserManagement.Form.RegeneratePassword": "Générer un nouveau mot de passe",
     "CK.Admin.UserManagement.User.FirstName": "Prénom",
     "CK.Admin.UserManagement.User.LastName": "Nom",
     "CK.Admin.UserManagement.User.UserName": "Nom d'utilisateur",
+    "CK.Admin.UserManagement.User.Password": "Mot de passe",
+    "CK.Admin.UserManagement.User.PasswordRequired": "Un mot de passe est requis.",
+    "CK.Admin.UserManagement.User.PasswordMinLength": "Le mot de passe est trop court.",
+    "CK.Admin.UserManagement.User.PasswordComplexity": "Le mot de passe doit combiner au moins trois éléments parmi : majuscule, minuscule, chiffre et caractère spécial.",
     "CK.Admin.UserManagement.Data.ErrorWhileLoading": "Une erreur est survenue lors du chargement des données."
 }

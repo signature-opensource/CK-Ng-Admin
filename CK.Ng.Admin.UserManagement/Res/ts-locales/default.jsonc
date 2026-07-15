@@ -11,8 +11,13 @@
     "CK.Admin.UserManagement.Modal.EditUser": "Edit user",
     "CK.Admin.UserManagement.Form.DefaultLanguage": "Default language",
     "CK.Admin.UserManagement.Form.Groups": "Groups",
+    "CK.Admin.UserManagement.Form.RegeneratePassword": "Generate a new password",
     "CK.Admin.UserManagement.User.FirstName": "First name",
     "CK.Admin.UserManagement.User.LastName": "Last name",
     "CK.Admin.UserManagement.User.UserName": "Username",
+    "CK.Admin.UserManagement.User.Password": "Password",
+    "CK.Admin.UserManagement.User.PasswordRequired": "A password is required.",
+    "CK.Admin.UserManagement.User.PasswordMinLength": "The password is too short.",
+    "CK.Admin.UserManagement.User.PasswordComplexity": "The password must combine at least three of: uppercase, lowercase, digit and special character.",
     "CK.Admin.UserManagement.Data.ErrorWhileLoading": "An error occurred while loading data."
 }

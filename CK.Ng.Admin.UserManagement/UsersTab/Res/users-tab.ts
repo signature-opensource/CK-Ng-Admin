@@ -398,9 +398,11 @@ export class UsersTab implements OnInit, AfterViewInit {
         if ( !cmp.valid ) return Promise.reject();
         const v = cmp.getValue();
         const extendedCultureId = languages.find( l => l.name === v.cultureName )?.id ?? languages[0]?.id ?? 0;
-        const res = await this.#crisEndpoint.sendOrThrowAsync(
-          new CreateWorkspaceUserCommand( v.userName, v.firstName, v.lastName, extendedCultureId, v.groups )
-        );
+        // Provisions an initial basic-authentication password so the new user can sign in right away.
+        // Set by property (not positional) because the generated ctor places the ambient parameters last.
+        const command = new CreateWorkspaceUserCommand( v.userName, v.firstName, v.lastName, extendedCultureId, v.groups );
+        command.password = v.password ?? '';
+        const res = await this.#crisEndpoint.sendOrThrowAsync( command );
         this.#notifService.notifyUserMessage( res );
         await this.loadUsers();
         this.userCreated.emit();
