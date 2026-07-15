@@ -57,6 +57,8 @@ public class UserManagementNgTests
             "CK.Ng.Zorro.BackOffice",
             "CK.Ng.Admin",
             "CK.Ng.Admin.UserManagement",
+            "CK.Ng.Admin.UserManagement.BinnedUser",
+            "CK.Ng.Admin.UserManagement.UserInvitation",
             "CK.UserManagement",
             "CK.UserManagement.BinnedUser",
             "CK.UserManagement.UserInvitation",

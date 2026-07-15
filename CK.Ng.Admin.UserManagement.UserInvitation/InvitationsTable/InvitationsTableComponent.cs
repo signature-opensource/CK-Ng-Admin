@@ -5,7 +5,7 @@ using CK.TS.Angular;
 namespace CK.Ng.Admin.UserManagement;
 
 [NgComponent]
-[Package<UserManagementTSPackage>]
+[Package<UserInvitation.UserManagementUserInvitationPackage>]
 [Requires<AdaptivePageLayoutComponent>]
 public sealed class InvitationsTableComponent : NgComponent
 {

@@ -1,15 +1,19 @@
 import { Component, OnInit, Signal, inject, viewChild } from '@angular/core';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faRotate } from '@fortawesome/free-solid-svg-icons';
 import { NZ_MODAL_DATA } from 'ng-zorro-antd/modal';
+import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzFormModule } from 'ng-zorro-antd/form';
-import { GenericForm, GenericFormData, GetWorkspaceUserEditDataQCommand, GroupInfos, HttpCrisEndpoint, UserWorkspaceGroupPicker, WorkspaceUser } from '@local/ck-gen';
+import { NzInputModule } from 'ng-zorro-antd/input';
+import { GenericForm, GenericFormData, GetWorkspaceUserEditDataQCommand, GroupInfos, HttpCrisEndpoint, PASSWORD_MIN_LENGTH, passwordComplexityValidator, UserWorkspaceGroupPicker, WorkspaceUser } from '@local/ck-gen';
 
 @Component({
     selector: 'ck-edit-user-form',
     templateUrl: './edit-user-form.html',
     styleUrls: ['./edit-user-form.less'],
-    imports: [FormsModule, ReactiveFormsModule, NzFormModule, TranslateModule, UserWorkspaceGroupPicker, GenericForm]
+    imports: [FormsModule, ReactiveFormsModule, NzFormModule, NzInputModule, NzButtonModule, FontAwesomeModule, TranslateModule, UserWorkspaceGroupPicker, GenericForm]
 })
 export class EditUserForm implements OnInit {
     // <PreViewChildren revert />
@@ -25,16 +29,19 @@ export class EditUserForm implements OnInit {
     // <PostInputOutput />
 
     // <PreIconsDefinition revert />
+    protected readonly refreshIcon = faRotate;
     // <PostIconsDefinition />
 
     // <PreLocalVariables revert />
     public workspaceGroups: Array<GroupInfos> = [];
     public user: WorkspaceUser;
     public workspace: GroupInfos;
+    // Basic user creation (userId === 0) provisions an initial sign-in password; the edit flow does not.
+    public readonly isCreate: boolean;
     // Scalar-field config (firstName/lastName/userName/email) consumed by the GenericForm. The GenericForm
     // also reads it from NZ_MODAL_DATA (modal mode); binding it satisfies its required input.
     public formData: GenericFormData<unknown, unknown>;
-    // The groups picker is not a GenericForm field type, so it lives here.
+    // The groups picker (and, on create, the generated password) are not GenericForm field types, so they live here.
     public customForm: FormGroup;
     // <PostLocalVariables />
 
@@ -42,12 +49,22 @@ export class EditUserForm implements OnInit {
         this.user = this.#nzModalData.user;
         this.workspace = this.#nzModalData.workspace;
         this.formData = this.#nzModalData.formData;
+        this.isCreate = this.user.userId === 0;
         // <PreCustomFormDefinition revert />
-        this.customForm = new FormGroup({
+        const controls: { [key: string]: AbstractControl } = {
             // <PreGroupsFormControlDefinition revert />
             groups: new FormControl<Array<number>>([], { nonNullable: true, validators: [Validators.required] })
             // <PostGroupsFormControlDefinition />
-        });
+        };
+        // On create, the admin sets an initial basic-authentication password (pre-filled with a strong
+        // random value, regenerable from the input) so the new user can sign in right away.
+        if (this.isCreate) {
+            controls['password'] = new FormControl<string>(this.#generatePassword(), {
+                nonNullable: true,
+                validators: [Validators.required, Validators.minLength(PASSWORD_MIN_LENGTH), passwordComplexityValidator]
+            });
+        }
+        this.customForm = new FormGroup(controls);
         // <PostCustomFormDefinition />
     }
 
@@ -55,13 +72,48 @@ export class EditUserForm implements OnInit {
         return this.customForm.get('groups') as FormControl<Array<number>>;
     }
 
+    get passwordControl(): FormControl<string> | null {
+        return this.customForm.get('password') as FormControl<string> | null;
+    }
+
     get valid(): boolean {
         const scalarForm = this.formComponent()?.form();
         return !!scalarForm && scalarForm.valid && this.customForm.valid;
     }
 
-    getValue(): { firstName: string, lastName: string, userName: string, email: string, cultureName: string, groups: Array<number> } {
+    getValue(): { firstName: string, lastName: string, userName: string, email: string, cultureName: string, groups: Array<number>, password?: string } {
         return { ...this.formComponent()!.form()!.getRawValue(), ...this.customForm.getRawValue() };
+    }
+
+    // Regenerates the create-flow password into the input (bound to the refresh button).
+    regeneratePassword(): void {
+        this.passwordControl?.setValue(this.#generatePassword());
+    }
+
+    // Builds a strong random password guaranteed to satisfy the complexity validator (at least one
+    // upper, lower, digit and special character). Ambiguous characters (0/O, 1/l/I) are excluded so
+    // the value stays easy to read and communicate.
+    #generatePassword(length = 16): string {
+        const upper = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+        const lower = 'abcdefghijkmnpqrstuvwxyz';
+        const digits = '23456789';
+        const special = '!@#$%&*-_=+?';
+        const all = upper + lower + digits + special;
+        const pick = (set: string): string => set[this.#randomInt(set.length)];
+        const chars = [pick(upper), pick(lower), pick(digits), pick(special)];
+        while (chars.length < length) chars.push(pick(all));
+        // Fisher-Yates shuffle so the guaranteed characters are not always in front.
+        for (let i = chars.length - 1; i > 0; i--) {
+            const j = this.#randomInt(i + 1);
+            [chars[i], chars[j]] = [chars[j], chars[i]];
+        }
+        return chars.join('');
+    }
+
+    #randomInt(max: number): number {
+        const arr = new Uint32Array(1);
+        crypto.getRandomValues(arr);
+        return arr[0] % max;
     }
 
     async ngOnInit(): Promise<void> {

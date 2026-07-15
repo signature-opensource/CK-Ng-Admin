@@ -5,30 +5,25 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { first } from 'rxjs';
 import { ModalOptions, NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 import { NzTagModule } from 'ng-zorro-antd/tag';
-import { faArrowRotateLeft, faEdit, faPlus, faRotate, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faPlus, faRotate } from '@fortawesome/free-solid-svg-icons';
 import {
   ActionBarContent,
   AdaptivePageLayout,
-  ArchiveUsersCommand,
-  CreateInvitationCommand,
+  CreateWorkspaceUserCommand,
   EditUserForm,
   EditWorkspaceUserCommand,
   Filter,
   FormControlConfig,
   GenericFormData,
-  GetWorkspaceInvitationDataQCommand,
   GetWorkspaceUsersQCommand,
   GroupInfos,
   HttpCrisEndpoint,
   NotificationService,
-  RestoreUsersCommand,
   SelectFilter,
   SimpleUserMessage,
-  SwitchFilter,
   TableAction,
   TableCellContext,
   TableColumn,
-  UserForm,
   UserMessageLevel,
   WorkspaceUser
 } from '@local/ck-gen';
@@ -47,7 +42,8 @@ export class UsersTab implements OnInit, AfterViewInit {
 
   // <PreInputOutput revert />
   readonly workspace = input<GroupInfos>();
-  readonly invitationCreated = output<void>();
+  // Raised after a user is created (basic or, when UserInvitation is present, invited).
+  readonly userCreated = output<void>();
   // <PostInputOutput />
 
   // <PreIconsDefinition revert />
@@ -72,7 +68,7 @@ export class UsersTab implements OnInit, AfterViewInit {
   protected selectedUsers: Array<WorkspaceUser> = [];
   #allUsers: Array<WorkspaceUser> = [];
   #roleFilter!: SelectFilter<'admin' | 'member'>;
-  #archivedFilter!: SwitchFilter;
+  // BinnedUser injects '#archivedFilter!: SwitchFilter;' here.
   // <PostLocalVariables />
 
   // Front search/filter run inside the adaptive layout: it calls these on every
@@ -80,13 +76,17 @@ export class UsersTab implements OnInit, AfterViewInit {
   protected readonly searchFunc = ( input: string ): Array<WorkspaceUser> => {
     const q = input.trim().toLocaleLowerCase();
     if ( !q ) return this.users();
-    return this.users().filter( u =>
-      u.userName.toLocaleLowerCase().startsWith( q ) ||
-      u.email.toLocaleLowerCase().startsWith( q ) ||
-      u.firstName.toLocaleLowerCase().startsWith( q ) ||
-      u.lastName.toLocaleLowerCase().startsWith( q )
-    );
+    return this.users().filter( u => this.#matchesSearch( u, q ) );
   };
+
+  // Base searches user name + first/last name. Siblings (UserInvitation) append search fields.
+  #matchesSearch( u: WorkspaceUser, q: string ): boolean {
+    return u.userName.toLocaleLowerCase().startsWith( q )
+      || u.firstName.toLocaleLowerCase().startsWith( q )
+      || u.lastName.toLocaleLowerCase().startsWith( q )
+      // <PostUsersTabSearchPredicate />
+      ;
+  }
 
   protected readonly filterFunc = (): Array<WorkspaceUser> => {
     const filtered = this.#computeFiltered();
@@ -101,6 +101,7 @@ export class UsersTab implements OnInit, AfterViewInit {
       .pipe( takeUntilDestroyed( this.#destroyRef ) )
       .subscribe( () => this.#refreshLabels() );
 
+    // <PostUsersTabInit />
     await this.loadUsers();
   }
 
@@ -111,20 +112,17 @@ export class UsersTab implements OnInit, AfterViewInit {
   #refreshLabels(): void {
     this.#translateService.get( [
       'CK.Admin.UserManagement.User.UserName',
-      'CK.Admin.UserManagement.User.Email',
       'CK.Admin.UserManagement.User.FirstName',
       'CK.Admin.UserManagement.User.LastName',
       'CK.Admin.UserManagement.Column.Role',
       'CK.Admin.UserManagement.Filter.Role',
       'CK.Admin.UserManagement.Filter.SelectRole',
-      'CK.Admin.UserManagement.Filter.ShowArchived',
       'CK.Admin.UserManagement.Role.Administrator',
       'CK.Admin.UserManagement.Role.Member',
       'Button.Create',
       'Button.Edit',
-      'Button.Delete',
-      'Button.Restore',
-      'Button.Refresh'
+      'Button.Refresh',
+      // <PostUsersTabTranslationKeys />
     ] ).pipe( first() ).subscribe( t => {
       this.initColumns( t );
       this.initActions( t );
@@ -138,9 +136,17 @@ export class UsersTab implements OnInit, AfterViewInit {
     this.#roleFilter.placeholder = t['CK.Admin.UserManagement.Filter.SelectRole'];
     this.#roleFilter.options[0].label = t['CK.Admin.UserManagement.Role.Administrator'];
     this.#roleFilter.options[1].label = t['CK.Admin.UserManagement.Role.Member'];
-    this.#archivedFilter.label = t['CK.Admin.UserManagement.Filter.ShowArchived'];
+    // <PostUsersTabFilterLabels />
     // Re-emit a new array so the layout picks up the relabelled filters.
-    this.filters.set( [this.#roleFilter, this.#archivedFilter] );
+    this.filters.set( this.#buildFilters() );
+  }
+
+  // Base ships only the role filter; siblings (BinnedUser) append theirs.
+  #buildFilters(): Array<Filter<unknown>> {
+    return [
+      this.#roleFilter,
+      // <PostUsersTabFilters />
+    ];
   }
 
   async loadUsers(): Promise<void> {
@@ -162,7 +168,7 @@ export class UsersTab implements OnInit, AfterViewInit {
     // <PostLoadUsers />
   }
 
-  // Applies the role / archived filters (archived hidden by default) to the full set.
+  // Applies the role filter to the full set. Siblings (BinnedUser) extend the result.
   #computeFiltered(): Array<WorkspaceUser> {
     let result = [...this.#allUsers];
 
@@ -173,15 +179,7 @@ export class UsersTab implements OnInit, AfterViewInit {
       }
     }
 
-    if ( this.#archivedFilter?.active ) {
-      result = this.#archivedFilter.value
-        ? result.filter( u => !!u.binDate )
-        : result.filter( u => !u.binDate );
-    } else {
-      // default: hide archived users when the filter is inactive
-      result = result.filter( u => !u.binDate );
-    }
-
+    // <PostComputeFiltered />
     return result;
   }
 
@@ -219,23 +217,7 @@ export class UsersTab implements OnInit, AfterViewInit {
           }
         }
       },
-      {
-        name: 'email',
-        displayedName: t['CK.Admin.UserManagement.User.Email'],
-        sortable: true,
-        showInMobile: true,
-        sortDirections: ['ascend', 'descend'],
-        hidden: false,
-        sortFn: ( a: WorkspaceUser, b: WorkspaceUser ) => a.email.localeCompare( b.email ),
-        filter: {
-          visible: false,
-          searchValue: '',
-          reset: () => this.users.set( this.#computeFiltered() ),
-          search: ( s: string ) => {
-            this.users.set( this.#computeFiltered().filter( u => u.email.trim().toLowerCase().includes( s.trim().toLowerCase() ) ) );
-          }
-        }
-      },
+      // <PostUsersTabColumns />
       {
         name: 'firstName',
         displayedName: t['CK.Admin.UserManagement.User.FirstName'],
@@ -297,12 +279,8 @@ export class UsersTab implements OnInit, AfterViewInit {
         placeholder: this.#translateService.instant( 'CK.Admin.UserManagement.Filter.SelectRole' )
       }
     );
-    this.#archivedFilter = new SwitchFilter(
-      this.#translateService.instant( 'CK.Admin.UserManagement.Filter.ShowArchived' ),
-      false,
-      false
-    );
-    this.filters.set( [this.#roleFilter, this.#archivedFilter] );
+    // <PostInitFilters />
+    this.filters.set( this.#buildFilters() );
   }
 
   initActions( t: Record<string, string> ): void {
@@ -326,22 +304,7 @@ export class UsersTab implements OnInit, AfterViewInit {
           execute: () => this.openUserEditModal(),
           shouldBeDisplayed: () => this.selectedUsers.length === 1
         },
-        {
-          name: 'archive',
-          displayName: t['Button.Delete'],
-          icon: faTrash,
-          isDanger: true,
-          execute: () => this.confirmArchiveUsers( this.selectedUsers ),
-          shouldBeDisplayed: () => this.selectedUsers.length > 0 && this.selectedUsers.every( u => !u.binDate )
-        },
-        {
-          name: 'restore',
-          displayName: t['Button.Restore'],
-          icon: faArrowRotateLeft,
-          isDanger: false,
-          execute: () => this.confirmRestoreUsers( this.selectedUsers ),
-          shouldBeDisplayed: () => this.selectedUsers.length > 0 && this.selectedUsers.every( u => !!u.binDate )
-        },
+        // <PostUsersTabRightActions />
         {
           name: 'refresh',
           icon: faRotate,
@@ -368,82 +331,51 @@ export class UsersTab implements OnInit, AfterViewInit {
         execute: ( u: WorkspaceUser ) => { void this.openUserEditModal( u ); },
         shouldBeDisplayed: () => true
       },
-      {
-        name: 'archive',
-        icon: faTrash,
-        isDanger: true,
-        type: 'text',
-        tooltip: t['Button.Delete'],
-        execute: ( u: WorkspaceUser ) => this.confirmArchiveUsers( [u] ),
-        shouldBeDisplayed: ( u: WorkspaceUser ) => !u.binDate
-      },
-      {
-        name: 'restore',
-        icon: faArrowRotateLeft,
-        isDanger: false,
-        type: 'text',
-        tooltip: t['Button.Restore'],
-        execute: ( u: WorkspaceUser ) => this.confirmRestoreUsers( [u] ),
-        shouldBeDisplayed: ( u: WorkspaceUser ) => !!u.binDate
-      }
+      // <PostUsersTabRowActions />
     ];
     // </UsersTabRowActionsRegistration>
   }
 
-  confirmArchiveUsers( users: Array<WorkspaceUser> ): void {
-    if ( users.length === 0 ) return;
-    const opts: ModalOptions = {
-      nzTitle: `${this.#translateService.instant( 'CK.Admin.UserManagement.Modal.ArchiveUsers' )} : ${users.map( i => i.userName ).join( ' ,' )} ?`,
-      nzOnOk: async () => {
-        const cmd = new ArchiveUsersCommand();
-        cmd.userIds = users.map( i => i.userId );
-        const res = await this.#crisEndpoint.sendOrThrowAsync( cmd );
-        res?.userMessages.forEach( m => this.#notifService.notifyUserMessage( m ) );
-        this.isLoading.set( true );
-        await this.loadUsers();
-      }
-    };
-    this.#nzModalService.confirm( opts );
-  }
+  // Archive / restore confirm methods are injected here by the BinnedUser sibling.
+  // <PostUsersTabMethods />
 
-  confirmRestoreUsers( users: Array<WorkspaceUser> ): void {
-    if ( users.length === 0 ) return;
-    const opts: ModalOptions = {
-      nzTitle: `${this.#translateService.instant( 'CK.Admin.UserManagement.Modal.RestoreUsers' )} : ${users.map( i => i.userName ).join( ' ,' )} ?`,
-      nzOnOk: async () => {
-        const cmd = new RestoreUsersCommand();
-        cmd.userIds = users.map( i => i.userId );
-        const res = await this.#crisEndpoint.sendOrThrowAsync( cmd );
-        res?.userMessages.forEach( m => this.#notifService.notifyUserMessage( m ) );
-        this.isLoading.set( true );
-        await this.loadUsers();
-      }
-    };
-    this.#nzModalService.confirm( opts );
-  }
+  // Create/edit modal openers are fields so a sibling (UserInvitation) can swap the strategy in
+  // ngOnInit without a duplicate method definition.
+  protected openCreateUserModal: () => Promise<void> = () => this.#defaultCreateUserModal();
+  protected openUserEditModal: ( user?: WorkspaceUser ) => Promise<void> = ( user ) => this.#defaultUserEditModal( user );
 
-  async openCreateUserModal(): Promise<void> {
+  // Base: direct (basic) user creation. UserInvitation swaps this for the e-mail invitation flow.
+  async #defaultCreateUserModal(): Promise<void> {
     const workspace = this.workspace();
     if ( !workspace ) return;
 
-    const res = await this.#crisEndpoint.sendOrThrowAsync( new GetWorkspaceInvitationDataQCommand() );
-    if ( !res ) return;
-
     const languages = Object.values( locales );
-    const g = [...res.groups];
-    g.unshift( workspace );
-
     const defaultCultureName = languages[0]?.name ?? 'fr';
     const formData: GenericFormData<unknown, unknown> = {
       formControls: {
-        email: new FormControlConfig( 'text',
-          this.#translateService.instant( 'CK.Admin.UserManagement.User.Email' ),
+        userName: new FormControlConfig( 'text',
+          this.#translateService.instant( 'CK.Admin.UserManagement.User.UserName' ),
           '',
           {
-            placeholder: this.#translateService.instant( 'CK.Admin.UserManagement.User.Email' ),
+            placeholder: this.#translateService.instant( 'CK.Admin.UserManagement.User.UserName' ),
             required: true,
-            validators: [Validators.required, Validators.email],
-            errorMessages: { email: this.#translateService.instant( 'CK.Admin.UserManagement.Form.InvalidEmail' ) }
+            validators: [Validators.required]
+          } ),
+        firstName: new FormControlConfig( 'text',
+          this.#translateService.instant( 'CK.Admin.UserManagement.User.FirstName' ),
+          '',
+          {
+            placeholder: this.#translateService.instant( 'CK.Admin.UserManagement.User.FirstName' ),
+            required: true,
+            validators: [Validators.required]
+          } ),
+        lastName: new FormControlConfig( 'text',
+          this.#translateService.instant( 'CK.Admin.UserManagement.User.LastName' ),
+          '',
+          {
+            placeholder: this.#translateService.instant( 'CK.Admin.UserManagement.User.LastName' ),
+            required: true,
+            validators: [Validators.required]
           } ),
         cultureName: new FormControlConfig( 'select',
           this.#translateService.instant( 'CK.Admin.UserManagement.Form.DefaultLanguage' ),
@@ -460,25 +392,27 @@ export class UsersTab implements OnInit, AfterViewInit {
       nzTitle: this.#translateService.instant( 'CK.Admin.UserManagement.Modal.CreateUser' ),
       nzCancelText: this.#translateService.instant( 'Button.Cancel' ),
       nzOkText: this.#translateService.instant( 'Button.Confirm' ),
-      nzContent: UserForm,
-      nzData: { formData, groupInfos: g.sort( ( a, b ) => a.groupId - b.groupId ), languages: languages },
-      nzOnOk: async ( cmp: UserForm ) => {
+      nzContent: EditUserForm,
+      nzData: { user: { userId: 0 }, workspace, formData },
+      nzOnOk: async ( cmp: EditUserForm ) => {
         if ( !cmp.valid ) return Promise.reject();
         const v = cmp.getValue();
         const extendedCultureId = languages.find( l => l.name === v.cultureName )?.id ?? languages[0]?.id ?? 0;
-        const createRes = await this.#crisEndpoint.sendOrThrowAsync(
-          new CreateInvitationCommand( v.email, v.groups, extendedCultureId )
-        );
-        this.#notifService.notifyUserMessage( createRes );
+        // Provisions an initial basic-authentication password so the new user can sign in right away.
+        // Set by property (not positional) because the generated ctor places the ambient parameters last.
+        const command = new CreateWorkspaceUserCommand(v.userName, v.firstName, v.lastName, extendedCultureId, v.password, v.groups );
+        command.password = v.password ?? '';
+        const res = await this.#crisEndpoint.sendOrThrowAsync( command );
+        this.#notifService.notifyUserMessage( res );
         await this.loadUsers();
-        this.invitationCreated.emit();
+        this.userCreated.emit();
         return undefined;
       }
     };
     this.#nzModalService.create( opts );
   }
-
-  async openUserEditModal( user: WorkspaceUser = this.selectedUsers[0] ): Promise<void> {
+  // Base edit: user name / names / culture / groups. UserInvitation swaps this to also edit the e-mail.
+  async #defaultUserEditModal( user: WorkspaceUser = this.selectedUsers[0] ): Promise<void> {
     const workspace = this.workspace();
     if ( !workspace ) return;
     if ( !user ) return;
@@ -511,15 +445,6 @@ export class UsersTab implements OnInit, AfterViewInit {
             required: true,
             validators: [Validators.required]
           } ),
-        email: new FormControlConfig( 'text',
-          this.#translateService.instant( 'CK.Admin.UserManagement.User.Email' ),
-          user.email,
-          {
-            placeholder: this.#translateService.instant( 'CK.Admin.UserManagement.User.Email' ),
-            required: true,
-            validators: [Validators.required, Validators.email],
-            errorMessages: { email: this.#translateService.instant( 'CK.Admin.UserManagement.Form.InvalidEmail' ) }
-          } ),
         cultureName: new FormControlConfig( 'select',
           this.#translateService.instant( 'CK.Admin.UserManagement.Form.DefaultLanguage' ),
           currentCultureName,
@@ -549,8 +474,6 @@ export class UsersTab implements OnInit, AfterViewInit {
           extendedCultureId,
           v.groups
         );
-        // Set by property: the generated ctor appends Email after the ambient culture parameter.
-        editCommand.email = v.email;
         const res = await this.#crisEndpoint.sendOrThrowAsync( editCommand );
         this.#notifService.notifyUserMessage( res );
         await this.loadUsers();

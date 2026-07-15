@@ -5,23 +5,26 @@ import { first } from 'rxjs';
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import {
   GroupInfos,
-  InvitationsTable,
   LayoutContent,
   UserService,
-  UsersTab
+  UsersTab,
+  // <PostPageImports />
 } from '@local/ck-gen';
-
-type AdminTab = 'users' | 'invitations';
 
 @Component( {
   selector: 'ck-user-management-page',
   templateUrl: './user-management-page.html',
-  imports: [LayoutContent, NzTabsModule, TranslateModule, UsersTab, InvitationsTable]
+  imports: [
+    LayoutContent,
+    NzTabsModule,
+    TranslateModule,
+    UsersTab,
+    // <PostPageComponentImports />
+  ]
 } )
 export class UserManagementPage {
   // <PreViewChildren revert />
   readonly usersTab = viewChild<UsersTab>( 'usersTab' );
-  readonly invitationsTable = viewChild<InvitationsTable>( 'invitationsTable' );
   // <PostViewChildren />
 
   // <PreInputOutput revert />
@@ -39,8 +42,7 @@ export class UserManagementPage {
   // <PreLocalVariables revert />
   protected title: WritableSignal<string> = signal( '' );
   protected workspace = computed<GroupInfos | undefined>( () => this.#userService.currentWorkspace() ?? undefined );
-  protected selectedTab: WritableSignal<AdminTab> = signal( 'users' );
-  protected selectedTabIndex = computed( () => this.selectedTab() === 'users' ? 0 : 1 );
+  protected selectedTabIndex: WritableSignal<number> = signal( 0 );
   protected workspaceId = computed( () => this.workspace()?.groupId ?? 0 );
   // <PostLocalVariables />
 
@@ -61,16 +63,14 @@ export class UserManagementPage {
   }
 
   onTabIndexChange( index: number ): void {
-    this.selectedTab.set( index === 0 ? 'users' : 'invitations' );
+    this.selectedTabIndex.set( index );
   }
 
-  async onInvitationCreated(): Promise<void> {
-    // <PreOnInvitationCreated revert />
-    const invTable = this.invitationsTable();
-    if ( invTable ) {
-      await invTable.getInvitations();
-      invTable.clearSelection();
-    }
-    // <PostOnInvitationCreated />
+  // Raised by the users tab after a user creation. Base does nothing extra; siblings (UserInvitation)
+  // refresh their own views (e.g. the invitations table).
+  onUserCreated(): void {
+    // <PostOnUserCreated />
   }
+
+  // <PostUserManagementPageMethods />
 }

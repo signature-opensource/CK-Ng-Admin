@@ -10,20 +10,9 @@
                 <ck-users-tab
                     #usersTab
                     [workspace]="workspace()"
-                    (invitationCreated)="onInvitationCreated()" />
+                    (userCreated)="onUserCreated()" />
             </nz-tab>
             <!-- <PostUsersTab /> -->
-            <!-- <PreInvitationsTab revert /> -->
-            <nz-tab [nzTitle]="'CK.Admin.UserManagement.Tab.Invitations' | translate">
-                <ng-template nz-tab>
-                    @if ( workspaceId() > 0 ) {
-                        <ck-invitations-table
-                            #invitationsTable
-                            [workspaceId]="workspaceId()" />
-                    }
-                </ng-template>
-            </nz-tab>
-            <!-- <PostInvitationsTab /> -->
             <!-- <PostUserManagementTabsRegistration /> -->
         </nz-tabset>
     </div>
