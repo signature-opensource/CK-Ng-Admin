@@ -270,7 +270,7 @@ export class InvitationsTable {
                 nzTitle: this.#translateService.instant( 'CK.Admin.UserManagement.Modal.DestroyInvitation' ),
                 nzContent: `${this.#translateService.instant( 'CK.Admin.UserManagement.Modal.DestroyInvitationContent' )} : ${this.selectedItems().map( i => i.email ).join( ', ' )}`,
                 nzOnOk: async () => {
-                  const res = await this.#crisEndpoint.sendOrThrowAsync( new DestroyInvitationsCommand( this.selectedItems(), undefined, this.#userService.userProfile()!.userId ) );
+                  const res = await this.#crisEndpoint.sendOrThrowAsync( new DestroyInvitationsCommand( this.selectedItems() ) );
                   this.#notifService.notifyUserMessage( res );
                   await this.getInvitations();
                   this.clearSelection();
