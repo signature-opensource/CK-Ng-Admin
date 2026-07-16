@@ -38,6 +38,7 @@ import {
   ValidateInvitationTokenCommand
 } from '@local/ck-gen';
 import { LocaleInfo, LocaleService, locales } from '@local/ck-gen/ts-locales/locales';
+import { UserMessageLevel } from '@local/ck-gen';
 
 @Component( {
   selector: 'ck-register',
@@ -179,9 +180,12 @@ export class Register implements OnInit {
       // Optional nickname: leave unset when blank so the backend falls back to the e-mail. Set by
       // property (not positional) because the generated ctor places the ambient culture parameter last.
       command.userName = raw.userName?.trim() || undefined;
-      const res = await this.#crisEndpoint.sendOrThrowAsync( command );
-      if ( res ) this.#notifService.notifyUserMessage( res );
-      await this.#router.navigate( ['/auth'] );
+      command.currentCultureName = raw.cultureName;
+      const res = await this.#crisEndpoint.sendOrThrowAsync(command);
+      if (res) this.#notifService.notifyUserMessage(res);
+      if (res?.level !== UserMessageLevel.Error) {
+          await this.#router.navigate(['/auth']);
+      }
     } finally {
       this.submitting.set( false );
     }
