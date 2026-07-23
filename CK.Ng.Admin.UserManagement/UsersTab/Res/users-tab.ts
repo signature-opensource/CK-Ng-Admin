@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, DestroyRef, OnInit, TemplateRef, WritableSignal, inject, input, output, signal, viewChild } from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, OnInit, TemplateRef, WritableSignal, effect, inject, input, output, signal, untracked, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Validators } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -94,7 +94,17 @@ export class UsersTab implements OnInit, AfterViewInit {
     return filtered;
   };
 
-  async ngOnInit(): Promise<void> {
+  constructor() {
+    // Load (and reload) users reactively once the workspace is set. On a fresh page load (F5)
+    // the workspace is resolved asynchronously by UserService; triggering the query here rather
+    // than in ngOnInit guarantees the ambient currentWorkspaceId is set before the command is sent.
+    effect( () => {
+      const ws = this.workspace();
+      untracked( () => { if ( ws ) void this.loadUsers(); } );
+    } );
+  }
+
+  ngOnInit(): void {
     this.initFilters();
 
     this.#translateService.onLangChange
@@ -102,7 +112,6 @@ export class UsersTab implements OnInit, AfterViewInit {
       .subscribe( () => this.#refreshLabels() );
 
     // <PostUsersTabInit />
-    await this.loadUsers();
   }
 
   ngAfterViewInit(): void {
