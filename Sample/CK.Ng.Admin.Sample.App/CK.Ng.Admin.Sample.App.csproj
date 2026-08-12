@@ -28,9 +28,9 @@
       <PackageReference Include="CK.SqlServer.Dapper" Version="15.0.2--ci.1" />
     <PackageReference Include="CK.SqlServer.Transaction" Version="12.0.1" />
 
-    <PackageReference Include="CK.UserManagement" Version="0.1.0--ci.24" />
-    <PackageReference Include="CK.UserManagement.UserBanned" Version="0.1.0--ci.24" />
-    <PackageReference Include="CK.UserManagement.UserInvitation" Version="0.1.0--ci.24" />
+    <PackageReference Include="CK.UserManagement" Version="0.0.0--ci.24" />
+    <PackageReference Include="CK.UserManagement.UserBanned" Version="0.0.0--ci.24" />
+    <PackageReference Include="CK.UserManagement.UserInvitation" Version="0.0.0--ci.24" />
 
     <ProjectReference Include="..\..\CK.Ng.Admin.UserManagement\CK.Ng.Admin.UserManagement.csproj" />
     <!--<ProjectReference Include="..\..\CK.Ng.Admin.UserManagement.UserBanned\CK.Ng.Admin.UserManagement.UserBanned.csproj" />-->
