@@ -11,7 +11,7 @@ namespace CK.Ng.Admin.UserManagement.Tests.WorkspaceUsers;
 /// <c>[ReplaceAutoService]</c>. Mirrors
 /// <c>CK.Ng.Admin.Sample.App.WorkspaceUsers.GetWorkspaceUsersCommandHandler</c>.
 /// </summary>
-[ReplaceAutoService( typeof( CK.UserManagement.BinnedUser.BinnedWorkspaceUsersHandler ) )]
+[ReplaceAutoService( typeof( CK.UserManagement.UserBanned.BannedWorkspaceUsersHandler ) )]
 [ReplaceAutoService( typeof( CK.UserManagement.UserInvitation.UserInvitationWorkspaceUsersHandler ) )]
 public class GetWorkspaceUsersCommandHandler : IAutoService, ICommandHandler<IGetWorkspaceUsersQCommand>
 {
