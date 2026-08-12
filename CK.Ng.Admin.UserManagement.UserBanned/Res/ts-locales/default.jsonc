@@ -1,0 +1,13 @@
+{
+    "CK.Admin.UserManagement.Filter.ShowBanned": "Show banned",
+    "CK.Admin.UserManagement.Column.Bans": "Banishments",
+    "CK.Admin.UserManagement.Modal.BanUsers": "Ban users",
+    "CK.Admin.UserManagement.Modal.UnbanUsers": "Unban users",
+    "CK.Admin.UserManagement.Ban.KeyReason": "Reason",
+    "CK.Admin.UserManagement.Ban.StartDate": "Start date",
+    "CK.Admin.UserManagement.Ban.EndDate": "End date",
+    "CK.Admin.UserManagement.Ban.Eternal": "Eternal banishment",
+    "CK.Admin.UserManagement.Ban.TargetedUsers": "Targeted users",
+    "Button.Ban": "Ban",
+    "Button.Unban": "Unban"
+}

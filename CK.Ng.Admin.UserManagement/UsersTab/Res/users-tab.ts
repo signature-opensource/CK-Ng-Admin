@@ -68,7 +68,7 @@ export class UsersTab implements OnInit, AfterViewInit {
   protected selectedUsers: Array<WorkspaceUser> = [];
   #allUsers: Array<WorkspaceUser> = [];
   #roleFilter!: SelectFilter<'admin' | 'member'>;
-  // BinnedUser injects '#archivedFilter!: SwitchFilter;' here.
+  // UserBanned injects '#bannedFilter!: SwitchFilter;' here.
   // <PostLocalVariables />
 
   // Front search/filter run inside the adaptive layout: it calls these on every
@@ -150,7 +150,7 @@ export class UsersTab implements OnInit, AfterViewInit {
     this.filters.set( this.#buildFilters() );
   }
 
-  // Base ships only the role filter; siblings (BinnedUser) append theirs.
+  // Base ships only the role filter; siblings (UserBanned) append theirs.
   #buildFilters(): Array<Filter<unknown>> {
     return [
       this.#roleFilter,
@@ -177,7 +177,7 @@ export class UsersTab implements OnInit, AfterViewInit {
     // <PostLoadUsers />
   }
 
-  // Applies the role filter to the full set. Siblings (BinnedUser) extend the result.
+  // Applies the role filter to the full set. Siblings (UserBanned) extend the result.
   #computeFiltered(): Array<WorkspaceUser> {
     let result = [...this.#allUsers];
 
@@ -345,7 +345,7 @@ export class UsersTab implements OnInit, AfterViewInit {
     // </UsersTabRowActionsRegistration>
   }
 
-  // Archive / restore confirm methods are injected here by the BinnedUser sibling.
+  // Ban / unban confirm methods are injected here by the UserBanned sibling.
   // <PostUsersTabMethods />
 
   // Create/edit modal openers are fields so a sibling (UserInvitation) can swap the strategy in

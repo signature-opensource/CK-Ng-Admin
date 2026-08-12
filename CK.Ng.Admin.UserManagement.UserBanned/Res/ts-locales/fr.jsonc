@@ -1,0 +1,13 @@
+{
+    "CK.Admin.UserManagement.Filter.ShowBanned": "Afficher les bannis",
+    "CK.Admin.UserManagement.Column.Bans": "Bannissements",
+    "CK.Admin.UserManagement.Modal.BanUsers": "Bannir les utilisateurs",
+    "CK.Admin.UserManagement.Modal.UnbanUsers": "Débannir les utilisateurs",
+    "CK.Admin.UserManagement.Ban.KeyReason": "Motif",
+    "CK.Admin.UserManagement.Ban.StartDate": "Date de début",
+    "CK.Admin.UserManagement.Ban.EndDate": "Date de fin",
+    "CK.Admin.UserManagement.Ban.Eternal": "Bannissement définitif",
+    "CK.Admin.UserManagement.Ban.TargetedUsers": "Utilisateurs concernés",
+    "Button.Ban": "Bannir",
+    "Button.Unban": "Débannir"
+}

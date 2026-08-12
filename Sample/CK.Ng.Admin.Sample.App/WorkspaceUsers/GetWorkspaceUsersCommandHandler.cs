@@ -6,17 +6,17 @@ using CK.SqlServer;
 namespace CK.Ng.Admin.Sample.App.WorkspaceUsers;
 
 /// <summary>
-/// App-level handler for <see cref="IGetWorkspaceUsersQCommand"/>. Both the BinnedUser
-/// (<c>BinDate</c>-aware) and UserInvitation (e-mail-aware) packages ship their own closed handler for
+/// App-level handler for <see cref="IGetWorkspaceUsersQCommand"/>. Both the UserBanned
+/// (ban-aware) and UserInvitation (e-mail-aware) packages ship their own closed handler for
 /// this command; composed together they would be ambiguous. Declaring
 /// <see cref="ICommandHandler{IGetWorkspaceUsersQCommand}"/> here makes the Cris engine elect this
-/// service over the package handlers, and it returns the combined projection (core columns + BinDate +
+/// service over the package handlers, and it returns the combined projection (core columns + bans +
 /// e-mail).
 /// <para>
 /// Same election mechanism as <c>CK.Ng.Admin.Sample.App.User.GetUserProfileCommandHandler</c>.
 /// </para>
 /// </summary>
-[ReplaceAutoService( typeof( CK.UserManagement.BinnedUser.BinnedWorkspaceUsersHandler ) )]
+[ReplaceAutoService( typeof( CK.UserManagement.UserBanned.BannedWorkspaceUsersHandler ) )]
 [ReplaceAutoService( typeof( CK.UserManagement.UserInvitation.UserInvitationWorkspaceUsersHandler ) )]
 public class GetWorkspaceUsersCommandHandler : IAutoService, ICommandHandler<IGetWorkspaceUsersQCommand>
 {
@@ -31,7 +31,7 @@ public class GetWorkspaceUsersCommandHandler : IAutoService, ICommandHandler<IGe
     public async Task<List<IWorkspaceUser>> GetWorkspaceUsersAsync( ISqlCallContext ctx, IGetWorkspaceUsersQCommand query )
     {
         var workspaceId = query.CurrentWorkspaceId.GetValueOrDefault();
-        using( ctx.Monitor.OpenInfo( $"Handling {nameof( IGetWorkspaceUsersQCommand )} query (combined BinDate + e-mail). (WorkspaceId: {workspaceId})" ) )
+        using( ctx.Monitor.OpenInfo( $"Handling {nameof( IGetWorkspaceUsersQCommand )} query (combined bans + e-mail). (WorkspaceId: {workspaceId})" ) )
         {
             try
             {

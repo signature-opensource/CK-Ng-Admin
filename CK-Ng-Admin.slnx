@@ -17,7 +17,7 @@
     <Project Path="Tests/CK.Ng.Admin.UserManagement.Tests/CK.Ng.Admin.UserManagement.Tests.csproj" />
   </Folder>
   <Project Path="CK.Ng.Admin.UserManagement/CK.Ng.Admin.UserManagement.csproj" Id="55bb900f-4ba3-489c-8caf-648691ee653c" />
-  <Project Path="CK.Ng.Admin.UserManagement.BinnedUser/CK.Ng.Admin.UserManagement.BinnedUser.csproj" />
+  <Project Path="CK.Ng.Admin.UserManagement.UserBanned/CK.Ng.Admin.UserManagement.UserBanned.csproj" />
   <Project Path="CK.Ng.Admin.UserManagement.UserInvitation/CK.Ng.Admin.UserManagement.UserInvitation.csproj" />
   <Project Path="CK.Ng.Admin/CK.Ng.Admin.csproj" />
 </Solution>

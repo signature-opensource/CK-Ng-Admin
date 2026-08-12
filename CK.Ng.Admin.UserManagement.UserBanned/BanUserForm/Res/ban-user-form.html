@@ -1,0 +1,18 @@
+<div class="ban-user-form-container">
+    <!-- <PreBannedUsersReminder revert /> -->
+    @if ( userNames.length > 0 ) {
+        <div class="banned-users">
+            <span class="banned-users-label">{{ 'CK.Admin.UserManagement.Ban.TargetedUsers' | translate }}</span>
+            <span class="banned-users-value">{{ userNames.join( ', ' ) }}</span>
+        </div>
+    }
+    <!-- <PostBannedUsersReminder /> -->
+
+    <ck-generic-form #formComp [inputFormData]="formData"></ck-generic-form>
+
+    <!-- <PreEternalToggle revert /> -->
+    <label nz-checkbox [(ngModel)]="isEternal" [ngModelOptions]="{standalone: true}">
+        {{ 'CK.Admin.UserManagement.Ban.Eternal' | translate }}
+    </label>
+    <!-- <PostEternalToggle /> -->
+</div>

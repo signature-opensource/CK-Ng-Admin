@@ -31,14 +31,14 @@
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.5.1" />
         <PackageReference Include="NUnit3TestAdapter" Version="6.2.0" />
         <!-- Backend command handlers/services exercised by the integration spec, now consumed as a published package. -->
-        <PackageReference Include="CK.UserManagement" Version="0.1.0--ci.23" />
-        <PackageReference Include="CK.UserManagement.BinnedUser" Version="0.1.0--ci.23" />
-        <PackageReference Include="CK.UserManagement.UserInvitation" Version="0.1.0--ci.23" />
+        <PackageReference Include="CK.UserManagement" Version="0.1.0--ci.24" />
+        <PackageReference Include="CK.UserManagement.UserBanned" Version="0.1.0--ci.24" />
+        <PackageReference Include="CK.UserManagement.UserInvitation" Version="0.1.0--ci.24" />
     </ItemGroup>
     <ItemGroup>
-        <!-- NG components (UsersTab, forms, ...) + IO contracts, plus the invitation / binned siblings. -->
+        <!-- NG components (UsersTab, forms, ...) + IO contracts, plus the invitation / banned siblings. -->
         <ProjectReference Include="..\..\CK.Ng.Admin.UserManagement\CK.Ng.Admin.UserManagement.csproj" />
-        <ProjectReference Include="..\..\CK.Ng.Admin.UserManagement.BinnedUser\CK.Ng.Admin.UserManagement.BinnedUser.csproj" />
+        <ProjectReference Include="..\..\CK.Ng.Admin.UserManagement.UserBanned\CK.Ng.Admin.UserManagement.UserBanned.csproj" />
         <ProjectReference Include="..\..\CK.Ng.Admin.UserManagement.UserInvitation\CK.Ng.Admin.UserManagement.UserInvitation.csproj" />
     </ItemGroup>
 </Project>

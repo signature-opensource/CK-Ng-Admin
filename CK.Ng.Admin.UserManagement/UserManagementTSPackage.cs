@@ -9,7 +9,7 @@ namespace CK.Ng.Admin.UserManagement;
 [Requires<AdminTSPackage>]
 
 // Base workspace-user management: direct (basic) user creation + listing + edit. Invitation and
-// archived-user features are brought by the CK.Ng.Admin.UserManagement.{UserInvitation,BinnedUser}
+// banned-user features are brought by the CK.Ng.Admin.UserManagement.{UserInvitation,UserBanned}
 // sibling packages, which register their own command types.
 
 // Q Commands
