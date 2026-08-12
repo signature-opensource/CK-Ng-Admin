@@ -2,6 +2,8 @@ create <ts> transformer
 begin
     ensure import { BanUserForm, DestroyUserBannedCommand, SetUserBannedCommand, SwitchFilter, UserBan } from '@local/ck-gen';
     ensure import { faBan, faUnlock } from '@fortawesome/free-solid-svg-icons';
+    // The generated Poco exposes the ban dates as luxon DateTime (not JS Date).
+    ensure import { DateTime } from 'luxon';
 
     // The banned-users filter field, and the "currently banned" predicate. A banishment is active when
     // now falls inside [banStartDate, banEndDate[ — the same window as CK.fUserBannedViewAt.
@@ -9,8 +11,8 @@ begin
            #bannedFilter!: SwitchFilter;
 
            #activeBans( u: WorkspaceUser ): Array<UserBan> {
-             const now = new Date();
-             return ( u.bans ?? [] ).filter( b => new Date( b.banStartDate ) <= now && now < new Date( b.banEndDate ) );
+             const now = DateTime.utc().toMillis();
+             return ( u.bans ?? [] ).filter( b => b.banStartDate.toMillis() <= now && now < b.banEndDate.toMillis() );
            }
 
            #isBanned( u: WorkspaceUser ): boolean {
@@ -121,10 +123,9 @@ begin
     // selection of the action bar is looped over here.
     inject """
            formatBan( ban: UserBan ): string {
-             const end = new Date( ban.banEndDate );
-             return end.getFullYear() >= 9999
+             return ban.banEndDate.year >= 9999
                ? `${ban.keyReason} (${this.#translateService.instant( 'CK.Admin.UserManagement.Ban.Eternal' )})`
-               : `${ban.keyReason} (${end.toLocaleDateString()})`;
+               : `${ban.keyReason} (${ban.banEndDate.toLocaleString( DateTime.DATE_SHORT )})`;
            }
 
            confirmBanUsers( users: Array<WorkspaceUser> ): void {

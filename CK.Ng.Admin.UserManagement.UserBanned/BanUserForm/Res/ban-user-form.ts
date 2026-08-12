@@ -1,10 +1,16 @@
 import { Component, Signal, inject, viewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { GenericForm, GenericFormData } from '@local/ck-gen';
+import { DateTime } from 'luxon';
 import { TranslateModule } from '@ngx-translate/core';
 import { NZ_MODAL_DATA } from 'ng-zorro-antd/modal';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
+
+// The nz-date-picker of the GenericForm yields JS Dates; the commands take luxon DateTime.
+function toDateTime( value: Date | null | undefined ): DateTime | undefined {
+  return value ? DateTime.fromJSDate( value ).toUTC() : undefined;
+}
 
 @Component( {
   selector: 'ck-ban-user-form',
@@ -40,13 +46,13 @@ export class BanUserForm {
     return !!form && form.valid;
   }
 
-  getValue(): { keyReason: string, banStartDate?: Date, banEndDate?: Date } {
+  getValue(): { keyReason: string, banStartDate?: DateTime, banEndDate?: DateTime } {
     const raw = this.formComponent()!.form()!.getRawValue();
     return {
       keyReason: raw.keyReason,
-      banStartDate: raw.banStartDate ?? undefined,
+      banStartDate: toDateTime( raw.banStartDate ),
       // An eternal banishment is expressed by leaving the end date undefined.
-      banEndDate: this.isEternal ? undefined : ( raw.banEndDate ?? undefined )
+      banEndDate: this.isEternal ? undefined : toDateTime( raw.banEndDate )
     };
   }
 }
