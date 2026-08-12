@@ -271,6 +271,7 @@ export class UsersTab implements OnInit, AfterViewInit {
         sortFn: ( a: WorkspaceUser, b: WorkspaceUser ) => a.isWorkspaceAdmin === b.isWorkspaceAdmin ? 0 : a.isWorkspaceAdmin ? -1 : 1,
         template: this.roleCellTemplate()
       },
+      // <PostUsersTabLastColumns />
     ];
     // </UsersTabColumnsRegistration>
   }

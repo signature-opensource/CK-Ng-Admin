@@ -10,9 +10,31 @@
 
     <ck-generic-form #formComp [inputFormData]="formData"></ck-generic-form>
 
-    <!-- <PreEternalToggle revert /> -->
-    <label nz-checkbox [(ngModel)]="isEternal" [ngModelOptions]="{standalone: true}">
-        {{ 'CK.Admin.UserManagement.Ban.Eternal' | translate }}
-    </label>
-    <!-- <PostEternalToggle /> -->
+    <!-- <PreBanDuration revert /> -->
+    <div class="ban-duration">
+        <label class="ban-duration-label">{{ 'CK.Admin.UserManagement.Ban.Duration' | translate }}</label>
+        <nz-select [(ngModel)]="banDuration" [ngModelOptions]="{standalone: true}">
+            @for ( d of durations; track d.key ) {
+                <nz-option [nzValue]="d.key" [nzLabel]="d.labelKey | translate"></nz-option>
+            }
+        </nz-select>
+
+        @if ( isCustomDuration ) {
+            <label class="ban-duration-label">{{ 'CK.Admin.UserManagement.Ban.EndDate' | translate }}</label>
+            <nz-date-picker
+                [(ngModel)]="customEndDate"
+                [ngModelOptions]="{standalone: true}"
+                [nzShowTime]="{ nzFormat: 'HH:mm' }"
+                nzFormat="dd-MM-yyyy HH:mm"
+                [nzDisabledDate]="disabledEndDate"
+                [nzDisabledTime]="disabledEndTime" />
+            @if ( missingEndDate ) {
+                <span class="ban-duration-error">{{ 'CK.Admin.UserManagement.Ban.EndDateRequired' | translate }}</span>
+            }
+            @if ( pastEndDate ) {
+                <span class="ban-duration-error">{{ 'CK.Admin.UserManagement.Ban.EndDatePast' | translate }}</span>
+            }
+        }
+    </div>
+    <!-- <PostBanDuration /> -->
 </div>
