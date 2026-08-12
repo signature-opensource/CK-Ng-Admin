@@ -1,8 +1,8 @@
 {
-    "CK.Admin.UserManagement.Filter.Banned": "Bannis",
-    "CK.Admin.UserManagement.Column.Bans": "Bannissements",
-    "CK.Admin.UserManagement.Modal.BanUsers": "Bannir les utilisateurs",
-    "CK.Admin.UserManagement.Modal.UnbanUsers": "Débannir les utilisateurs",
+    "CK.Admin.UserManagement.Filter.Banned": "Désactivés",
+    "CK.Admin.UserManagement.Column.Bans": "Désactivations",
+    "CK.Admin.UserManagement.Modal.BanUsers": "Désactiver les utilisateurs",
+    "CK.Admin.UserManagement.Modal.UnbanUsers": "Réactiver les utilisateurs",
     "CK.Admin.UserManagement.Ban.KeyReason": "Motif",
     "CK.Admin.UserManagement.Ban.SelectReason": "Sélectionnez un motif",
     "CK.Admin.UserManagement.Ban.ReasonRequired": "Un motif est obligatoire.",
@@ -18,7 +18,7 @@
     "CK.Admin.UserManagement.Ban.CustomReasonRequired": "Veuillez préciser le motif.",
     "CK.Admin.UserManagement.Ban.CustomReasonTooLong": "Le motif ne peut pas dépasser 128 caractères.",
     "CK.Admin.UserManagement.Ban.CustomReasonInvalidChars": "Le motif ne peut pas contenir % _ [ ].",
-    "CK.Admin.UserManagement.Ban.Duration": "Durée du bannissement",
+    "CK.Admin.UserManagement.Ban.Duration": "Durée de la désactivation",
     "CK.Admin.UserManagement.Ban.DurationHour": "1 heure",
     "CK.Admin.UserManagement.Ban.DurationDay": "1 jour",
     "CK.Admin.UserManagement.Ban.DurationWeek": "1 semaine",
@@ -27,8 +27,8 @@
     "CK.Admin.UserManagement.Ban.EndDate": "Date de fin",
     "CK.Admin.UserManagement.Ban.EndDateRequired": "Une date de fin est obligatoire.",
     "CK.Admin.UserManagement.Ban.EndDatePast": "La date de fin doit être postérieure à maintenant.",
-    "CK.Admin.UserManagement.Ban.Eternal": "Bannissement définitif",
+    "CK.Admin.UserManagement.Ban.Eternal": "Désactivation définitive",
     "CK.Admin.UserManagement.Ban.TargetedUsers": "Utilisateurs concernés",
-    "Button.Ban": "Bannir",
-    "Button.Unban": "Débannir"
+    "Button.Ban": "Désactiver",
+    "Button.Unban": "Réactiver"
 }
