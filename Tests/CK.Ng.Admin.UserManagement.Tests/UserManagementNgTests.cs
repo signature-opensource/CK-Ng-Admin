@@ -44,7 +44,7 @@ public class UserManagementNgTests
             "CK.DB.User.UserPassword",
             "CK.DB.User.NamedUser",
             "CK.DB.User.PreferredCulture",
-            "CK.DB.User.BinnedUser",
+            "CK.DB.User.UserBanned",
             "CK.DB.Actor.ActorEMail",
             "CK.DB.UserInvitation",
             "CK.DB.Workspace",
@@ -57,10 +57,10 @@ public class UserManagementNgTests
             "CK.Ng.Zorro.BackOffice",
             "CK.Ng.Admin",
             "CK.Ng.Admin.UserManagement",
-            "CK.Ng.Admin.UserManagement.BinnedUser",
+            "CK.Ng.Admin.UserManagement.UserBanned",
             "CK.Ng.Admin.UserManagement.UserInvitation",
             "CK.UserManagement",
-            "CK.UserManagement.BinnedUser",
+            "CK.UserManagement.UserBanned",
             "CK.UserManagement.UserInvitation",
             "CK.SqlServer.Transaction"
         ] );
@@ -85,8 +85,8 @@ public class UserManagementNgTests
             // User-management commands (also registered by UserManagementTSPackage).
             typeof( ICreateInvitationCommand ),
             typeof( IEditWorkspaceUserCommand ),
-            typeof( IArchiveUsersAdminCommand ),
-            typeof( IRestoreUsersAdminCommand ),
+            typeof( IDestroyUserBannedAdminCommand ),
+            typeof( ISetUserBannedAdminCommand ),
             typeof( IResendInvitationsCommand ),
             typeof( IValidateInvitationTokenCommand ),
             typeof( ICompleteRegistrationCommand ),
