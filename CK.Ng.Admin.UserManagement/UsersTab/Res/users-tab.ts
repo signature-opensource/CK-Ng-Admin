@@ -377,9 +377,8 @@ export class UsersTab implements OnInit, AfterViewInit {
         name: 'edit',
         icon: faEdit,
         isDanger: false,
-        // Same rendering as the action-bar buttons on the opposite side of the filters (which default
-        // to 'primary'): the row actions must not look like a different kind of button.
-        type: 'primary',
+        // Borderless button: only its color is aligned with the action bar (see users-tab.less).
+        type: 'text',
         tooltip: t['Button.Edit'],
         execute: ( u: WorkspaceUser ) => { void this.openUserEditModal( u ); },
         shouldBeDisplayed: () => true

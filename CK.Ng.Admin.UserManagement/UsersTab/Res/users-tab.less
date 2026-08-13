@@ -1,5 +1,13 @@
 .users-tab-layout {
   height: 100%;
+
+  // Row actions (the "Actions" column, and the action buttons of the mobile list): they stay the
+  // borderless buttons of the table, only their color is aligned with the action-bar buttons displayed
+  // on the opposite side of the filters. The danger ones keep the red that ng-zorro gives them.
+  .ck-cell-value button.ant-btn-text:not(.ant-btn-dangerous),
+  button.ck-list-item-action-btn.ant-btn-text:not(.ant-btn-dangerous) {
+    color: @primary-color;
+  }
 }
 
 // Tags of the "Groups" column (table cell and mobile line): they wrap instead of overflowing.
