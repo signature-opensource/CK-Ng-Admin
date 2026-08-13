@@ -28,23 +28,24 @@
             <span>{{ user.lastName }}</span>
         </div>
         <div class="ck-list-item-line">
-            <span>{{ 'CK.Admin.UserManagement.Column.Role' | translate }}</span>
-            @if ( user.isWorkspaceAdmin ) {
-                <nz-tag nzColor="geekblue">{{ 'CK.Admin.UserManagement.Role.Administrator' | translate }}</nz-tag>
-            } @else {
-                <nz-tag>{{ 'CK.Admin.UserManagement.Role.Member' | translate }}</nz-tag>
-            }
+            <span>{{ 'CK.Admin.UserManagement.Column.Groups' | translate }}</span>
+            <!-- The template reference variable (not the viewChild signal) is what the template resolves. -->
+            <ng-container *ngTemplateOutlet="groupsCellTemplate; context: { row: user }" />
         </div>
     </div>
 </ng-template>
 <!-- <PostItemTemplate /> -->
 
-<!-- <PreRoleCellTemplate revert /> -->
-<ng-template #roleCellTemplate let-user="row">
-    @if ( user.isWorkspaceAdmin ) {
-        <nz-tag nzColor="geekblue">{{ 'CK.Admin.UserManagement.Role.Administrator' | translate }}</nz-tag>
-    } @else {
-        <nz-tag>{{ 'CK.Admin.UserManagement.Role.Member' | translate }}</nz-tag>
-    }
+<!-- <PreGroupsCellTemplate revert /> -->
+<ng-template #groupsCellTemplate let-user="row">
+    <div class="ck-group-tags">
+        @for ( tag of groupTags( user ); track tag.label ) {
+            @if ( tag.isAdmin ) {
+                <nz-tag nzColor="geekblue">{{ tag.label }}</nz-tag>
+            } @else {
+                <nz-tag>{{ tag.label }}</nz-tag>
+            }
+        }
+    </div>
 </ng-template>
-<!-- <PostRoleCellTemplate /> -->
+<!-- <PostGroupsCellTemplate /> -->

@@ -1,4 +1,5 @@
 using CK.Core;
+using CK.IO.UserProfile.Workspace;
 using CK.SqlServer;
 using Dapper;
 
@@ -17,9 +18,16 @@ public class WorkspaceUsersQueries : IAutoService
     readonly PocoDirectory _pocoDirectory;
 
     /// <summary>
-    /// The left outer join on the banishments duplicates the user row once per banishment: the grouping
-    /// is done in C# by <see cref="GetWorkspaceUsersAsync"/>. All the banishments are returned, expired
-    /// ones included: the caller owns the definition of "currently banned".
+    /// The left outer joins duplicate the user row once per banishment and once per group — and, the two
+    /// combined, once per (banishment, group) pair: the grouping is done in C# by
+    /// <see cref="GetWorkspaceUsersAsync"/>. All the banishments are returned, expired ones included:
+    /// the caller owns the definition of "currently banned".
+    /// <para>
+    /// The groups span all the zones, not only the queried workspace: the listing displays the
+    /// memberships of a user outside of the current workspace. Rows are ordered by workspace, its own
+    /// zone group first: a zone group is its own workspace but <c>CK.vGroup</c> gives it a null
+    /// <c>ZoneId</c> (and therefore no <c>ZoneName</c>).
+    /// </para>
     /// </summary>
     const string _getWorkspaceUsersSql =
         """
@@ -33,13 +41,25 @@ public class WorkspaceUsersQueries : IAutoService
               ,b.KeyReason
               ,b.BanStartDate
               ,b.BanEndDate
+              ,pg.GroupId
+              ,pg.GroupName
+              ,pg.IsZone
+              ,pg.ZoneId
+              ,ZoneName = isnull( pz.ZoneName, '' )
           from CK.vUser u
               inner join CK.tActorProfile ap on ap.ActorId = u.UserId
               inner join CK.tWorkspace w on w.WorkspaceId = @WorkspaceId
               left outer join CK.tActorEMail e on e.ActorId = u.UserId and e.IsPrimary = 1
               left outer join CK.tUserBanned b on b.UserId = u.UserId
+              left outer join CK.tActorProfile pap on pap.ActorId = u.UserId and pap.ActorId <> pap.GroupId
+              left outer join CK.vGroup pg on pg.GroupId = pap.GroupId and pg.GroupId > 1
+              left outer join CK.vZone pz on pz.ZoneId = pg.ZoneId
           where ap.GroupId = @WorkspaceId and u.UserId > 1
-          order by u.UserId, b.BanStartDate;
+          order by u.UserId
+                  ,case when pg.IsZone = 1 then pg.GroupId else pg.ZoneId end
+                  ,pg.IsZone desc
+                  ,pg.GroupName
+                  ,b.BanStartDate;
         """;
 
     /// <summary>
@@ -62,15 +82,18 @@ public class WorkspaceUsersQueries : IAutoService
     public async Task<IReadOnlyList<CK.IO.UserManagement.IWorkspaceUser>> GetWorkspaceUsersAsync( ISqlCallContext ctx, int workspaceId )
     {
         var byId = new Dictionary<int, ICombinedWorkspaceUser>();
-        await ctx[_userTable].QueryAsync<ICombinedWorkspaceUser, BanRow, object?>(
+        await ctx[_userTable].QueryAsync<ICombinedWorkspaceUser, BanRow, IGroupInfos, object?>(
             _getWorkspaceUsersSql,
-            ( user, ban ) =>
+            ( user, ban, group ) =>
             {
                 if( !byId.TryGetValue( user.UserId, out var existing ) )
                 {
                     byId.Add( user.UserId, existing = user );
                 }
-                if( ban?.KeyReason != null )
+                // Both collections are guarded: the banishment and group joins fan out into each other,
+                // so each banishment row repeats once per group and each group row once per banishment.
+                if( ban?.KeyReason != null
+                    && !existing.Bans.Any( x => x.KeyReason == ban.KeyReason && x.BanStartDate == ban.BanStartDate ) )
                 {
                     existing.Bans.Add( _pocoDirectory.Create<CK.IO.UserManagement.UserBanned.IUserBan>( b =>
                     {
@@ -79,10 +102,14 @@ public class WorkspaceUsersQueries : IAutoService
                         b.BanEndDate = ban.BanEndDate!.Value;
                     } ) );
                 }
+                if( group != null && !existing.Groups.Any( g => g.GroupId == group.GroupId ) )
+                {
+                    existing.Groups.Add( group );
+                }
                 return null;
             },
             new { WorkspaceId = workspaceId },
-            splitOn: "KeyReason" );
+            splitOn: "KeyReason,GroupId" );
 
         return byId.Values.Cast<CK.IO.UserManagement.IWorkspaceUser>().ToList();
     }

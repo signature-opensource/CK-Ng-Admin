@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, DestroyRef, OnInit, TemplateRef, WritableSignal, effect, inject, input, output, signal, untracked, viewChild } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Validators } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -32,12 +33,12 @@ import { locales } from '@local/ck-gen/ts-locales/locales';
 @Component( {
   selector: 'ck-users-tab',
   templateUrl: './users-tab.html',
-  imports: [TranslateModule, AdaptivePageLayout, NzModalModule, NzTagModule]
+  imports: [TranslateModule, AdaptivePageLayout, NgTemplateOutlet, NzModalModule, NzTagModule]
 } )
 export class UsersTab implements OnInit, AfterViewInit {
   // <PreViewChildren revert />
   readonly layout = viewChild<AdaptivePageLayout<WorkspaceUser>>( 'layout' );
-  readonly roleCellTemplate = viewChild.required<TemplateRef<TableCellContext<WorkspaceUser>>>( 'roleCellTemplate' );
+  readonly groupsCellTemplate = viewChild.required<TemplateRef<TableCellContext<WorkspaceUser>>>( 'groupsCellTemplate' );
   // <PostViewChildren />
 
   // <PreInputOutput revert />
@@ -68,6 +69,10 @@ export class UsersTab implements OnInit, AfterViewInit {
   protected selectedUsers: Array<WorkspaceUser> = [];
   #allUsers: Array<WorkspaceUser> = [];
   #roleFilter!: SelectFilter<'admin' | 'member'>;
+  // Role labels of the group tags. Kept as fields (rather than translated in the template) because the
+  // tags are built in TS; they are refreshed by #refreshLabels on every language change.
+  #adminRoleLabel: string = '';
+  #memberRoleLabel: string = '';
   // UserBanned injects '#bannedFilter!: SwitchFilter;' here.
   // <PostLocalVariables />
 
@@ -123,9 +128,9 @@ export class UsersTab implements OnInit, AfterViewInit {
       'CK.Admin.UserManagement.User.UserName',
       'CK.Admin.UserManagement.User.FirstName',
       'CK.Admin.UserManagement.User.LastName',
-      'CK.Admin.UserManagement.Column.Role',
-      'CK.Admin.UserManagement.Filter.Role',
-      'CK.Admin.UserManagement.Filter.SelectRole',
+      'CK.Admin.UserManagement.Column.Groups',
+      'CK.Admin.UserManagement.Filter.Group',
+      'CK.Admin.UserManagement.Filter.SelectGroup',
       'CK.Admin.UserManagement.Role.Administrator',
       'CK.Admin.UserManagement.Role.Member',
       'Button.Create',
@@ -133,6 +138,8 @@ export class UsersTab implements OnInit, AfterViewInit {
       'Button.Refresh',
       // <PostUsersTabTranslationKeys />
     ] ).pipe( first() ).subscribe( t => {
+      this.#adminRoleLabel = t['CK.Admin.UserManagement.Role.Administrator'];
+      this.#memberRoleLabel = t['CK.Admin.UserManagement.Role.Member'];
       this.initColumns( t );
       this.initActions( t );
       this.initRowActions( t );
@@ -141,8 +148,8 @@ export class UsersTab implements OnInit, AfterViewInit {
   }
 
   #refreshFilterLabels( t: Record<string, string> ): void {
-    this.#roleFilter.label = t['CK.Admin.UserManagement.Filter.Role'];
-    this.#roleFilter.placeholder = t['CK.Admin.UserManagement.Filter.SelectRole'];
+    this.#roleFilter.label = t['CK.Admin.UserManagement.Filter.Group'];
+    this.#roleFilter.placeholder = t['CK.Admin.UserManagement.Filter.SelectGroup'];
     this.#roleFilter.options[0].label = t['CK.Admin.UserManagement.Role.Administrator'];
     this.#roleFilter.options[1].label = t['CK.Admin.UserManagement.Role.Member'];
     // <PostUsersTabFilterLabels />
@@ -194,6 +201,40 @@ export class UsersTab implements OnInit, AfterViewInit {
 
   onTableSelection( users: Array<WorkspaceUser> ): void {
     this.selectedUsers = [...users];
+  }
+
+  // One tag per workspace (zone) the user belongs to: the current workspace shows its roles only, the
+  // others are prefixed with their workspace name. A user belonging to a workspace without any other
+  // group is a plain member of it. The server order (zone, then group name) is kept.
+  protected groupTags( u: WorkspaceUser ): Array<{ label: string, isAdmin: boolean }> {
+    const currentZoneId = this.workspace()?.groupId ?? 0;
+    const zones = new Map<number, { zoneId: number, name: string, roles: Array<string>, isAdmin: boolean }>();
+    for ( const g of u.groups ?? [] ) {
+      // A zone group is its own workspace: CK.vGroup gives it a null ZoneId/ZoneName.
+      const zoneId = g.isZone ? g.groupId : g.zoneId;
+      const zoneName = g.isZone ? g.groupName : g.zoneName;
+      const zone = zones.get( zoneId ) ?? { zoneId, name: zoneName, roles: [], isAdmin: false };
+      if ( !zone.name ) zone.name = zoneName;
+      // Same convention as UserWorkspaceGroupPicker: the 'Administrators' group of a zone is the
+      // administrator role. The zone group itself carries no role: it is the mere membership.
+      if ( g.groupName === 'Administrators' ) {
+        zone.isAdmin = true;
+        zone.roles.push( this.#adminRoleLabel );
+      } else if ( !g.isZone ) {
+        zone.roles.push( g.groupName );
+      }
+      zones.set( zoneId, zone );
+    }
+    return [...zones.values()].map( z => {
+      const roles = z.roles.length > 0 ? z.roles.join( ', ' ) : this.#memberRoleLabel;
+      // No prefix for the current workspace, nor for the groups that belong to no workspace at all.
+      const prefixed = z.zoneId !== currentZoneId && z.name.length > 0;
+      return { label: prefixed ? `${z.name}: ${roles}` : roles, isAdmin: z.isAdmin };
+    } );
+  }
+
+  #groupsSortKey( u: WorkspaceUser ): string {
+    return this.groupTags( u ).map( t => t.label ).join( ' | ' );
   }
 
   initColumns( t: Record<string, string> ): void {
@@ -262,14 +303,14 @@ export class UsersTab implements OnInit, AfterViewInit {
         }
       },
       {
-        name: 'isWorkspaceAdmin',
-        displayedName: t['CK.Admin.UserManagement.Column.Role'],
+        name: 'groups',
+        displayedName: t['CK.Admin.UserManagement.Column.Groups'],
         sortable: true,
         showInMobile: true,
         sortDirections: ['ascend', 'descend'],
         hidden: false,
-        sortFn: ( a: WorkspaceUser, b: WorkspaceUser ) => a.isWorkspaceAdmin === b.isWorkspaceAdmin ? 0 : a.isWorkspaceAdmin ? -1 : 1,
-        template: this.roleCellTemplate()
+        sortFn: ( a: WorkspaceUser, b: WorkspaceUser ) => this.#groupsSortKey( a ).localeCompare( this.#groupsSortKey( b ) ),
+        template: this.groupsCellTemplate()
       },
       // <PostUsersTabLastColumns />
     ];
@@ -279,14 +320,14 @@ export class UsersTab implements OnInit, AfterViewInit {
   initFilters(): void {
     this.#roleFilter = new SelectFilter<'admin' | 'member'>(
       'multiple',
-      this.#translateService.instant( 'CK.Admin.UserManagement.Filter.Role' ),
+      this.#translateService.instant( 'CK.Admin.UserManagement.Filter.Group' ),
       [
         { label: this.#translateService.instant( 'CK.Admin.UserManagement.Role.Administrator' ), value: 'admin' },
         { label: this.#translateService.instant( 'CK.Admin.UserManagement.Role.Member' ), value: 'member' }
       ],
       {
         defaultValue: [],
-        placeholder: this.#translateService.instant( 'CK.Admin.UserManagement.Filter.SelectRole' )
+        placeholder: this.#translateService.instant( 'CK.Admin.UserManagement.Filter.SelectGroup' )
       }
     );
     // <PostInitFilters />
@@ -336,7 +377,9 @@ export class UsersTab implements OnInit, AfterViewInit {
         name: 'edit',
         icon: faEdit,
         isDanger: false,
-        type: 'text',
+        // Same rendering as the action-bar buttons on the opposite side of the filters (which default
+        // to 'primary'): the row actions must not look like a different kind of button.
+        type: 'primary',
         tooltip: t['Button.Edit'],
         execute: ( u: WorkspaceUser ) => { void this.openUserEditModal( u ); },
         shouldBeDisplayed: () => true

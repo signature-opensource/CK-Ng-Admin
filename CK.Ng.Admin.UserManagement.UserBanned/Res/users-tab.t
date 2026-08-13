@@ -161,7 +161,7 @@ begin
              name: 'ban',
              icon: faBan,
              isDanger: true,
-             type: 'text',
+             type: 'primary',
              tooltip: t['Button.Ban'],
              execute: ( u: WorkspaceUser ) => this.confirmBanUsers( [u] ),
              shouldBeDisplayed: ( u: WorkspaceUser ) => !this.#isBanned( u )
@@ -170,7 +170,7 @@ begin
              name: 'unban',
              icon: faUnlock,
              isDanger: false,
-             type: 'text',
+             type: 'primary',
              tooltip: t['Button.Unban'],
              execute: ( u: WorkspaceUser ) => this.confirmUnbanUsers( [u] ),
              shouldBeDisplayed: ( u: WorkspaceUser ) => this.#isBanned( u )

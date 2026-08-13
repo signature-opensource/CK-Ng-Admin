@@ -66,6 +66,12 @@ describe( 'user-management integration', () => {
     const users = await cris.sendOrThrowAsync( new GetWorkspaceUsersQCommand() );
     expect( users.some( u => u.userName === 'UMAdmin' ) ).toBe( true );
 
+    // The "Groups" column of the users tab builds its tags from this list: every listed user at least
+    // belongs to the workspace zone group itself.
+    const admin = users.find( u => u.userName === 'UMAdmin' )!;
+    expect( admin.groups.length ).toBeGreaterThan( 0 );
+    expect( admin.groups.some( g => g.groupId === userService.currentWorkspace()!.groupId ) ).toBe( true );
+
     const pending = await cris.sendOrThrowAsync( new GetWorkspacePendingInvitationsQCommand() );
     expect( pending.some( i => i.email === email ) ).toBe( true );
   } );

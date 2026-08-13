@@ -3,6 +3,7 @@ using CK.DB.Actor;
 using CK.DB.User.UserPassword;
 using CK.IO.UserProfile.Workspace;
 using CK.SqlServer;
+using Dapper;
 using Microsoft.AspNetCore.Authentication;
 using System.Reflection;
 
@@ -44,6 +45,9 @@ if( cs is not null )
 //   - "TestUser"  / "success" -> plain member of the AdminZone (grant 16):       isAdmin == false.
 // Group ids in CK's default schema: 2 = Administrators, 3 = AdminZone.
 await SeedDemoUsersAsync( map!, monitor );
+// A second workspace AdminUser also belongs to, so the "Groups" column of the user list shows a
+// prefixed tag ("Villars: ContentManager") next to the unprefixed tag of the current workspace.
+await SeedSecondWorkspaceAsync( map!, monitor );
 
 var app = builder.CKBuild( map );
 
@@ -108,4 +112,53 @@ static async Task SeedDemoUsersAsync( IStObjMap map, IActivityMonitor monitor )
     await pwdTable.CreateOrUpdatePasswordUserAsync( ctx, 1, idAdmin, "success", CK.DB.Auth.UCLMode.CreateOrUpdate );
 
     monitor.Info( "Demo users 'AdminUser' and 'TestUser' are ready (password: 'success')." );
+}
+
+// Ensures a second demo workspace ("Villars") exists with a "ContentManager" group AdminUser belongs
+// to. The user list of the AdminZone workspace then displays two tags for AdminUser: the roles of the
+// current workspace, unprefixed, and "Villars: ContentManager" for the other one.
+static async Task SeedSecondWorkspaceAsync( IStObjMap map, IActivityMonitor monitor )
+{
+    const string workspaceName = "Villars";
+    const string groupName = "ContentManager";
+
+    var userTable = map.StObjs.Obtain<UserTable>()!;
+    var groupTable = map.StObjs.Obtain<CK.DB.Zone.GroupTable>()!;
+    var workspaceTable = map.StObjs.Obtain<CK.DB.Workspace.WorkspaceTable>()!;
+    var naming = map.StObjs.Obtain<CK.DB.Group.SimpleNaming.Package>()!;
+
+    using var ctx = new SqlStandardCallContext( monitor );
+
+    int idAdmin = await userTable.FindByNameAsync( ctx, "AdminUser" );
+    if( idAdmin <= 0 ) return;
+
+    try
+    {
+        int workspaceId = await ctx[userTable].QuerySingleOrDefaultAsync<int>(
+            "select ZoneId from CK.vZone where ZoneName = @Name;",
+            new { Name = workspaceName } );
+        if( workspaceId <= 0 )
+        {
+            var ws = await workspaceTable.CreateWorkspaceAsync( ctx, 1, workspaceName );
+            workspaceId = ws.WorkspaceId;
+        }
+
+        int groupId = await ctx[userTable].QuerySingleOrDefaultAsync<int>(
+            "select GroupId from CK.vGroup where ZoneId = @ZoneId and GroupName = @Name;",
+            new { ZoneId = workspaceId, Name = groupName } );
+        if( groupId <= 0 )
+        {
+            groupId = await groupTable.CreateGroupAsync( ctx, 1, workspaceId );
+            await naming.GroupRenameAsync( ctx, 1, groupId, groupName );
+        }
+
+        // autoAddUserInZone also makes AdminUser a member of the Villars workspace itself.
+        await groupTable.AddUserAsync( ctx, 1, groupId, idAdmin, autoAddUserInZone: true );
+        monitor.Info( $"Demo workspace '{workspaceName}' is ready with 'AdminUser' in its '{groupName}' group." );
+    }
+    catch( Exception e )
+    {
+        // Demo data only: a failure here must not prevent the sample from starting.
+        monitor.Warn( $"Could not seed the '{workspaceName}' demo workspace.", e );
+    }
 }

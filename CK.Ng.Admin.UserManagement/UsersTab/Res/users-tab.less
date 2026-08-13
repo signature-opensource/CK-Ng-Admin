@@ -2,6 +2,18 @@
   height: 100%;
 }
 
+// Tags of the "Groups" column (table cell and mobile line): they wrap instead of overflowing.
+.ck-group-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+
+  // The gap replaces the default tag spacing.
+  nz-tag {
+    margin-right: 0;
+  }
+}
+
 // Mobile list-view item rendered through #itemTemplate.
 .ck-list-item-infos {
   width: 100%;
@@ -35,5 +47,10 @@
     min-width: 0;
     text-align: right;
     overflow-wrap: anywhere;
+  }
+
+  // Tags stay on the value side of the line.
+  .ck-group-tags {
+    justify-content: flex-end;
   }
 }
