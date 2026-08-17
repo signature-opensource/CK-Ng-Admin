@@ -8,8 +8,8 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="CK.Cris.Auth" Version="0.43.2--ci.1" />
-        <PackageReference Include="CK.DB.AspNet.Auth" Version="31.0.3--ci.5" />
-        <PackageReference Include="CK.DB.User.UserPassword" Version="28.0.3--ci.5" />
+        <PackageReference Include="CK.DB.AspNet.Auth" Version="31.0.3--ci.6" />
+        <PackageReference Include="CK.DB.User.UserPassword" Version="28.0.3--ci.6" />
         <PackageReference Include="CK.DB.Workspace" Version="15.1.2--ci.1" />
         <PackageReference Include="CK.DB.Acl" Version="28.0.3--ci.1" />
         <PackageReference Include="CK.Ng.AspNet.Auth.Basic" Version="0.31.3--ci.7" />
@@ -31,9 +31,9 @@
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.5.1" />
         <PackageReference Include="NUnit3TestAdapter" Version="6.2.0" />
         <!-- Backend command handlers/services exercised by the integration spec, now consumed as a published package. -->
-        <PackageReference Include="CK.UserManagement" Version="0.2.0--ci.1" />
-        <PackageReference Include="CK.UserManagement.UserBanned" Version="0.2.0--ci.1" />
-        <PackageReference Include="CK.UserManagement.UserInvitation" Version="0.2.0--ci.1" />
+        <PackageReference Include="CK.UserManagement" Version="0.2.0--ci.2" />
+        <PackageReference Include="CK.UserManagement.UserBanned" Version="0.2.0--ci.2" />
+        <PackageReference Include="CK.UserManagement.UserInvitation" Version="0.2.0--ci.2" />
     </ItemGroup>
     <ItemGroup>
         <!-- NG components (UsersTab, forms, ...) + IO contracts, plus the invitation / banned siblings. -->
