@@ -14,17 +14,14 @@ import {
   EditUserForm,
   EditWorkspaceUserCommand,
   Filter,
+  ForceResetPasswordForm,
   ForceResetUserPasswordCommand,
   FormControlConfig,
-  generateStrongPassword,
-  GenericForm,
   GenericFormData,
   GetWorkspaceUsersQCommand,
   GroupInfos,
   HttpCrisEndpoint,
   NotificationService,
-  PASSWORD_MIN_LENGTH,
-  passwordComplexityValidator,
   SelectFilter,
   SimpleUserMessage,
   TableAction,
@@ -413,45 +410,24 @@ export class UsersTab implements OnInit, AfterViewInit {
 
   // Forced reset of a single user's password: the administrator sets a new one, always posed as a
   // temporary password server-side, so the user must choose its own before using the application
-  // (CK.Ng.UserProfile.UserPassword.Reset redirects it to the reset page on its next refresh).
+  // (CK.Ng.UserProfile.UserPassword.Reset guards every private page until then).
   confirmForceResetPassword( user: WorkspaceUser ): void {
     if ( !user ) return;
-
-    const formData: GenericFormData<unknown, unknown> = {
-      formControls: {
-        // Deliberately a readable text field, not a masked one: the administrator has to dictate the
-        // password to the user. It is pre-filled with a strong value, as in the creation flow.
-        password: new FormControlConfig( 'text',
-          this.#translateService.instant( 'CK.Admin.UserManagement.User.Password' ),
-          generateStrongPassword(),
-          {
-            placeholder: this.#translateService.instant( 'CK.Admin.UserManagement.User.Password' ),
-            required: true,
-            validators: [Validators.required, Validators.minLength( PASSWORD_MIN_LENGTH ), passwordComplexityValidator],
-            errorMessages: {
-              required: this.#translateService.instant( 'CK.Admin.UserManagement.User.PasswordRequired' ),
-              minlength: this.#translateService.instant( 'CK.Admin.UserManagement.User.PasswordMinLength' ),
-              passwordComplexity: this.#translateService.instant( 'CK.Admin.UserManagement.User.PasswordComplexity' )
-            }
-          } ),
-      }
-    };
 
     const opts: ModalOptions = {
       nzTitle: `${this.#translateService.instant( 'CK.Admin.UserManagement.Modal.ForceResetPassword' )} : ${user.userName} ?`,
       nzCancelText: this.#translateService.instant( 'Button.Cancel' ),
       nzOkText: this.#translateService.instant( 'Button.Confirm' ),
-      // GenericForm in modal mode reads its formData from NZ_MODAL_DATA: a single password field
-      // needs no dedicated component.
-      nzContent: GenericForm,
-      nzData: { formData },
-      nzOnOk: async ( cmp: GenericForm ) => {
-        const form = cmp.form();
+      // A dedicated component rather than the shared GenericForm: the password field carries a
+      // regenerate button as its suffix, which GenericForm cannot render.
+      nzContent: ForceResetPasswordForm,
+      nzData: { userName: user.userName },
+      nzOnOk: async ( cmp: ForceResetPasswordForm ) => {
         // Keep the modal open and reveal what is missing rather than rejecting silently.
-        if ( !form?.valid ) { form?.markAllAsTouched(); return Promise.reject(); }
+        if ( !cmp.valid ) { cmp.showErrors(); return Promise.reject(); }
         const cmd = new ForceResetUserPasswordCommand();
         cmd.userId = user.userId;
-        cmd.password = ( form.getRawValue() as { password: string } ).password;
+        cmd.password = cmp.getValue();
         const res = await this.#crisEndpoint.sendOrThrowAsync( cmd );
         this.#notifService.notifyUserMessage( res );
         return undefined;
