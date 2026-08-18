@@ -9,6 +9,8 @@
     "CK.Admin.UserManagement.Column.Groups": "Groups",
     "CK.Admin.UserManagement.Modal.CreateUser": "Create user",
     "CK.Admin.UserManagement.Modal.EditUser": "Edit user",
+    "CK.Admin.UserManagement.Modal.ForceResetPassword": "Reset the password of",
+    "CK.Admin.UserManagement.Button.ResetPassword": "Reset password",
     "CK.Admin.UserManagement.Form.DefaultLanguage": "Default language",
     "CK.Admin.UserManagement.Form.Groups": "Groups",
     "CK.Admin.UserManagement.Form.RegeneratePassword": "Generate a new password",

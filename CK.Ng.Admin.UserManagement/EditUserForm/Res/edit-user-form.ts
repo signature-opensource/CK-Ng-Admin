@@ -7,7 +7,7 @@ import { NZ_MODAL_DATA } from 'ng-zorro-antd/modal';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
-import { GenericForm, GenericFormData, GetWorkspaceUserEditDataQCommand, GroupInfos, HttpCrisEndpoint, PASSWORD_MIN_LENGTH, passwordComplexityValidator, UserWorkspaceGroupPicker, WorkspaceUser } from '@local/ck-gen';
+import { generateStrongPassword, GenericForm, GenericFormData, GetWorkspaceUserEditDataQCommand, GroupInfos, HttpCrisEndpoint, PASSWORD_MIN_LENGTH, passwordComplexityValidator, UserWorkspaceGroupPicker, WorkspaceUser } from '@local/ck-gen';
 
 @Component({
     selector: 'ck-edit-user-form',
@@ -59,7 +59,7 @@ export class EditUserForm implements OnInit {
         // On create, the admin sets an initial basic-authentication password (pre-filled with a strong
         // random value, regenerable from the input) so the new user can sign in right away.
         if (this.isCreate) {
-            controls['password'] = new FormControl<string>(this.#generatePassword(), {
+            controls['password'] = new FormControl<string>(generateStrongPassword(), {
                 nonNullable: true,
                 validators: [Validators.required, Validators.minLength(PASSWORD_MIN_LENGTH), passwordComplexityValidator]
             });
@@ -87,33 +87,7 @@ export class EditUserForm implements OnInit {
 
     // Regenerates the create-flow password into the input (bound to the refresh button).
     regeneratePassword(): void {
-        this.passwordControl?.setValue(this.#generatePassword());
-    }
-
-    // Builds a strong random password guaranteed to satisfy the complexity validator (at least one
-    // upper, lower, digit and special character). Ambiguous characters (0/O, 1/l/I) are excluded so
-    // the value stays easy to read and communicate.
-    #generatePassword(length = 16): string {
-        const upper = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
-        const lower = 'abcdefghijkmnpqrstuvwxyz';
-        const digits = '23456789';
-        const special = '!@#$%&*-_=+?';
-        const all = upper + lower + digits + special;
-        const pick = (set: string): string => set[this.#randomInt(set.length)];
-        const chars = [pick(upper), pick(lower), pick(digits), pick(special)];
-        while (chars.length < length) chars.push(pick(all));
-        // Fisher-Yates shuffle so the guaranteed characters are not always in front.
-        for (let i = chars.length - 1; i > 0; i--) {
-            const j = this.#randomInt(i + 1);
-            [chars[i], chars[j]] = [chars[j], chars[i]];
-        }
-        return chars.join('');
-    }
-
-    #randomInt(max: number): number {
-        const arr = new Uint32Array(1);
-        crypto.getRandomValues(arr);
-        return arr[0] % max;
+        this.passwordControl?.setValue(generateStrongPassword());
     }
 
     async ngOnInit(): Promise<void> {

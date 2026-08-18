@@ -6,7 +6,10 @@ using CK.TypeScript;
 namespace CK.Ng.Admin.UserManagement;
 
 [TypeScriptPackage]
-[Requires<AdminTSPackage>]
+[Requires<AdminTSPackage, UserProfile.UserPassword.Reset.UserProfilePasswordResetPackage>]
+
+// Strong password generation, shared by the creation form and the force-reset modal.
+[TypeScriptFile( "password-generator.ts", "generateStrongPassword" )]
 
 // Base workspace-user management: direct (basic) user creation + listing + edit. Invitation and
 // banned-user features are brought by the CK.Ng.Admin.UserManagement.{UserInvitation,UserBanned}
@@ -19,6 +22,7 @@ namespace CK.Ng.Admin.UserManagement;
 // Commands
 [RegisterTypeScriptType( typeof( ICreateWorkspaceUserCommand ) )]
 [RegisterTypeScriptType( typeof( IEditWorkspaceUserCommand ) )]
+[RegisterTypeScriptType( typeof( IForceResetUserPasswordCommand ) )]
 
 public class UserManagementTSPackage : TypeScriptPackage
 {

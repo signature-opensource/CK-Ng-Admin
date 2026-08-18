@@ -6,7 +6,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { first } from 'rxjs';
 import { ModalOptions, NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 import { NzTagModule } from 'ng-zorro-antd/tag';
-import { faEdit, faPlus, faRotate } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faKey, faPlus, faRotate } from '@fortawesome/free-solid-svg-icons';
 import {
   ActionBarContent,
   AdaptivePageLayout,
@@ -14,12 +14,17 @@ import {
   EditUserForm,
   EditWorkspaceUserCommand,
   Filter,
+  ForceResetUserPasswordCommand,
   FormControlConfig,
+  generateStrongPassword,
+  GenericForm,
   GenericFormData,
   GetWorkspaceUsersQCommand,
   GroupInfos,
   HttpCrisEndpoint,
   NotificationService,
+  PASSWORD_MIN_LENGTH,
+  passwordComplexityValidator,
   SelectFilter,
   SimpleUserMessage,
   TableAction,
@@ -136,6 +141,7 @@ export class UsersTab implements OnInit, AfterViewInit {
       'Button.Create',
       'Button.Edit',
       'Button.Refresh',
+      'CK.Admin.UserManagement.Button.ResetPassword',
       // <PostUsersTabTranslationKeys />
     ] ).pipe( first() ).subscribe( t => {
       this.#adminRoleLabel = t['CK.Admin.UserManagement.Role.Administrator'];
@@ -355,6 +361,14 @@ export class UsersTab implements OnInit, AfterViewInit {
           execute: () => this.openUserEditModal(),
           shouldBeDisplayed: () => this.selectedUsers.length === 1
         },
+        {
+          name: 'forceResetPassword',
+          displayName: t['CK.Admin.UserManagement.Button.ResetPassword'],
+          icon: faKey,
+          isDanger: false,
+          execute: () => this.confirmForceResetPassword( this.selectedUsers[0] ),
+          shouldBeDisplayed: () => this.selectedUsers.length === 1
+        },
         // <PostUsersTabRightActions />
         {
           name: 'refresh',
@@ -383,9 +397,67 @@ export class UsersTab implements OnInit, AfterViewInit {
         execute: ( u: WorkspaceUser ) => { void this.openUserEditModal( u ); },
         shouldBeDisplayed: () => true
       },
+      {
+        name: 'forceResetPassword',
+        icon: faKey,
+        isDanger: false,
+        type: 'text',
+        tooltip: t['CK.Admin.UserManagement.Button.ResetPassword'],
+        execute: ( u: WorkspaceUser ) => this.confirmForceResetPassword( u ),
+        shouldBeDisplayed: () => true
+      },
       // <PostUsersTabRowActions />
     ];
     // </UsersTabRowActionsRegistration>
+  }
+
+  // Forced reset of a single user's password: the administrator sets a new one, always posed as a
+  // temporary password server-side, so the user must choose its own before using the application
+  // (CK.Ng.UserProfile.UserPassword.Reset redirects it to the reset page on its next refresh).
+  confirmForceResetPassword( user: WorkspaceUser ): void {
+    if ( !user ) return;
+
+    const formData: GenericFormData<unknown, unknown> = {
+      formControls: {
+        // Deliberately a readable text field, not a masked one: the administrator has to dictate the
+        // password to the user. It is pre-filled with a strong value, as in the creation flow.
+        password: new FormControlConfig( 'text',
+          this.#translateService.instant( 'CK.Admin.UserManagement.User.Password' ),
+          generateStrongPassword(),
+          {
+            placeholder: this.#translateService.instant( 'CK.Admin.UserManagement.User.Password' ),
+            required: true,
+            validators: [Validators.required, Validators.minLength( PASSWORD_MIN_LENGTH ), passwordComplexityValidator],
+            errorMessages: {
+              required: this.#translateService.instant( 'CK.Admin.UserManagement.User.PasswordRequired' ),
+              minlength: this.#translateService.instant( 'CK.Admin.UserManagement.User.PasswordMinLength' ),
+              passwordComplexity: this.#translateService.instant( 'CK.Admin.UserManagement.User.PasswordComplexity' )
+            }
+          } ),
+      }
+    };
+
+    const opts: ModalOptions = {
+      nzTitle: `${this.#translateService.instant( 'CK.Admin.UserManagement.Modal.ForceResetPassword' )} : ${user.userName} ?`,
+      nzCancelText: this.#translateService.instant( 'Button.Cancel' ),
+      nzOkText: this.#translateService.instant( 'Button.Confirm' ),
+      // GenericForm in modal mode reads its formData from NZ_MODAL_DATA: a single password field
+      // needs no dedicated component.
+      nzContent: GenericForm,
+      nzData: { formData },
+      nzOnOk: async ( cmp: GenericForm ) => {
+        const form = cmp.form();
+        // Keep the modal open and reveal what is missing rather than rejecting silently.
+        if ( !form?.valid ) { form?.markAllAsTouched(); return Promise.reject(); }
+        const cmd = new ForceResetUserPasswordCommand();
+        cmd.userId = user.userId;
+        cmd.password = ( form.getRawValue() as { password: string } ).password;
+        const res = await this.#crisEndpoint.sendOrThrowAsync( cmd );
+        this.#notifService.notifyUserMessage( res );
+        return undefined;
+      }
+    };
+    this.#nzModalService.create( opts );
   }
 
   // Ban / unban confirm methods are injected here by the UserBanned sibling.

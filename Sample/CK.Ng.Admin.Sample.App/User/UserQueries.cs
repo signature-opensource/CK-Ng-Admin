@@ -10,6 +10,12 @@ namespace CK.Ng.Admin.Sample.App.User;
 /// The base <c>CK.sUserUserProfileRead</c> stored procedure only projects <c>UserId</c>/<c>UserName</c>, so this
 /// service is used by <see cref="GetUserProfileCommandHandler"/> to override the default
 /// <c>IGetUserProfileQCommand</c> handler with a result that includes groups + grant levels.
+/// <para>
+/// Beware: bypassing the procedure also bypasses every <c>transform:sUserUserProfileRead</c> a feature
+/// package contributes, so each of those columns must be mirrored here. That is the case of
+/// <c>IsTemporaryPassword</c> (CK.DB.User.UserPassword.Reset), read by the Angular navigation guard
+/// to redirect a user whose password is temporary to the reset page.
+/// </para>
 /// </summary>
 public class UserQueries : IAutoService
 {
@@ -33,6 +39,7 @@ public class UserQueries : IAutoService
                   ,u.UserName
                   ,u.PreferredWorkspaceId
                   ,u.ExtendedCultureId
+                  ,IsTemporaryPassword = isnull( p.IsTemporary, cast( 0 as bit ) )
                   ,GroupId    = isnull( g.GroupId, 0 )
                   ,GroupName  = isnull( g.GroupName, '' )
                   ,IsZone     = isnull( g.IsZone, cast( 0 as bit ) )
@@ -40,6 +47,7 @@ public class UserQueries : IAutoService
                   ,ZoneName   = isnull( z.ZoneName, '' )
                   ,GrantLevel = isnull( CK.fAclGrantLevel( @UserId, acl.AclId ), 0 )
             from CK.tUser u
+                left join CK.tUserPassword p     on p.UserId   = u.UserId
                 left join CK.tActorProfile ap
                     on ap.ActorId = u.UserId
                     and ap.ActorId <> ap.GroupId
@@ -60,6 +68,7 @@ public class UserQueries : IAutoService
                     up.UserName = user.UserName;
                     up.PreferredWorkspaceId = user.PreferredWorkspaceId;
                     up.ExtendedCultureId = user.ExtendedCultureId;
+                    up.IsTemporaryPassword = user.IsTemporaryPassword;
                     foreach( var g in u.Where( r => r.GroupId != 0 ).DistinctBy( r => r.GroupId ) )
                     {
                         up.Groups.Add( _pocoDirectory.Create<IUserGroup>( ug =>
@@ -87,6 +96,7 @@ record FlatUserProfile
     public string UserName { get; init; } = string.Empty;
     public int PreferredWorkspaceId { get; init; }
     public int ExtendedCultureId { get; init; }
+    public bool IsTemporaryPassword { get; init; }
     public int GroupId { get; init; }
     public string GroupName { get; init; } = string.Empty;
     public bool IsZone { get; init; }

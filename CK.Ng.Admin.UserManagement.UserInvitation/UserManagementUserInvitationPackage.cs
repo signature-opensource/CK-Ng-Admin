@@ -11,7 +11,7 @@ namespace CK.Ng.Admin.UserManagement.UserInvitation;
 /// components via <c>.t</c> transformers.
 /// </summary>
 [TypeScriptPackage]
-[Requires<UserManagementTSPackage>]
+[Requires<UserManagementTSPackage, UserProfile.UserPassword.Lost.UserProfilePasswordLostPackage>]
 
 // Q Commands
 [RegisterTypeScriptType( typeof( IGetPlatformPendingInvitationsQCommand ) )]
