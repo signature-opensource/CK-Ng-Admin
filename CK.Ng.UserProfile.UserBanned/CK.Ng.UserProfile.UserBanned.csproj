@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <Description>Banishment flow on the client side: a banished user is logged out and sent back to the authentication page, the instant the ban is pushed on the session channel, on the next reconnection when it was unreachable, or on the next navigation.</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="CK.Ng.UserProfile" Version="0.8.0--ci.18" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\CK.AspNet.SessionChannel\CK.AspNet.SessionChannel.csproj" />
+    </ItemGroup>
+
+</Project>

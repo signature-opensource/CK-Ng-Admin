@@ -32,9 +32,11 @@
     <PackageReference Include="CK.UserManagement.UserBanned" Version="0.2.0--ci.4" />
     <PackageReference Include="CK.UserManagement.UserInvitation" Version="0.2.0--ci.4" />
 
+    <ProjectReference Include="..\..\CK.AspNet.SessionChannel\CK.AspNet.SessionChannel.csproj" />
+    <ProjectReference Include="..\..\CK.Ng.UserProfile.UserBanned\CK.Ng.UserProfile.UserBanned.csproj" />
     <ProjectReference Include="..\..\CK.Ng.Admin.UserManagement\CK.Ng.Admin.UserManagement.csproj" />
-    <ProjectReference Include="..\..\CK.Ng.Admin.UserManagement.UserBanned\CK.Ng.Admin.UserManagement.UserBanned.csproj" />
-    <!--<ProjectReference Include="..\..\CK.Ng.Admin.UserManagement.UserInvitation\CK.Ng.Admin.UserManagement.UserInvitation.csproj" />-->
+    <!--<ProjectReference Include="..\..\CK.Ng.Admin.UserManagement.UserBanned\CK.Ng.Admin.UserManagement.UserBanned.csproj" />-->
+    <ProjectReference Include="..\..\CK.Ng.Admin.UserManagement.UserInvitation\CK.Ng.Admin.UserManagement.UserInvitation.csproj" />
     <ProjectReference Include="..\..\SLog.Mail.Branding\SLog.Mail.Branding.csproj" />
   </ItemGroup>
 </Project>
