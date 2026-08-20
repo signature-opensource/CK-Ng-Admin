@@ -17,7 +17,11 @@
 <!-- <PreItemTemplate revert /> -->
 <ng-template #itemTemplate let-user>
     <div class="ck-list-item-infos">
-        <span class="ck-list-item-primary-info">{{ user.userName }}</span>
+        <span class="ck-list-item-primary-info">
+            <!-- Same cell template as the table column: a sibling tagging the name (UserBanned) shows
+                 up on mobile too, with no second injection point to maintain. -->
+            <ng-container *ngTemplateOutlet="userNameCellTemplate; context: { row: user }" />
+        </span>
         <!-- <PostUsersTabItemInfo /> -->
         <div class="ck-list-item-line">
             <span>{{ 'CK.Admin.UserManagement.User.FirstName' | translate }}</span>
@@ -35,6 +39,16 @@
     </div>
 </ng-template>
 <!-- <PostItemTemplate /> -->
+
+<!-- <PreUserNameCellTemplate revert /> -->
+<ng-template #userNameCellTemplate let-user="row">
+    <span class="ck-user-name-cell">
+        <span>{{ user.userName }}</span>
+        <!-- Siblings (UserBanned) append a status tag right next to the name. -->
+        <!-- <PostUserNameCellTags /> -->
+    </span>
+</ng-template>
+<!-- <PostUserNameCellTemplate /> -->
 
 <!-- <PreGroupsCellTemplate revert /> -->
 <ng-template #groupsCellTemplate let-user="row">

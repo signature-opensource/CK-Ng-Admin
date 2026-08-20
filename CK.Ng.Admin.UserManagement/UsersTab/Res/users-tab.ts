@@ -40,6 +40,7 @@ import { locales } from '@local/ck-gen/ts-locales/locales';
 export class UsersTab implements OnInit, AfterViewInit {
   // <PreViewChildren revert />
   readonly layout = viewChild<AdaptivePageLayout<WorkspaceUser>>( 'layout' );
+  readonly userNameCellTemplate = viewChild.required<TemplateRef<TableCellContext<WorkspaceUser>>>( 'userNameCellTemplate' );
   readonly groupsCellTemplate = viewChild.required<TemplateRef<TableCellContext<WorkspaceUser>>>( 'groupsCellTemplate' );
   // <PostViewChildren />
 
@@ -261,6 +262,7 @@ export class UsersTab implements OnInit, AfterViewInit {
         sortDirections: ['ascend', 'descend'],
         hidden: false,
         sortFn: ( a: WorkspaceUser, b: WorkspaceUser ) => a.userName.localeCompare( b.userName ),
+        template: this.userNameCellTemplate(),
         filter: {
           visible: false,
           searchValue: '',

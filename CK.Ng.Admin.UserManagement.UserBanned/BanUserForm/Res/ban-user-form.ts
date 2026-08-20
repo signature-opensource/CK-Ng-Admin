@@ -22,11 +22,6 @@ function range( from: number, to: number ): Array<number> {
   return Array.from( { length: Math.max( 0, to - from ) }, ( _, i ) => from + i );
 }
 
-// Value of the reason select that opens the free-text field instead of sending a catalog key.
-// UsersTab builds the reason options and duplicates this value as #banOtherReason: the CK import
-// rewriter only resolves registered types from '@local/ck-gen', so a plain const cannot be shared.
-export const BAN_OTHER_REASON = 'other';
-
 export type BanDurationKey = 'eternal' | 'hour' | 'day' | 'week' | 'month' | 'custom';
 
 // Durations offered in the select. A missing `duration` means no end date is computed here:
@@ -55,7 +50,7 @@ export class BanUserForm {
   // <PostDependencyInjection />
 
   // <PreLocalVariables revert />
-  // Scalar-field config (keyReason/customKeyReason) consumed by the GenericForm. The GenericForm
+  // Scalar-field config (the free-text keyReason) consumed by the GenericForm. The GenericForm
   // also reads it from NZ_MODAL_DATA (modal mode); binding it satisfies its required input.
   public formData: GenericFormData<unknown, unknown>;
   // Names of the users being banned, shown as a reminder in the modal.
@@ -129,10 +124,8 @@ export class BanUserForm {
 
   getValue(): { keyReason: string, banEndDate?: DateTime } {
     const raw = this.formComponent()!.form()!.getRawValue();
-    // On "Other" the reason sent is the typed text, otherwise it is the catalog's technical key.
-    const keyReason = raw.keyReason === BAN_OTHER_REASON
-      ? ( raw.customKeyReason as string ).trim()
-      : raw.keyReason;
+    // The reason is free text: only the surrounding whitespace is dropped.
+    const keyReason = ( raw.keyReason as string ).trim();
     return { keyReason, banEndDate: this.#computeEndDate() };
   }
 

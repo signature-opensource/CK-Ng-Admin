@@ -10,6 +10,18 @@
   }
 }
 
+// The "User name" cell: the name, and the status tags a sibling (UserBanned) appends next to it.
+.ck-user-name-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  // The gap replaces the default tag spacing.
+  nz-tag {
+    margin-right: 0;
+  }
+}
+
 // Tags of the "Groups" column (table cell and mobile line): they wrap instead of overflowing.
 .ck-group-tags {
   display: flex;
