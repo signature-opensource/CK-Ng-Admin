@@ -1,4 +1,5 @@
 using CK.Core;
+using CK.Ng.UserProfile.UserPassword;
 using CK.TS.Angular;
 
 namespace CK.Ng.Admin.UserManagement;
@@ -14,6 +15,7 @@ namespace CK.Ng.Admin.UserManagement;
 /// </summary>
 [NgComponent]
 [Package<UserManagementTSPackage>]
+[Requires<PasswordStrengthComponent>]
 public sealed class ForceResetPasswordFormComponent : NgComponent
 {
 }

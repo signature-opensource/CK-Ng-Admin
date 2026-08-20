@@ -7,13 +7,13 @@ import { NZ_MODAL_DATA } from 'ng-zorro-antd/modal';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
-import { generateStrongPassword, PASSWORD_MIN_LENGTH, passwordComplexityValidator } from '@local/ck-gen';
+import { generateStrongPassword, PasswordStrength, passwordComplexityValidator } from '@local/ck-gen';
 
 @Component( {
   selector: 'ck-force-reset-password-form',
   templateUrl: './force-reset-password-form.html',
   styleUrls: ['./force-reset-password-form.less'],
-  imports: [FormsModule, ReactiveFormsModule, TranslateModule, FontAwesomeModule, NzButtonModule, NzFormModule, NzInputModule]
+  imports: [FormsModule, ReactiveFormsModule, TranslateModule, FontAwesomeModule, NzButtonModule, NzFormModule, NzInputModule, PasswordStrength]
 } )
 export class ForceResetPasswordForm {
   // <PreDependencyInjection revert />
@@ -32,7 +32,7 @@ export class ForceResetPasswordForm {
   public readonly form = new FormGroup( {
     password: new FormControl<string>( generateStrongPassword(), {
       nonNullable: true,
-      validators: [Validators.required, Validators.minLength( PASSWORD_MIN_LENGTH ), passwordComplexityValidator]
+      validators: [Validators.required, passwordComplexityValidator]
     } )
   } );
   // <PostLocalVariables />

@@ -9,8 +9,6 @@
     "CK.Admin.Register.LastName.Required": "Last name is required.",
     "CK.Admin.Register.Password.Placeholder": "Password",
     "CK.Admin.Register.Password.Required": "Password is required.",
-    "CK.Admin.Register.Password.MinLength": "Password must be at least 8 characters long.",
-    "CK.Admin.Register.Password.Complexity": "Password must include at least three of: uppercase, lowercase, digit, special character.",
     "CK.Admin.Register.ConfirmPassword.Placeholder": "Confirm password",
     "CK.Admin.Register.ConfirmPassword.Required": "Please confirm your password.",
     "CK.Admin.Register.ConfirmPassword.Mismatch": "Passwords do not match.",

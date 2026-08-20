@@ -19,7 +19,5 @@
     "CK.Admin.UserManagement.User.UserName": "Nom d'utilisateur",
     "CK.Admin.UserManagement.User.Password": "Mot de passe",
     "CK.Admin.UserManagement.User.PasswordRequired": "Un mot de passe est requis.",
-    "CK.Admin.UserManagement.User.PasswordMinLength": "Le mot de passe est trop court.",
-    "CK.Admin.UserManagement.User.PasswordComplexity": "Le mot de passe doit combiner au moins trois éléments parmi : majuscule, minuscule, chiffre et caractère spécial.",
     "CK.Admin.UserManagement.Data.ErrorWhileLoading": "Une erreur est survenue lors du chargement des données."
 }

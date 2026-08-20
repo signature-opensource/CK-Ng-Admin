@@ -19,7 +19,5 @@
     "CK.Admin.UserManagement.User.UserName": "Username",
     "CK.Admin.UserManagement.User.Password": "Password",
     "CK.Admin.UserManagement.User.PasswordRequired": "A password is required.",
-    "CK.Admin.UserManagement.User.PasswordMinLength": "The password is too short.",
-    "CK.Admin.UserManagement.User.PasswordComplexity": "The password must combine at least three of: uppercase, lowercase, digit and special character.",
     "CK.Admin.UserManagement.Data.ErrorWhileLoading": "An error occurred while loading data."
 }

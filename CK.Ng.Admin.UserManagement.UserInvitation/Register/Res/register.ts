@@ -31,7 +31,7 @@ import {
   CompleteRegistrationCommand,
   HttpCrisEndpoint,
   NotificationService,
-  PASSWORD_MIN_LENGTH,
+  PasswordStrength,
   passwordComplexityValidator,
   passwordsMatchValidator,
   PendingUser,
@@ -53,7 +53,8 @@ import { UserMessageLevel } from '@local/ck-gen';
     NzFormModule,
     NzInputModule,
     NzSelectModule,
-    NzSpinModule
+    NzSpinModule,
+    PasswordStrength
   ]
 } )
 export class Register implements OnInit {
@@ -111,7 +112,7 @@ export class Register implements OnInit {
       // <PrePasswordFormControlDefinition revert />
       password: new FormControl<string>( '', {
         nonNullable: true,
-        validators: [Validators.required, Validators.minLength( PASSWORD_MIN_LENGTH ), passwordComplexityValidator]
+        validators: [Validators.required, passwordComplexityValidator]
       } ),
       // <PostPasswordFormControlDefinition />
       // <PreConfirmPasswordFormControlDefinition revert />
