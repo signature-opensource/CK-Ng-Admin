@@ -13,7 +13,8 @@ namespace CK.AspNet.SessionChannel;
 public interface ISessionChannelPush : ISingletonAutoService
 {
     /// <summary>
-    /// Pushes <c>{"type":"&lt;type&gt;"}</c> to every connection currently bound to <paramref name="userId"/>.
+    /// Pushes <c>{"type":"&lt;type&gt;"}</c> to every connection currently bound to <paramref name="userId"/>,
+    /// under the session topic of the application-wide channel.
     /// Does nothing when the user has no open connection: an offline client is caught later, when it
     /// reconnects and re-sends its <see cref="IRegisterSessionCommand"/>.
     /// </summary>

@@ -1,7 +1,6 @@
+using CK.AspNet.WebSocketChannel;
 using CK.Core;
 using CK.Cris;
-using Microsoft.Extensions.Hosting;
-using SimpleR;
 using System;
 using System.Buffers;
 using System.Collections.Concurrent;
@@ -11,37 +10,47 @@ using System.Threading.Tasks;
 namespace CK.AspNet.SessionChannel;
 
 /// <summary>
-/// Singleton that tracks every open <see cref="SessionConnection"/>, keyed by connection identifier,
-/// and indexes them by the user they have been bound to so that a message can reach all the
-/// connections of one user at once (several tabs, several devices).
+/// Indexes the connections of the channel by the user they have been bound to, so that a message can
+/// reach all the connections of one user at once (several tabs, several devices).
 /// <para>
 /// Handles <see cref="IRegisterSessionCommand"/>: this is where an anonymous socket becomes the socket
-/// of an identified user.
+/// of an identified user. The socket itself belongs to <see cref="WebSocketChannelManager"/>; what
+/// lives here is only the identity index, and this feature claims the <see cref="Topic"/> topic on it.
 /// </para>
 /// </summary>
 public sealed class SessionChannelRegistry : IRealObject, ISessionChannelPush
 {
-    readonly ConcurrentDictionary<string, SessionConnection> _connections = new();
-    // Reverse index used by PushAsync: the connection identifiers of one user. The inner dictionary is
-    // a set (its byte value is never read); a user legitimately has several connections at once.
-    readonly ConcurrentDictionary<int, ConcurrentDictionary<string, byte>> _byActor = new();
+    /// <summary>
+    /// The channel topic of the session messages. The TypeScript side matches on this exact string
+    /// (see <c>session-channel.ts</c>).
+    /// </summary>
+    public const string Topic = "SC";
 
-    // Set by AbortAll on ApplicationStopping: once stopping, new connections are refused so an
-    // auto-reconnecting client cannot re-arm the full ShutdownTimeout drain.
-    volatile bool _stopping;
+    // The connection identifiers of one user. The inner dictionary is a set (its byte value is never
+    // read); a user legitimately has several connections at once.
+    readonly ConcurrentDictionary<int, ConcurrentDictionary<string, byte>> _byActor = new();
+    // The reverse mapping, so that a closed connection is unindexed without having to ask anyone which
+    // user it was bound to. It is also what lets a connection carry no identity of its own.
+    readonly ConcurrentDictionary<string, int> _actorByConnection = new();
+
+    WebSocketChannelManager _channel = null!;
+
+    void StObjConstruct( WebSocketChannelManager channel )
+    {
+        _channel = channel;
+    }
 
     /// <summary>
-    /// Registers <see cref="AbortAll"/> on <see cref="IHostApplicationLifetime.ApplicationStopping"/> so
-    /// open connections are aborted before Kestrel starts draining (OnHostStopAsync is only a late
-    /// backstop).
+    /// Subscribes to the channel here rather than in <c>OnHostStart</c>: several hosts can start on the
+    /// same StObjMap (tests do), and a subscription per start would pile handlers up. StObjInitialize
+    /// runs once per map.
     /// </summary>
-    void OnHostStart( IActivityMonitor monitor, IHostApplicationLifetime lifetime )
+    void StObjInitialize( IActivityMonitor monitor, IStObjObjectMap map )
     {
-        // This real object is a process singleton: reset _stopping so the registry is reusable if a new
-        // host starts on the same StObjMap (e.g. across tests) after a previous host stopped.
-        _stopping = false;
-        lifetime.ApplicationStopping.Register( AbortAll );
+        _channel.ConnectionClosed.Sync += OnConnectionClosed;
     }
+
+    void OnConnectionClosed( IActivityMonitor monitor, ConnectionClosedEvent e ) => Unindex( e.ConnectionId );
 
     /// <summary>
     /// Handles <see cref="IRegisterSessionCommand"/>: binds the connection to the calling user.
@@ -56,24 +65,30 @@ public sealed class SessionChannelRegistry : IRealObject, ISessionChannelPush
     public void HandleRegisterSession( IActivityMonitor monitor, IRegisterSessionCommand command )
     {
         int actorId = command.ActorId.GetValueOrDefault();
-        if( !_connections.TryGetValue( command.ConnectionId, out var connection ) )
+        if( _channel.TryGetConnection( command.ConnectionId, out _ ) is false )
         {
             // Also covers the legitimate case of a socket closed between the negotiation and this
             // command: the client renegotiates a new identifier anyway.
             Throw.InvalidDataException( $"Connection {command.ConnectionId} does not exist, or is not identified as you." );
-            return;
         }
         // Re-registering the same connection is harmless: the client renegotiates on every reconnection
         // and a retry must not create a second index entry.
-        if( connection.ActorId != 0 && connection.ActorId != actorId )
+        if( _actorByConnection.GetOrAdd( command.ConnectionId, actorId ) != actorId )
         {
             Throw.InvalidDataException( $"Connection {command.ConnectionId} is already bound to another user." );
-            return;
         }
-        connection.ActorId = actorId;
         _byActor.GetOrAdd( actorId, _ => new ConcurrentDictionary<string, byte>() )
-                .TryAdd( connection.ConnectionId, 0 );
-        monitor.Trace( $"Session channel: connection {connection.ConnectionId} bound to user {actorId}." );
+                .TryAdd( command.ConnectionId, 0 );
+
+        // The connection can vanish between the check above and this line: the closed event would then
+        // have found nothing to unindex, and the entry would stay in the index for the lifetime of the
+        // process. Clean up rather than leak.
+        if( _channel.TryGetConnection( command.ConnectionId, out _ ) is false )
+        {
+            Unindex( command.ConnectionId );
+            Throw.InvalidDataException( $"Connection {command.ConnectionId} does not exist, or is not identified as you." );
+        }
+        monitor.Trace( $"Session channel: connection {command.ConnectionId} bound to user {actorId}." );
     }
 
     /// <inheritdoc />
@@ -84,10 +99,7 @@ public sealed class SessionChannelRegistry : IRealObject, ISessionChannelPush
         var message = CreateTypedMessage( type );
         foreach( var connectionId in connectionIds.Keys )
         {
-            if( _connections.TryGetValue( connectionId, out var connection ) )
-            {
-                await connection.WriteAsync( message ).ConfigureAwait( false );
-            }
+            await _channel.SendAsync( connectionId, Topic, message ).ConfigureAwait( false );
         }
     }
 
@@ -104,86 +116,15 @@ public sealed class SessionChannelRegistry : IRealObject, ISessionChannelPush
         return buffer.WrittenMemory;
     }
 
-    internal async Task<bool> CreateAsync( IWebsocketConnectionContext<ReadOnlyMemory<byte>> connection )
-    {
-        // Refuse new connections once stopping so a reconnect cannot re-arm the ShutdownTimeout drain.
-        if( _stopping )
-        {
-            connection.Abort();
-            return false;
-        }
-
-        var session = new SessionConnection( connection );
-        if( _connections.TryAdd( connection.ConnectionId, session ) is false )
-        {
-            await session.DisposeAsync().ConfigureAwait( false );
-            return false;
-        }
-
-        // Re-check: AbortAll sets _stopping before iterating, so it may have missed this entry added
-        // just after.
-        if( _stopping && _connections.TryRemove( connection.ConnectionId, out _ ) )
-        {
-            connection.Abort();
-            await session.DisposeAsync().ConfigureAwait( false );
-            return false;
-        }
-
-        return true;
-    }
-
-    /// <summary>
-    /// Sets the stopping flag then aborts every tracked connection (registered on ApplicationStopping
-    /// by <see cref="OnHostStart"/>). Each connection is then removed by <see cref="DestroyAsync"/> as
-    /// its read loop ends.
-    /// </summary>
-    internal void AbortAll()
-    {
-        _stopping = true;
-        foreach( var kv in _connections )
-        {
-            kv.Value.Abort();
-        }
-    }
-
-    internal async Task<bool> DestroyAsync( string connectionId )
-    {
-        if( _connections.TryRemove( connectionId, out var connection ) )
-        {
-            Unindex( connection );
-            await connection.DisposeAsync().ConfigureAwait( false );
-            return true;
-        }
-
-        return false;
-    }
-
     // Removes the connection from the per-user index, and the user entry itself once its last
     // connection is gone: without this the dictionary would keep one empty set per user ever seen.
-    void Unindex( SessionConnection connection )
+    void Unindex( string connectionId )
     {
-        int actorId = connection.ActorId;
-        if( actorId == 0 ) return; // Never registered: it is not in the index.
+        if( !_actorByConnection.TryRemove( connectionId, out int actorId ) ) return; // Never registered.
         if( _byActor.TryGetValue( actorId, out var connectionIds ) )
         {
-            connectionIds.TryRemove( connection.ConnectionId, out _ );
+            connectionIds.TryRemove( connectionId, out _ );
             if( connectionIds.IsEmpty ) _byActor.TryRemove( actorId, out _ );
-        }
-    }
-
-    async Task OnHostStopAsync( IActivityMonitor monitor )
-    {
-        // Late backstop: AbortAll should already have closed everything. Abort (not just dispose) any
-        // straggler, since DisposeAsync alone never aborts the socket.
-        _stopping = true;
-        foreach( var kv in _connections )
-        {
-            if( _connections.TryRemove( kv.Key, out var connection ) )
-            {
-                Unindex( connection );
-                connection.Abort();
-                await connection.DisposeAsync().ConfigureAwait( false );
-            }
         }
     }
 }

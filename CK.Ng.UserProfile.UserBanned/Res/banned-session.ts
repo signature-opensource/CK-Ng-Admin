@@ -7,7 +7,8 @@ import {
   NgAuthService,
   NotificationService,
   SessionChannel,
-  UserService
+  UserService,
+  WSConnection
 } from '@local/ck-gen';
 
 /**
@@ -17,13 +18,7 @@ import {
 const BANNED_MESSAGE_TYPE = 'banned';
 
 /**
- * WebSocket endpoint of the session channel. Must stay in sync with
- * `WebApplicationBuilderExtensions.SessionChannelPath`.
- */
-const SESSION_CHANNEL_URL = '/ws/session';
-
-/**
- * Owns the session channel and the single logout path of the banishment flow.
+ * Owns the session side of the channel and the single logout path of the banishment flow.
  *
  * Three detections lead to the same exit, and they can fire together, hence the guard flag:
  *  - the server pushes `banned` on the channel: this is the nominal, instant case;
@@ -43,6 +38,7 @@ export class BannedSession {
   readonly #router = inject( Router );
   readonly #translateService = inject( TranslateService );
   readonly #userService = inject( UserService );
+  readonly #wsConnection = inject( WSConnection );
 
   readonly #channel: SessionChannel;
   // Held while a logout is in flight: the three detections are concurrent by design and only the
@@ -50,12 +46,13 @@ export class BannedSession {
   #loggingOut = false;
 
   constructor() {
-    this.#channel = new SessionChannel( SESSION_CHANNEL_URL, this.#crisEndpoint );
+    this.#channel = new SessionChannel( this.#wsConnection, this.#crisEndpoint );
     this.#channel.onMessage( BANNED_MESSAGE_TYPE, () => void this.logoutBannedAsync() );
     this.#channel.onRegisterError( () => void this.#onRegisterRejectedAsync() );
 
-    // No socket for an anonymous visitor, and one that closes on logout. Reading the signal here is
-    // what re-opens the channel after a login.
+    // Nothing to watch for an anonymous visitor, and nothing left to watch after a logout. Reading
+    // the signal here is what re-claims the topic after a login. The socket itself is the
+    // application's and stays open throughout: only this feature's interest in it comes and goes.
     effect( () => {
       if ( this.#authService.authenticationInfo().level >= AuthLevel.Normal ) this.#channel.start();
       else void this.#channel.stopAsync();
@@ -76,7 +73,7 @@ export class BannedSession {
     if ( this.#authService.authenticationInfo().level < AuthLevel.Normal ) return;
     this.#loggingOut = true;
     try {
-      // Stop first: the socket must not resurrect itself while the logout is in flight.
+      // Stop first: no session message must land while the logout is in flight.
       await this.#channel.stopAsync();
       this.#notifService.notifySimpleMessage( 'error', this.#translateService.instant( 'CK.Auth.Banned.Message' ) );
       await this.#authService.authService.logout();

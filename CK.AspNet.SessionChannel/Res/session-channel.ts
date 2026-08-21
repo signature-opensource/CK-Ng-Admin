@@ -1,4 +1,4 @@
-import { CrisEndpoint, RegisterSessionCommand } from '@local/ck-gen';
+import { CrisEndpoint, RegisterSessionCommand, WSConnection } from '@local/ck-gen';
 
 /**
  * A message pushed by the server. Only `type` is guaranteed: senders are free to add their own
@@ -12,35 +12,34 @@ export interface SessionChannelMessage {
 export type SessionMessageHandler = ( message: SessionChannelMessage ) => void;
 export type SessionErrorHandler = ( error: unknown ) => void;
 
-// Reconnection backoff: doubles on each failed attempt, capped. A ban is a rare event, there is no
-// point hammering a server that is down.
-const RECONNECT_MIN_MS = 1000;
-const RECONNECT_MAX_MS = 30000;
+/**
+ * Channel topic of the session messages. Must stay in sync with `SessionChannelRegistry.Topic`.
+ */
+const SESSION_TOPIC = 'SC';
 
 /**
- * Client of the server-to-client session channel.
+ * Session side of the application-wide WebSocket channel.
  *
- * The socket itself carries no credential: it is opened anonymously, the server answers with a
- * connection identifier, and the identity is bound afterwards by sending that identifier through the
- * authenticated Cris endpoint. No token ever transits in the socket URL.
+ * The socket carries no credential: it is opened anonymously by WSConnection, the server answers with
+ * a connection identifier, and this class binds the identity afterwards by sending that identifier
+ * through the authenticated Cris endpoint. No token ever transits in the socket URL.
  *
- * That negotiation is replayed in full on every reconnection, which is what makes the channel
- * self-healing: whatever the server refuses at registration time (a banished user, typically) is
- * refused again the moment the client comes back, without any polling in between.
+ * That binding is replayed on every reconnection, which is what makes the session self-healing:
+ * whatever the server refuses at registration time (a banished user, typically) is refused again the
+ * moment the client comes back, without any polling in between.
+ *
+ * It owns no socket. Starting and stopping this channel claims and releases the `SC` topic; the
+ * connection stays up for the other features either way.
  */
 export class SessionChannel {
   readonly #handlers = new Map<string, Array<SessionMessageHandler>>();
   readonly #registerErrorHandlers: Array<SessionErrorHandler> = [];
-
-  #socket?: WebSocket;
-  #connectionId?: string;
-  // True between stopAsync() and the next start(): tells the close handler not to reconnect.
-  #stopped = true;
-  #reconnectDelay = RECONNECT_MIN_MS;
-  #reconnectTimer?: ReturnType<typeof setTimeout>;
+  // Whether the caller asked for a session. Only used to keep start()/stopAsync() idempotent and to
+  // drop the answer of a registration that was in flight when the session was stopped.
+  #started = false;
 
   constructor(
-    private readonly url: string,
+    private readonly wsConnection: WSConnection,
     private readonly crisEndpoint: CrisEndpoint
   ) { }
 
@@ -59,83 +58,45 @@ export class SessionChannel {
     this.#registerErrorHandlers.push( handler );
   }
 
-  /** Opens the channel. Idempotent: calling it on an open channel does nothing. */
+  /** Starts the session: claims the topic and binds the current connection. Idempotent. */
   start(): void {
-    if ( !this.#stopped ) return;
-    this.#stopped = false;
-    this.#reconnectDelay = RECONNECT_MIN_MS;
-    this.#connect();
-  }
-
-  /** Closes the channel and cancels any pending reconnection. */
-  async stopAsync(): Promise<void> {
-    this.#stopped = true;
-    if ( this.#reconnectTimer !== undefined ) {
-      clearTimeout( this.#reconnectTimer );
-      this.#reconnectTimer = undefined;
-    }
-    const socket = this.#socket;
-    this.#socket = this.#connectionId = undefined;
-    if ( !socket ) return;
-    await new Promise<void>( resolve => {
-      // Resolve on close rather than immediately: callers stop the channel to release it, and a
-      // half-closed socket would still deliver messages.
-      socket.addEventListener( 'close', () => resolve(), { once: true } );
-      try {
-        socket.close();
-      } catch ( e ) {
-        console.error( e );
-        resolve();
-      }
+    if ( this.#started ) return;
+    this.#started = true;
+    this.wsConnection.addHandler( SESSION_TOPIC, {
+      onMessage: message => this.#dispatch( message ),
+      // Every reconnection needs the identity bound again: the identifier of the previous socket is
+      // gone with it. This is the whole reason the ban of an unreachable user lands as soon as it
+      // comes back, with no polling in between.
+      onConnected: connectionId => void this.#registerAsync( connectionId )
     } );
+    // Already connected: bind now. Otherwise onConnected will, as soon as we are.
+    const connectionId = this.wsConnection.connectionId;
+    if ( connectionId !== undefined ) void this.#registerAsync( connectionId );
   }
 
-  #connect(): void {
-    this.#connectionId = undefined;
-    let socket: WebSocket;
-    try {
-      socket = new WebSocket( this.url );
-    } catch ( e ) {
-      // A malformed URL or a blocked scheme: retrying cannot hurt, and stopping silently would leave
-      // the channel dead with no trace.
-      console.error( e );
-      this.#scheduleReconnect();
-      return;
+  /**
+   * Stops the session: releases the topic, callbacks included. The socket belongs to the application
+   * and is shared with the other features, so it is deliberately left open.
+   */
+  stopAsync(): Promise<void> {
+    if ( this.#started ) {
+      this.#started = false;
+      this.wsConnection.removeHandler( SESSION_TOPIC );
     }
-    this.#socket = socket;
-    socket.onmessage = event => this.#onMessageEvent( socket, event );
-    // onerror is always followed by onclose: reconnection is handled there only, so a single failure
-    // cannot schedule two attempts.
-    socket.onerror = () => console.warn( 'Session channel: socket error.' );
-    socket.onclose = () => this.#onCloseEvent( socket );
+    return Promise.resolve();
   }
 
-  #onMessageEvent( socket: WebSocket, event: MessageEvent ): void {
-    // A late message from a socket already replaced by a reconnection must be ignored.
-    if ( socket !== this.#socket ) return;
-    let data: { connectionId?: string } & Partial<SessionChannelMessage>;
-    try {
-      data = JSON.parse( event.data );
-    } catch ( e ) {
-      console.error( 'Session channel: unparseable message.', e );
-      return;
-    }
-    // The first message of a connection is the negotiation, and it is the only one carrying a
-    // connectionId. Everything after it is a typed message.
-    if ( this.#connectionId === undefined && typeof data.connectionId === 'string' ) {
-      this.#connectionId = data.connectionId;
-      void this.#registerAsync( socket, data.connectionId );
-      return;
-    }
-    if ( typeof data.type !== 'string' ) {
+  #dispatch( message: unknown ): void {
+    const m = message as Partial<SessionChannelMessage>;
+    if ( typeof m?.type !== 'string' ) {
       console.warn( 'Session channel: message without a type, ignored.' );
       return;
     }
-    const handlers = this.#handlers.get( data.type );
+    const handlers = this.#handlers.get( m.type );
     if ( !handlers ) return;
     for ( const handler of handlers ) {
       try {
-        handler( data as SessionChannelMessage );
+        handler( m as SessionChannelMessage );
       } catch ( e ) {
         // One faulty handler must not prevent the others from seeing the message.
         console.error( e );
@@ -143,16 +104,14 @@ export class SessionChannel {
     }
   }
 
-  async #registerAsync( socket: WebSocket, connectionId: string ): Promise<void> {
+  async #registerAsync( connectionId: string ): Promise<void> {
     const command = new RegisterSessionCommand();
     command.connectionId = connectionId;
     try {
       await this.crisEndpoint.sendOrThrowAsync( command );
-      // Only a completed negotiation proves the server is healthy: resetting the backoff earlier
-      // would let a server that accepts sockets but refuses commands be hammered.
-      this.#reconnectDelay = RECONNECT_MIN_MS;
     } catch ( e ) {
-      if ( socket !== this.#socket ) return; // Obsolete socket, the answer no longer matters.
+      // A reconnection or a stop while the command was in flight: the answer no longer concerns us.
+      if ( !this.#started || connectionId !== this.wsConnection.connectionId ) return;
       for ( const handler of this.#registerErrorHandlers ) {
         try {
           handler( e );
@@ -161,22 +120,5 @@ export class SessionChannel {
         }
       }
     }
-  }
-
-  #onCloseEvent( socket: WebSocket ): void {
-    if ( socket !== this.#socket ) return; // Close of a socket already replaced: nothing to do.
-    this.#socket = this.#connectionId = undefined;
-    if ( this.#stopped ) return;
-    this.#scheduleReconnect();
-  }
-
-  #scheduleReconnect(): void {
-    if ( this.#stopped || this.#reconnectTimer !== undefined ) return;
-    const delay = this.#reconnectDelay;
-    this.#reconnectDelay = Math.min( delay * 2, RECONNECT_MAX_MS );
-    this.#reconnectTimer = setTimeout( () => {
-      this.#reconnectTimer = undefined;
-      if ( !this.#stopped ) this.#connect();
-    }, delay );
   }
 }

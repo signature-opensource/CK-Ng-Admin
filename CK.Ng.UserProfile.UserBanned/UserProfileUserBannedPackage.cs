@@ -21,7 +21,7 @@ namespace CK.Ng.UserProfile.UserBanned;
 /// </para>
 /// </summary>
 [TypeScriptPackage]
-[Requires<UserProfilePackage, SessionChannelPackage>]
+[Requires<UserProfilePackage, SessionChannelPackage, CK.Ng.WebSocketChannel.NgWebSocketChannelPackage>]
 // Navigation guard of the banishment flow, registered on the private page by AppRoutes.t.
 [TypeScriptFile( "banned-guard.ts", "bannedGuard" )]
 // Holds the session channel and owns the single logout path shared by all three detections.

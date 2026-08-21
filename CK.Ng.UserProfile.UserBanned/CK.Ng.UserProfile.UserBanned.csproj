@@ -13,6 +13,8 @@
 
     <ItemGroup>
         <ProjectReference Include="..\CK.AspNet.SessionChannel\CK.AspNet.SessionChannel.csproj" />
+        <!-- TEMPORARY: replace with a PackageReference to CK.Ng.WebSocketChannel once CK-TypeScript has been released on the CI feed. -->
+        <ProjectReference Include="..\..\CK-TypeScript\CK.Ng.WebSocketChannel\CK.Ng.WebSocketChannel.csproj" />
     </ItemGroup>
 
 </Project>
