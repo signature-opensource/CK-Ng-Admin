@@ -69,9 +69,8 @@ export class SessionChannel {
       // comes back, with no polling in between.
       onConnected: connectionId => void this.#registerAsync( connectionId )
     } );
-    // Already connected: bind now. Otherwise onConnected will, as soon as we are.
-    const connectionId = this.wsConnection.connectionId;
-    if ( connectionId !== undefined ) void this.#registerAsync( connectionId );
+    // No catch-up needed for a connection that is already established: addHandler calls onConnected
+    // right away in that case.
   }
 
   /**
