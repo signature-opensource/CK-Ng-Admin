@@ -7,13 +7,13 @@ import { NZ_MODAL_DATA } from 'ng-zorro-antd/modal';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
-import { generateStrongPassword, GenericForm, GenericFormData, GetWorkspaceUserEditDataQCommand, GroupInfos, HttpCrisEndpoint, PASSWORD_MIN_LENGTH, passwordComplexityValidator, UserWorkspaceGroupPicker, WorkspaceUser } from '@local/ck-gen';
+import { generateStrongPassword, GenericForm, GenericFormData, GetWorkspaceUserEditDataQCommand, GroupInfos, HttpCrisEndpoint, PasswordStrength, passwordComplexityValidator, UserWorkspaceGroupPicker, WorkspaceUser } from '@local/ck-gen';
 
 @Component({
     selector: 'ck-edit-user-form',
     templateUrl: './edit-user-form.html',
     styleUrls: ['./edit-user-form.less'],
-    imports: [FormsModule, ReactiveFormsModule, NzFormModule, NzInputModule, NzButtonModule, FontAwesomeModule, TranslateModule, UserWorkspaceGroupPicker, GenericForm]
+    imports: [FormsModule, ReactiveFormsModule, NzFormModule, NzInputModule, NzButtonModule, FontAwesomeModule, TranslateModule, UserWorkspaceGroupPicker, GenericForm, PasswordStrength]
 })
 export class EditUserForm implements OnInit {
     // <PreViewChildren revert />
@@ -61,7 +61,7 @@ export class EditUserForm implements OnInit {
         if (this.isCreate) {
             controls['password'] = new FormControl<string>(generateStrongPassword(), {
                 nonNullable: true,
-                validators: [Validators.required, Validators.minLength(PASSWORD_MIN_LENGTH), passwordComplexityValidator]
+                validators: [Validators.required, passwordComplexityValidator]
             });
         }
         this.customForm = new FormGroup(controls);

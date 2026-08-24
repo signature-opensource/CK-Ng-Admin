@@ -99,14 +99,12 @@
                 <!-- <PrePasswordError revert /> -->
                 @if ( registerForm.get( 'password' )!.hasError( 'required' ) ) {
                     <span>{{ 'CK.Admin.Register.Password.Required' | translate }}</span>
-                } @else if ( registerForm.get( 'password' )!.hasError( 'minlength' ) ) {
-                    <span>{{ 'CK.Admin.Register.Password.MinLength' | translate }}</span>
-                } @else if ( registerForm.get( 'password' )!.hasError( 'passwordComplexity' ) ) {
-                    <span>{{ 'CK.Admin.Register.Password.Complexity' | translate }}</span>
                 }
                 <!-- <PostPasswordError /> -->
             </ng-template>
         </nz-form-item>
+        <ck-password-strength [password]="registerForm.get( 'password' )!.value" />
+
         <!-- <PostPasswordFormItem /> -->
 
         <!-- <PreConfirmPasswordFormItem revert /> -->

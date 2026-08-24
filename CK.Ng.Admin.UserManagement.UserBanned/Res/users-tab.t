@@ -2,13 +2,23 @@ create <ts> transformer
 begin
     ensure import { BanUserForm, DestroyUserBannedCommand, SetUserBannedCommand, SwitchFilter, UserBan } from '@local/ck-gen';
     ensure import { faBan, faUnlock } from '@fortawesome/free-solid-svg-icons';
-    // AbstractControl types the cross-field validator that makes the free-text reason mandatory.
+    // AbstractControl types the validator that rejects a blank reason.
     ensure import { AbstractControl } from '@angular/forms';
     // The generated Poco exposes the ban dates as luxon DateTime (not JS Date).
     ensure import { DateTime } from 'luxon';
+    // The banned tag carries a tooltip: the module must join the base component's imports.
+    ensure import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+
+    // The tag injected into the user-name cell needs the tooltip directive. Only the imports array of
+    // the @Component decorator is targeted, so the NzTagModule of the import statement above is left alone.
+    in after "@Component"
+        in first {^braces}
+            in after "imports:"
+                in first {^[]}
+                    replace "NzTagModule" with "NzTagModule, NzToolTipModule";
 
     // The banned-users filter field, and the "currently banned" predicate. A banishment is active when
-    // now falls inside [banStartDate, banEndDate[ — the same window as CK.fUserBannedViewAt.
+    // now falls inside [banStartDate, banEndDate[ - the same window as CK.fUserBannedViewAt.
     inject """
            #bannedFilter!: SwitchFilter;
 
@@ -17,71 +27,23 @@ begin
              return ( u.bans ?? [] ).filter( b => b.banStartDate.toMillis() <= now && now < b.banEndDate.toMillis() );
            }
 
-           #isBanned( u: WorkspaceUser ): boolean {
+           // Not a #private member: the user-name cell template calls it, and a template cannot resolve
+           // a private field.
+           protected isBanned( u: WorkspaceUser ): boolean {
              return this.#activeBans( u ).length > 0;
-           }
-
-           // Select value that opens the free-text reason instead of sending a catalog key. Must stay
-           // in sync with BAN_OTHER_REASON in ban-user-form.ts, which reads the form back: the CK
-           // import rewriter only resolves registered types from '@local/ck-gen', not plain consts,
-           // so the constant cannot be shared through an import here.
-           readonly #banOtherReason = 'other';
-
-           // Banishment reasons offered to the administrator. What is sent to the server is the
-           // technical key (stable, language independent); the label is display only. They all share
-           // the UserManagement.AdminBan prefix so an administrative ban stays recognizable.
-           readonly #banReasonKeys: ReadonlyArray<{ value: string, labelKey: string }> = [
-             { value: 'UserManagement.AdminBan.LeftCompany', labelKey: 'CK.Admin.UserManagement.Ban.ReasonLeftCompany' },
-             { value: 'UserManagement.AdminBan.ContractEnded', labelKey: 'CK.Admin.UserManagement.Ban.ReasonContractEnded' },
-             { value: 'UserManagement.AdminBan.ExtendedLeave', labelKey: 'CK.Admin.UserManagement.Ban.ReasonExtendedLeave' },
-             { value: 'UserManagement.AdminBan.SecurityViolation', labelKey: 'CK.Admin.UserManagement.Ban.ReasonSecurityViolation' },
-             { value: 'UserManagement.AdminBan.CompromisedAccount', labelKey: 'CK.Admin.UserManagement.Ban.ReasonCompromisedAccount' },
-             { value: 'UserManagement.AdminBan.Misconduct', labelKey: 'CK.Admin.UserManagement.Ban.ReasonMisconduct' },
-             { value: 'UserManagement.AdminBan.PendingInvestigation', labelKey: 'CK.Admin.UserManagement.Ban.ReasonPendingInvestigation' }
-           ];
-
-           // Select options, labels resolved in the current language; "Other" always comes last.
-           #banReasonOptions(): Array<{ label: string, value: string }> {
-             return [
-               ...this.#banReasonKeys.map( r => ( {
-                 label: this.#translateService.instant( r.labelKey ),
-                 value: r.value
-               } ) ),
-               {
-                 label: this.#translateService.instant( 'CK.Admin.UserManagement.Ban.ReasonOther' ),
-                 value: this.#banOtherReason
-               }
-             ];
-           }
-
-           // Label of a reason read back from the database. Free-text reasons and those set by other
-           // packages (CK.DB.User.UserPassword.Banned uses UserPassword.TooManyAttempt) have no
-           // translation: they are displayed as-is.
-           #banReasonLabel( keyReason: string ): string {
-             const known = this.#banReasonKeys.find( r => r.value === keyReason );
-             return known ? this.#translateService.instant( known.labelKey ) : keyReason;
            }
            """ into <PostLocalVariables>;
 
     // Translation keys fetched by #refreshLabels.
     inject """
            'CK.Admin.UserManagement.Filter.Banned',
-           'CK.Admin.UserManagement.Column.Bans',
+           'CK.Admin.UserManagement.Ban.Tag',
+           'CK.Admin.UserManagement.Ban.Until',
            'CK.Admin.UserManagement.Ban.KeyReason',
-           'CK.Admin.UserManagement.Ban.SelectReason',
+           'CK.Admin.UserManagement.Ban.ReasonPlaceholder',
            'CK.Admin.UserManagement.Ban.ReasonRequired',
-           'CK.Admin.UserManagement.Ban.ReasonLeftCompany',
-           'CK.Admin.UserManagement.Ban.ReasonContractEnded',
-           'CK.Admin.UserManagement.Ban.ReasonExtendedLeave',
-           'CK.Admin.UserManagement.Ban.ReasonSecurityViolation',
-           'CK.Admin.UserManagement.Ban.ReasonCompromisedAccount',
-           'CK.Admin.UserManagement.Ban.ReasonMisconduct',
-           'CK.Admin.UserManagement.Ban.ReasonPendingInvestigation',
-           'CK.Admin.UserManagement.Ban.ReasonOther',
-           'CK.Admin.UserManagement.Ban.CustomReason',
-           'CK.Admin.UserManagement.Ban.CustomReasonRequired',
-           'CK.Admin.UserManagement.Ban.CustomReasonTooLong',
-           'CK.Admin.UserManagement.Ban.CustomReasonInvalidChars',
+           'CK.Admin.UserManagement.Ban.ReasonTooLong',
+           'CK.Admin.UserManagement.Ban.ReasonInvalidChars',
            'CK.Admin.UserManagement.Ban.Eternal',
            'CK.Admin.UserManagement.Modal.BanUsers',
            'CK.Admin.UserManagement.Modal.UnbanUsers',
@@ -115,25 +77,10 @@ begin
     inject """
            if ( this.#bannedFilter?.active ) {
              result = this.#bannedFilter.value
-               ? result.filter( u => this.#isBanned( u ) )
-               : result.filter( u => !this.#isBanned( u ) );
+               ? result.filter( u => this.isBanned( u ) )
+               : result.filter( u => !this.isBanned( u ) );
            }
            """ into <PostComputeFiltered>;
-
-    // Banishment column: the active reasons and their end date (an eternal ban has no displayed date).
-    // Injected at the trailing marker so it comes after the role column, at the far right of the table.
-    inject """
-           {
-             name: 'bans',
-             displayedName: t['CK.Admin.UserManagement.Column.Bans'],
-             sortable: true,
-             showInMobile: true,
-             sortDirections: ['ascend', 'descend'],
-             hidden: false,
-             sortFn: ( a: WorkspaceUser, b: WorkspaceUser ) => this.#activeBans( a ).length - this.#activeBans( b ).length,
-             valueFormatter: ( _value: unknown, u: WorkspaceUser ) => this.#activeBans( u ).map( b => this.formatBan( b ) ).join( ', ' )
-           },
-           """ into <PostUsersTabLastColumns>;
 
     // Ban / unban action-bar buttons.
     inject """
@@ -143,7 +90,7 @@ begin
              icon: faBan,
              isDanger: true,
              execute: () => this.confirmBanUsers( this.selectedUsers ),
-             shouldBeDisplayed: () => this.selectedUsers.length > 0 && this.selectedUsers.every( u => !this.#isBanned( u ) )
+             shouldBeDisplayed: () => this.selectedUsers.length > 0 && this.selectedUsers.every( u => !this.isBanned( u ) )
            },
            {
              name: 'unban',
@@ -151,7 +98,7 @@ begin
              icon: faUnlock,
              isDanger: false,
              execute: () => this.confirmUnbanUsers( this.selectedUsers ),
-             shouldBeDisplayed: () => this.selectedUsers.length > 0 && this.selectedUsers.every( u => this.#isBanned( u ) )
+             shouldBeDisplayed: () => this.selectedUsers.length > 0 && this.selectedUsers.every( u => this.isBanned( u ) )
            },
            """ into <PostUsersTabRightActions>;
 
@@ -164,7 +111,7 @@ begin
              type: 'text',
              tooltip: t['Button.Ban'],
              execute: ( u: WorkspaceUser ) => this.confirmBanUsers( [u] ),
-             shouldBeDisplayed: ( u: WorkspaceUser ) => !this.#isBanned( u )
+             shouldBeDisplayed: ( u: WorkspaceUser ) => !this.isBanned( u )
            },
            {
              name: 'unban',
@@ -173,75 +120,65 @@ begin
              type: 'text',
              tooltip: t['Button.Unban'],
              execute: ( u: WorkspaceUser ) => this.confirmUnbanUsers( [u] ),
-             shouldBeDisplayed: ( u: WorkspaceUser ) => this.#isBanned( u )
+             shouldBeDisplayed: ( u: WorkspaceUser ) => this.isBanned( u )
            },
            """ into <PostUsersTabRowActions>;
 
     // Ban / unban methods. The commands are per user (and, for the unban, per reason): the batch
     // selection of the action bar is looped over here.
     inject """
+           // Tooltip of the banned tag: one entry per active banishment. The separator is not a newline
+           // because .ant-tooltip-inner renders with white-space: normal, so a line feed would collapse
+           // into a space; the overlay lives outside the component styles, out of reach of a fix here.
+           banTooltip( u: WorkspaceUser ): string {
+             return this.#activeBans( u ).map( b => this.formatBan( b ) ).join( ' | ' );
+           }
+
            formatBan( ban: UserBan ): string {
-             const reason = this.#banReasonLabel( ban.keyReason );
+             // The reason is free text typed by the administrator: it is displayed as it was entered.
+             // Banishments set by another package (CK.DB.User.UserPassword.Banned uses
+             // UserPassword.TooManyAttempt) therefore show their technical key.
+             const reason = ban.keyReason;
              if ( ban.banEndDate.year >= 9999 ) {
-               return `${reason} (${this.#translateService.instant( 'CK.Admin.UserManagement.Ban.Eternal' )})`;
+               return reason + ' - ' + this.#translateService.instant( 'CK.Admin.UserManagement.Ban.Eternal' );
              }
              // The Poco carries UTC instants (CTSType parses them with zone 'UTC'), so they must be
              // moved to the browser zone before formatting, otherwise the hour is displayed off.
              const end = ban.banEndDate.toLocal();
              // A short ban (typically one hour) must show the time, not only the day.
              const shortLived = end.diffNow( 'hours' ).hours < 24;
-             return `${reason} (${end.toLocaleString( shortLived ? DateTime.DATETIME_SHORT : DateTime.DATE_SHORT )})`;
+             const until = this.#translateService.instant( 'CK.Admin.UserManagement.Ban.Until' );
+             return reason + ' - ' + until + ' ' + end.toLocaleString( shortLived ? DateTime.DATETIME_SHORT : DateTime.DATE_SHORT );
            }
 
            confirmBanUsers( users: Array<WorkspaceUser> ): void {
              if ( users.length === 0 ) return;
 
-             const otherReason = this.#banOtherReason;
-             const formData: GenericFormData<unknown, { keyReason: string, customKeyReason: string }> = {
+             // A single free-text reason: the server stores KeyReason as a plain varchar(128) with no
+             // catalog of its own, so there is nothing to pick from.
+             const formData: GenericFormData<unknown, { keyReason: string }> = {
                formControls: {
-                 keyReason: new FormControlConfig( 'select',
+                 keyReason: new FormControlConfig( 'text',
                    this.#translateService.instant( 'CK.Admin.UserManagement.Ban.KeyReason' ),
-                   null,
-                   {
-                     placeholder: this.#translateService.instant( 'CK.Admin.UserManagement.Ban.SelectReason' ),
-                     required: true,
-                     options: this.#banReasonOptions(),
-                     validators: [Validators.required],
-                     errorMessages: { required: this.#translateService.instant( 'CK.Admin.UserManagement.Ban.ReasonRequired' ) }
-                   } ),
-                 customKeyReason: new FormControlConfig( 'text',
-                   this.#translateService.instant( 'CK.Admin.UserManagement.Ban.CustomReason' ),
                    '',
                    {
-                     placeholder: this.#translateService.instant( 'CK.Admin.UserManagement.Ban.CustomReason' ),
-                     // Shown only on "Other". Beware: isVisible() merely hides, the control's own
-                     // validators stay active - hence no Validators.required here, the requirement
-                     // being carried by the group validator below.
-                     show: v => v.keyReason === otherReason,
+                     placeholder: this.#translateService.instant( 'CK.Admin.UserManagement.Ban.ReasonPlaceholder' ),
+                     required: true,
                      validators: [
+                       // Validators.required accepts a run of spaces: the check is done on the trimmed
+                       // value, and reports 'required' so the message stays the same.
+                       ( c: AbstractControl ) => ( ( c.value ?? '' ) as string ).trim() ? null : { required: true },
                        Validators.maxLength( 128 ),
                        // CK.sUserBannedSet matches with LIKE: a % or a _ in the reason would target
                        // another banishment instead of creating one.
                        Validators.pattern( /^[^%_\[\]]*$/ )
                      ],
                      errorMessages: {
-                       maxlength: this.#translateService.instant( 'CK.Admin.UserManagement.Ban.CustomReasonTooLong' ),
-                       pattern: this.#translateService.instant( 'CK.Admin.UserManagement.Ban.CustomReasonInvalidChars' )
+                       required: this.#translateService.instant( 'CK.Admin.UserManagement.Ban.ReasonRequired' ),
+                       maxlength: this.#translateService.instant( 'CK.Admin.UserManagement.Ban.ReasonTooLong' ),
+                       pattern: this.#translateService.instant( 'CK.Admin.UserManagement.Ban.ReasonInvalidChars' )
                      }
                    } ),
-               },
-               // Group validator: re-evaluated as soon as any control changes, unlike a validator
-               // carried by customKeyReason which would not react to a keyReason change.
-               generalFormValidators: {
-                 validators: [( g: AbstractControl ) => {
-                   if ( g.get( 'keyReason' )?.value !== otherReason ) return null;
-                   return ( g.get( 'customKeyReason' )?.value ?? '' ).toString().trim()
-                     ? null
-                     : { customKeyReasonRequired: true };
-                 }],
-                 errorMessages: {
-                   customKeyReasonRequired: this.#translateService.instant( 'CK.Admin.UserManagement.Ban.CustomReasonRequired' )
-                 }
                }
              };
 
@@ -300,13 +237,12 @@ end
 
 create <html> transformer
 begin
-    // Show the active banishments on the mobile list item.
+    // Banned tag, right next to the user name. It replaces the former "Deactivations" column: the detail
+    // (reason and end date of every active banishment) moved into its tooltip. The user-name cell
+    // template is shared by the table and the mobile list item, so one injection covers both.
     inject """
-           @if ( user.bans && user.bans.length > 0 ) {
-               <div class="ck-list-item-line">
-                   <span>{{ 'CK.Admin.UserManagement.Column.Bans' | translate }}</span>
-                   <span>{{ user.bans.length }}</span>
-               </div>
+           @if ( isBanned( user ) ) {
+               <nz-tag nzColor="red" nz-tooltip [nzTooltipTitle]="banTooltip( user )">{{ 'CK.Admin.UserManagement.Ban.Tag' | translate }}</nz-tag>
            }
-           """ into <PostUsersTabItemInfo>;
+           """ into <PostUserNameCellTags>;
 end
