@@ -1,3 +1,4 @@
+using CK.AspNet.WebSocketChannel;
 using CK.Core;
 using CK.DB.Actor;
 using CK.DB.User.UserPassword;
@@ -22,6 +23,8 @@ builder.Services.AddCors();
 builder.Services.AddHttpClient();
 
 var authBuilder = new AuthenticationBuilder( builder.Services );
+
+builder.AddWebSocketChannel();
 
 builder.AddWebFrontAuth( o => {
     o.ExpireTimeSpan = TimeSpan.FromHours( 1 );
@@ -59,6 +62,7 @@ app.UseCors( c => c.SetIsOriginAllowed( host => true )
                    .AllowCredentials() );
 app.UseAuthorization();
 app.UseStaticFiles();
+app.UseWebSocketChannel();
 app.UseCris();
 app.UseSpa( ( b ) =>
 {

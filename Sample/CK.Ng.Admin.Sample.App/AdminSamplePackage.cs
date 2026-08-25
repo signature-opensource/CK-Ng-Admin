@@ -8,9 +8,10 @@ namespace CK.Ng.Admin.Sample.App;
 [TypeScriptPackage]
 [Requires<AspNetAuthBasicPackage, CrisAspNetAuthPackage>]
 [Requires<UserManagement.UserManagementTSPackage>]
-[Requires<UserManagement.UserBanned.UserManagementUserBannedPackage>]
+//[Requires<UserManagement.UserBanned.UserManagementUserBannedPackage>]
 //[Requires<UserManagement.UserInvitation.UserManagementUserInvitationPackage>]
 [Requires<Ng.UserProfile.PreferredCulture.UserProfilePreferredCulturePackage>]
+[Requires<Ng.UserProfile.UserBanned.UserProfileUserBannedPackage>]
 public class AdminSamplePackage : TypeScriptPackage
 {
 }

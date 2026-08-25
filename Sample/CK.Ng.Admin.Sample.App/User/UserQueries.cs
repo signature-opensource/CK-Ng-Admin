@@ -14,7 +14,8 @@ namespace CK.Ng.Admin.Sample.App.User;
 /// Beware: bypassing the procedure also bypasses every <c>transform:sUserUserProfileRead</c> a feature
 /// package contributes, so each of those columns must be mirrored here. That is the case of
 /// <c>IsTemporaryPassword</c> (CK.DB.User.UserPassword.Reset), read by the Angular navigation guard
-/// to redirect a user whose password is temporary to the reset page.
+/// to redirect a user whose password is temporary to the reset page, and of <c>IsBanned</c>
+/// (CK.DB.User.UserBanned), read by the banishment guard.
 /// </para>
 /// </summary>
 public class UserQueries : IAutoService
@@ -40,6 +41,12 @@ public class UserQueries : IAutoService
                   ,u.PreferredWorkspaceId
                   ,u.ExtendedCultureId
                   ,IsTemporaryPassword = isnull( p.IsTemporary, cast( 0 as bit ) )
+                   -- An "exists" and not a join: a user can carry several active banishments at once,
+                   -- and a join would duplicate the row (this select is already grouped by user).
+                  ,IsBanned = case when exists( select 1
+                                                from CK.fUserBannedViewAt( sysutcdatetime() ) ban
+                                                where ban.UserId = u.UserId )
+                                   then cast( 1 as bit ) else cast( 0 as bit ) end
                   ,GroupId    = isnull( g.GroupId, 0 )
                   ,GroupName  = isnull( g.GroupName, '' )
                   ,IsZone     = isnull( g.IsZone, cast( 0 as bit ) )
@@ -69,6 +76,7 @@ public class UserQueries : IAutoService
                     up.PreferredWorkspaceId = user.PreferredWorkspaceId;
                     up.ExtendedCultureId = user.ExtendedCultureId;
                     up.IsTemporaryPassword = user.IsTemporaryPassword;
+                    up.IsBanned = user.IsBanned;
                     foreach( var g in u.Where( r => r.GroupId != 0 ).DistinctBy( r => r.GroupId ) )
                     {
                         up.Groups.Add( _pocoDirectory.Create<IUserGroup>( ug =>
@@ -97,6 +105,7 @@ record FlatUserProfile
     public int PreferredWorkspaceId { get; init; }
     public int ExtendedCultureId { get; init; }
     public bool IsTemporaryPassword { get; init; }
+    public bool IsBanned { get; init; }
     public int GroupId { get; init; }
     public string GroupName { get; init; } = string.Empty;
     public bool IsZone { get; init; }
