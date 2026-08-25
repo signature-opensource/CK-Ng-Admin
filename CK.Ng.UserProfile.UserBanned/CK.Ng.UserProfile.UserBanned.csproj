@@ -13,7 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="CK.SessionChannel" Version="0.0.0--ci.2" />
+        <PackageReference Include="CK.AspNet.ActorChannel" Version="0.0.0--ci.3" />
     </ItemGroup>
 
 </Project>

@@ -1,4 +1,4 @@
-using CK.SessionChannel;
+using CK.AspNet.ActorChannel;
 using CK.Core;
 using CK.Cris;
 using CK.IO.User.UserBanned;
@@ -19,9 +19,9 @@ public class UserBannedPushService : IAutoService
     /// </summary>
     public const string BannedMessageType = "banned";
 
-    readonly ISessionChannelPush _push;
+    readonly IActorChannelPush _push;
 
-    public UserBannedPushService( ISessionChannelPush push )
+    public UserBannedPushService( IActorChannelPush push )
     {
         _push = push;
     }

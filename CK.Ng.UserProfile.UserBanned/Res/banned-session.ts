@@ -6,7 +6,7 @@ import {
   HttpCrisEndpoint,
   NgAuthService,
   NotificationService,
-  SessionChannel,
+  ActorChannel,
   UserService,
   WSConnection
 } from '@local/ck-gen';
@@ -18,7 +18,7 @@ import {
 const BANNED_MESSAGE_TYPE = 'banned';
 
 /**
- * Owns the session side of the channel and the single logout path of the banishment flow.
+ * Owns this user's side of the actor channel and the single logout path of the banishment flow.
  *
  * Three detections lead to the same exit, and they can fire together, hence the guard flag:
  *  - the server pushes `banned` on the channel: this is the nominal, instant case;
@@ -40,13 +40,13 @@ export class BannedSession {
   readonly #userService = inject( UserService );
   readonly #wsConnection = inject( WSConnection );
 
-  readonly #channel: SessionChannel;
+  readonly #channel: ActorChannel;
   // Held while a logout is in flight: the three detections are concurrent by design and only the
   // first one may act.
   #loggingOut = false;
 
   constructor() {
-    this.#channel = new SessionChannel( this.#wsConnection, this.#crisEndpoint );
+    this.#channel = new ActorChannel( this.#wsConnection, this.#crisEndpoint );
     this.#channel.onMessage( BANNED_MESSAGE_TYPE, () => void this.logoutBannedAsync() );
     this.#channel.onRegisterError( () => void this.#onRegisterRejectedAsync() );
 
