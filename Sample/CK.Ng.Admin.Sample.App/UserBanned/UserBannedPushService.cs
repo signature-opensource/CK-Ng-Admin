@@ -1,4 +1,4 @@
-using CK.AspNet.SessionChannel;
+using CK.SessionChannel;
 using CK.Core;
 using CK.Cris;
 using CK.IO.User.UserBanned;

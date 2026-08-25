@@ -9,11 +9,12 @@
 
     <ItemGroup>
         <PackageReference Include="CK.Ng.UserProfile" Version="0.8.0--ci.18" />
-        <PackageReference Include="CK.Ng.AspNet.WebSocketChannel" Version="0.31.3--ci.15" />
+        <PackageReference Include="CK.Ng.AspNet.WebSocketChannel" Version="0.31.3--ci.18" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\CK.AspNet.SessionChannel\CK.AspNet.SessionChannel.csproj" />
+        <!-- TODO: version of the CK-SessionChannel release. -->
+        <PackageReference Include="CK.SessionChannel" Version="0.0.0--ci.TODO" />
     </ItemGroup>
 
 </Project>

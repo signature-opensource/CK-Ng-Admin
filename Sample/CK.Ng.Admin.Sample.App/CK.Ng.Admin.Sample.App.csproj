@@ -32,7 +32,8 @@
     <PackageReference Include="CK.UserManagement.UserBanned" Version="0.2.0--ci.9" />
     <PackageReference Include="CK.UserManagement.UserInvitation" Version="0.2.0--ci.9" />
 
-    <ProjectReference Include="..\..\CK.AspNet.SessionChannel\CK.AspNet.SessionChannel.csproj" />
+    <!-- TODO: version of the CK-SessionChannel release. -->
+    <PackageReference Include="CK.SessionChannel" Version="0.0.0--ci.TODO" />
     <ProjectReference Include="..\..\CK.Ng.UserProfile.UserBanned\CK.Ng.UserProfile.UserBanned.csproj" />
     <ProjectReference Include="..\..\CK.Ng.Admin.UserManagement\CK.Ng.Admin.UserManagement.csproj" />
     <ProjectReference Include="..\..\CK.Ng.Admin.UserManagement.UserBanned\CK.Ng.Admin.UserManagement.UserBanned.csproj" />
