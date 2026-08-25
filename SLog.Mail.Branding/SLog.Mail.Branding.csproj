@@ -11,7 +11,7 @@
 
     <ItemGroup>
         <PackageReference Include="CK.AppIdentity.Abstractions" Version="0.14.1" />
-        <PackageReference Include="CK.Mail.SharedLayout" Version="0.2.0--ci.5" />
+        <PackageReference Include="CK.Mail.SharedLayout" Version="0.2.0--ci.7" />
     </ItemGroup>
 
 </Project>

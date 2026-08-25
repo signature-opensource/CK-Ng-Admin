@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="CK.IO.UserManagement.UserBanned" Version="0.2.0--ci.5" />
+        <PackageReference Include="CK.IO.UserManagement.UserBanned" Version="0.2.0--ci.7" />
     </ItemGroup>
 
     <ItemGroup>
