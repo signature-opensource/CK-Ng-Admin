@@ -1,5 +1,7 @@
 # CK-Ng-Admin
 
+[![License MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+
 The Angular administration back office: the `/admin` page and the workspace user management that hangs
 off it.
 
