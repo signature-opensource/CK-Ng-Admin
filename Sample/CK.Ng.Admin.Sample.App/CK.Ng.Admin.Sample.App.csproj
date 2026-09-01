@@ -8,31 +8,31 @@
     <IsPackable>False</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CK.AppIdentity.Hosting" Version="0.14.1" />
-    <PackageReference Include="CK.Cris.AspNet" Version="0.55.3--ci.7" />
-    <PackageReference Include="CK.Cris.Auth" Version="0.43.2--ci.1" />
-    <PackageReference Include="CK.Cris.Workspace" Version="15.1.2--ci.1" />
+    <PackageReference Include="CK.AppIdentity.Hosting" Version="0.14.2" />
+    <PackageReference Include="CK.Cris.AspNet" Version="0.55.3" />
+    <PackageReference Include="CK.Cris.Auth" Version="0.43.2" />
+    <PackageReference Include="CK.Cris.Workspace" Version="15.1.2" />
       
-    <PackageReference Include="CK.DB.AspNet.Auth" Version="31.0.3--ci.10" />
-    <PackageReference Include="CK.DB.User.NamedUser" Version="28.0.3--ci.1" />
-    <PackageReference Include="CK.DB.User.PreferredCulture" Version="0.5.0--ci.7" />
-    <PackageReference Include="CK.DB.User.UserPassword" Version="28.0.3--ci.7" />
-    <PackageReference Include="CK.DB.Workspace" Version="15.1.2--ci.1" />
+    <PackageReference Include="CK.DB.AspNet.Auth" Version="31.0.3" />
+    <PackageReference Include="CK.DB.User.NamedUser" Version="28.0.3" />
+    <PackageReference Include="CK.DB.User.PreferredCulture" Version="0.5.0" />
+    <PackageReference Include="CK.DB.User.UserPassword" Version="28.0.3" />
+    <PackageReference Include="CK.DB.Workspace" Version="15.1.2" />
       
-    <PackageReference Include="CK.Ng.AspNet.Auth.Basic" Version="0.31.3--ci.19" />
-    <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="0.7.0--ci.16" />
-    <PackageReference Include="CK.Ng.Cris.AspNet.Auth" Version="0.55.3--ci.7" />
-    <PackageReference Include="CK.Ng.UserProfile.PreferredCulture" Version="0.8.0--ci.29" />
+    <PackageReference Include="CK.Ng.AspNet.Auth.Basic" Version="0.31.3" />
+    <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="0.7.0" />
+    <PackageReference Include="CK.Ng.Cris.AspNet.Auth" Version="0.55.3" />
+    <PackageReference Include="CK.Ng.UserProfile.PreferredCulture" Version="0.8.0" />
 
 
-      <PackageReference Include="CK.SqlServer.Dapper" Version="15.0.2--ci.1" />
-    <PackageReference Include="CK.SqlServer.Transaction" Version="12.0.1" />
+      <PackageReference Include="CK.SqlServer.Dapper" Version="15.0.2" />
+    <PackageReference Include="CK.SqlServer.Transaction" Version="12.0.2" />
 
-    <PackageReference Include="CK.UserManagement" Version="0.2.0--ci.10" />
-    <PackageReference Include="CK.UserManagement.UserBanned" Version="0.2.0--ci.10" />
-    <PackageReference Include="CK.UserManagement.UserInvitation" Version="0.2.0--ci.10" />
+    <PackageReference Include="CK.UserManagement" Version="0.2.0" />
+    <PackageReference Include="CK.UserManagement.UserBanned" Version="0.2.0" />
+    <PackageReference Include="CK.UserManagement.UserInvitation" Version="0.2.0" />
 
-    <PackageReference Include="CK.AspNet.ActorChannel" Version="0.0.0--ci.3" />
+    <PackageReference Include="CK.AspNet.ActorChannel" Version="0.0.0" />
     <ProjectReference Include="..\..\CK.Ng.UserProfile.UserBanned\CK.Ng.UserProfile.UserBanned.csproj" />
     <ProjectReference Include="..\..\CK.Ng.Admin.UserManagement\CK.Ng.Admin.UserManagement.csproj" />
     <ProjectReference Include="..\..\CK.Ng.Admin.UserManagement.UserBanned\CK.Ng.Admin.UserManagement.UserBanned.csproj" />

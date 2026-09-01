@@ -8,12 +8,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="CK.Ng.UserProfile" Version="0.8.0--ci.29" />
-        <PackageReference Include="CK.Ng.AspNet.WebSocketChannel" Version="0.31.3--ci.19" />
+        <PackageReference Include="CK.Ng.UserProfile" Version="0.8.0" />
+        <PackageReference Include="CK.Ng.AspNet.WebSocketChannel" Version="0.31.3" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="CK.AspNet.ActorChannel" Version="0.0.0--ci.3" />
+        <PackageReference Include="CK.AspNet.ActorChannel" Version="0.0.0" />
     </ItemGroup>
 
 </Project>
