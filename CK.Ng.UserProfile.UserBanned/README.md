@@ -4,8 +4,9 @@ Angular CKomposable package that brings the banishment flow to the client: as so
 banished it is logged out and sent back to the authentication page, where the login is already refused
 by `CK.sAuthUserOnLogin`.
 
-Same shape as `CK.Ng.UserProfile.UserPassword.Reset`: a flag on the user profile, a `CanActivateFn`,
-and an `AppRoutes.t` that hooks it onto the private page.
+Four pieces: a `CanActivateFn`, the `BannedSession` service that owns the single logout path, an
+`AppRoutes.t` that hooks the guard onto the private page, and the translations. The `isBanned` flag they
+all read is not one of them - it is supplied by the application's user profile, and only read here.
 
 > Note that this package sits in the CK-Ng-Admin repository but belongs to the `CK.Ng.UserProfile.*`
 > family - it extends the user profile, not the admin page.
@@ -64,10 +65,14 @@ array is created by the `AppRoutes.t` of `CK.Ng.UserProfile.UserPassword.Reset` 
 the stack that writes `canActivate` on the app routes.
 
 Yet this package declares
-`[Requires<UserProfilePackage, ActorChannelPackage, NgWebSocketChannelPackage>]` - no dependency on
-Reset. **The dependency is real but undeclared**, and it holds today only by composition: the single
-configuration that uses this package also references `CK.Ng.Admin.UserManagement`, which depends on
-Reset, so the anchor happens to be there.
+
+```csharp
+[Requires<UserProfilePackage, ActorChannelPackage, CK.Ng.AspNet.WebSocketChannel.NgWebSocketChannelPackage>]
+```
+
+with no dependency on Reset. **The dependency is real but undeclared**, and it holds today only by
+composition: the single configuration that uses this package also references
+`CK.Ng.Admin.UserManagement`, which depends on Reset, so the anchor happens to be there.
 
 Referencing this package for the banishment ejection *without* the temporary-password flow leaves the
 transformer with nothing to match. Adding `[Requires<UserProfilePasswordResetPackage>]` would state the

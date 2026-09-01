@@ -31,9 +31,10 @@ texts.
 
 The ban form refuses `%`, `_`, `[` and `]` in the reason
 (`CK.Admin.UserManagement.Ban.ReasonInvalidChars`). This is not cosmetic: server-side,
-[`CK.sUserBannedSet`](https://github.com/signature-opensource/CK-DB-User-UserBanned) matches the
-existing banishment with `KeyReason like @KeyReason`, so a reason carrying a wildcard would update
-somebody else's row. The client-side rule is what keeps the operator away from that.
+`CK.sUserBannedSet` matches the existing banishment with `KeyReason like @KeyReason`, so a reason
+carrying a wildcard would update another banishment of that same user instead of creating one - the
+table's key is `( UserId, KeyReason )` and the statement filters on both, so it cannot reach another
+user. The client-side rule is what keeps the operator away from that.
 
 The reason is also capped at 128 characters, which is the width of `CK.tUserBanned.KeyReason`.
 
