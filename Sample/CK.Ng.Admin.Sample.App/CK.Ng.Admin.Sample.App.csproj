@@ -22,7 +22,16 @@
     <PackageReference Include="CK.Ng.AspNet.Auth.Basic" Version="0.31.3" />
     <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="0.7.0" />
     <PackageReference Include="CK.Ng.Cris.AspNet.Auth" Version="0.55.3" />
-    <PackageReference Include="CK.Ng.UserProfile.PreferredCulture" Version="0.8.0" />
+    <!-- TODO: version of the CK-Ng-User-UserProfile release. The whole family must stay on one
+         single version: the 0.8.0 of UserPassword.Reset still creates the canActivate block of the
+         private page that CK.Ng.UserProfile now owns, and mixing the two emits it twice, which
+         breaks every transformer anchored on it. Fill all six in together. -->
+    <PackageReference Include="CK.Ng.UserProfile" Version="0.8.1--ci.TODO" />
+    <PackageReference Include="CK.Ng.UserProfile.PreferredCulture" Version="0.8.1--ci.TODO" />
+    <PackageReference Include="CK.Ng.UserProfile.UserPassword" Version="0.8.1--ci.TODO" />
+    <PackageReference Include="CK.Ng.UserProfile.UserPassword.Lost" Version="0.8.1--ci.TODO" />
+    <PackageReference Include="CK.Ng.UserProfile.UserPassword.Reset" Version="0.8.1--ci.TODO" />
+    <PackageReference Include="CK.Ng.UserProfile.Workspace" Version="0.8.1--ci.TODO" />
 
 
       <PackageReference Include="CK.SqlServer.Dapper" Version="15.0.2" />
@@ -32,8 +41,8 @@
     <PackageReference Include="CK.UserManagement.UserBanned" Version="0.2.0" />
     <PackageReference Include="CK.UserManagement.UserInvitation" Version="0.2.0" />
 
-    <PackageReference Include="CK.AspNet.ActorChannel" Version="0.0.0" />
-    <PackageReference Include="CK.Ng.UserProfile.UserBanned" Version="0.1.0--ci.67" />
+    <!-- TODO: version of the CK-DB-User-UserBanned release carrying BannedActorValidator. -->
+    <PackageReference Include="CK.DB.User.UserBanned" Version="1.0.2--ci.TODO" />
     <ProjectReference Include="..\..\CK.Ng.Admin.UserManagement\CK.Ng.Admin.UserManagement.csproj" />
     <ProjectReference Include="..\..\CK.Ng.Admin.UserManagement.UserBanned\CK.Ng.Admin.UserManagement.UserBanned.csproj" />
     <ProjectReference Include="..\..\CK.Ng.Admin.UserManagement.UserInvitation\CK.Ng.Admin.UserManagement.UserInvitation.csproj" />
