@@ -14,11 +14,15 @@ actions and commands by transforming them. Reference only what the application n
 | [CK.Ng.Admin.UserManagement](CK.Ng.Admin.UserManagement/README.md) | The `/admin/user` page: listing, direct creation, edit, forced password reset. |
 | [CK.Ng.Admin.UserManagement.UserInvitation](CK.Ng.Admin.UserManagement.UserInvitation/README.md) | Invitations tab, e-mail column, and the anonymous registration page. |
 | [CK.Ng.Admin.UserManagement.UserBanned](CK.Ng.Admin.UserManagement.UserBanned/README.md) | Ban and unban actions, banned filter and tag. |
-| [CK.Ng.UserProfile.UserBanned](CK.Ng.UserProfile.UserBanned/README.md) | The client side of a banishment: the banished user is ejected from the application. |
 | [SLog.Mail.Branding](SLog.Mail.Branding/README.md) | Tenant-specific mail branding for Signature One deployments. Unrelated to the admin page. |
 
-Two of these do not follow the repository naming: `CK.Ng.UserProfile.UserBanned` belongs to the
-`CK.Ng.UserProfile.*` family (it extends the user profile, not the admin page), and
-`SLog.Mail.Branding` is neither `CK.*` nor an Angular package.
+One of these does not follow the repository naming: `SLog.Mail.Branding` is neither `CK.*` nor an
+Angular package.
+
+The client side of a banishment - the ejection of the banished user - lives in
+`CK.Ng.UserProfile.UserBanned`, in the
+[CK-Ng-User-UserProfile](https://github.com/signature-opensource/CK-Ng-User-UserProfile) repository:
+it extends the user profile, not the admin page. The ban and unban *actions* are here, in
+[CK.Ng.Admin.UserManagement.UserBanned](CK.Ng.Admin.UserManagement.UserBanned/README.md).
 
 `Sample/` builds a runnable application over these packages.
