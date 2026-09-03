@@ -7,11 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="CK.IO.UserManagement.UserBanned" Version="0.2.0" />
+        <PackageReference Include="CK.IO.UserManagement.UserBanned" Version="0.2.1--ci.1" />
         <!-- TODO: version of the CK-Ng-User-UserProfile release, the same one as the family pinned
              in the Sample. Brings the banned session support and, transitively, the actor channel
              it rides on. -->
-        <PackageReference Include="CK.Ng.UserProfile.UserBanned" Version="0.8.1--ci.TODO" />
+        <PackageReference Include="CK.Ng.UserProfile.UserBanned" Version="0.8.1--ci.4" />
     </ItemGroup>
 
     <ItemGroup>
