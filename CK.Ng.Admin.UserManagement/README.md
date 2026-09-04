@@ -35,6 +35,25 @@ rather than an option - without it the created user would keep a password it nev
 The invitation-based flow, where the user receives a link and sets its own password, is not part of this
 package.
 
+## The satellite features leave the listing to you.
+
+The satellites of this package add their columns to the users tab through the anchors above, but each
+also needs its own contribution to the `IGetWorkspaceUsersQCommand` answer - and those contributions
+come from server-side packages this one does not reference. Reference two of them and two services
+claim the same Q command.
+
+Resolving that is the application's job: one `ICommandHandler<IGetWorkspaceUsersQCommand>` carrying a
+`[ReplaceAutoService]` per handler it supersedes, over a query returning the combined listing, plus a
+Poco leaf unifying the shapes the satellites contribute. No excerpt here - naming those handlers would
+name packages this one has no reference to - but
+[the test version](../Tests/CK.Ng.Admin.UserManagement.Tests/WorkspaceUsers/GetWorkspaceUsersCommandHandler.cs)
+is the reference implementation, and it mirrors `Sample/CK.Ng.Admin.Sample.App`.
+
+This is the deliberate trade of the anchor model. A satellite injects into the UI without this package
+knowing it, but two packages contributing to the *same server-side answer* cannot compose themselves -
+something has to decide what the combined listing is, and only the application knows which
+contributors it has.
+
 ## The forced reset modal does not use GenericForm.
 
 [`ForceResetPasswordFormComponent`](ForceResetPasswordForm/ForceResetPasswordFormComponent.cs) is a
