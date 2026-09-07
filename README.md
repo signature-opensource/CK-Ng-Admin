@@ -8,13 +8,13 @@ off it.
 The base packages own their pages as anchored files; each feature satellite adds its columns, filters,
 actions and commands by transforming them. Reference only what the application needs.
 
-| Package | Description |
-|---------|-------------|
-| [CK.Ng.Admin](CK.Ng.Admin/README.md) | The `/admin` page shell, and the `isAdmin` signal on the user service. |
-| [CK.Ng.Admin.UserManagement](CK.Ng.Admin.UserManagement/README.md) | The `/admin/user` page: listing, direct creation, edit, forced password reset. |
-| [CK.Ng.Admin.UserManagement.UserInvitation](CK.Ng.Admin.UserManagement.UserInvitation/README.md) | Invitations tab, e-mail column, and the anonymous registration page. |
-| [CK.Ng.Admin.UserManagement.UserBanned](CK.Ng.Admin.UserManagement.UserBanned/README.md) | Ban and unban actions, banned filter and tag. |
-| [SLog.Mail.Branding](SLog.Mail.Branding/README.md) | Tenant-specific mail branding for Signature One deployments. Unrelated to the admin page. |
+| Package | Description | Latest stable |
+|---------|-------------|---------------|
+| [CK.Ng.Admin](CK.Ng.Admin/README.md) | The `/admin` page shell, and the `isAdmin` signal on the user service. | [![nuget](https://img.shields.io/nuget/v/CK.Ng.Admin.svg?label=CK.Ng.Admin)](https://www.nuget.org/packages/CK.Ng.Admin/) |
+| [CK.Ng.Admin.UserManagement](CK.Ng.Admin.UserManagement/README.md) | The `/admin/user` page: listing, direct creation, edit, forced password reset. | [![nuget](https://img.shields.io/nuget/v/CK.Ng.Admin.UserManagement.svg?label=CK.Ng.Admin.UserManagement)](https://www.nuget.org/packages/CK.Ng.Admin.UserManagement/) |
+| [CK.Ng.Admin.UserManagement.UserInvitation](CK.Ng.Admin.UserManagement.UserInvitation/README.md) | Invitations tab, e-mail column, and the anonymous registration page. | [![nuget](https://img.shields.io/nuget/v/CK.Ng.Admin.UserManagement.UserInvitation.svg?label=CK.Ng.Admin.UserManagement.UserInvitation)](https://www.nuget.org/packages/CK.Ng.Admin.UserManagement.UserInvitation/) |
+| [CK.Ng.Admin.UserManagement.UserBanned](CK.Ng.Admin.UserManagement.UserBanned/README.md) | Ban and unban actions, banned filter and tag. | [![nuget](https://img.shields.io/nuget/v/CK.Ng.Admin.UserManagement.UserBanned.svg?label=CK.Ng.Admin.UserManagement.UserBanned)](https://www.nuget.org/packages/CK.Ng.Admin.UserManagement.UserBanned/) |
+| [SLog.Mail.Branding](SLog.Mail.Branding/README.md) | Tenant-specific mail branding for Signature One deployments. Unrelated to the admin page. | [![nuget](https://img.shields.io/nuget/v/SLog.Mail.Branding.svg?label=SLog.Mail.Branding)](https://www.nuget.org/packages/SLog.Mail.Branding/) |
 
 One of these does not follow the repository naming: `SLog.Mail.Branding` is neither `CK.*` nor an
 Angular package.
