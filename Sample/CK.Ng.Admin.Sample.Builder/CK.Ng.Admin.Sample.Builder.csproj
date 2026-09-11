@@ -7,14 +7,14 @@
     <IsPackable>False</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CK.AppBuilder" Version="33.0.2" />
-    <PackageReference Include="CK.AppIdentity.Hosting" Version="0.14.2" />
-    <PackageReference Include="CK.Cris.AspNet.Engine" Version="0.55.3" />
-    <PackageReference Include="CK.Globalization.Engine" Version="0.0.0" />
-    <PackageReference Include="CK.Setupable.Engine" Version="33.0.3" />
-    <PackageReference Include="CK.SqlServer.Setup.Engine" Version="33.0.3" />
-    <PackageReference Include="CK.TS.Angular.Engine" Version="0.31.3" />
-    <PackageReference Include="CK.Template.Fluid.Engine" Version="0.0.1" />
+    <PackageReference Include="CK.AppBuilder" Version="33.0.3" />
+    <PackageReference Include="CK.AppIdentity.Hosting" Version="0.14.3" />
+    <PackageReference Include="CK.Cris.AspNet.Engine" Version="0.55.4" />
+    <PackageReference Include="CK.Globalization.Engine" Version="0.1.0" />
+    <PackageReference Include="CK.Setupable.Engine" Version="33.0.4" />
+    <PackageReference Include="CK.SqlServer.Setup.Engine" Version="33.0.4" />
+    <PackageReference Include="CK.TS.Angular.Engine" Version="0.31.4" />
+    <PackageReference Include="CK.Template.Fluid.Engine" Version="0.0.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CK.Ng.Admin.Sample.App\CK.Ng.Admin.Sample.App.csproj" />
