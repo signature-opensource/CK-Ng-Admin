@@ -8,41 +8,41 @@
     <IsPackable>False</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CK.AppIdentity.Hosting" Version="0.14.4" />
-    <PackageReference Include="CK.Cris.AspNet" Version="0.55.5" />
-    <PackageReference Include="CK.Cris.Auth" Version="0.43.4" />
-    <PackageReference Include="CK.Cris.Workspace" Version="15.1.4" />
+    <PackageReference Include="CK.AppIdentity.Hosting" Version="0.14.5" />
+    <PackageReference Include="CK.Cris.AspNet" Version="0.55.6" />
+    <PackageReference Include="CK.Cris.Auth" Version="0.44.0" />
+    <PackageReference Include="CK.Cris.Workspace" Version="15.1.5" />
       
-    <PackageReference Include="CK.DB.AspNet.Auth" Version="31.0.5" />
-    <PackageReference Include="CK.DB.User.NamedUser" Version="28.0.5" />
-    <PackageReference Include="CK.DB.User.PreferredCulture" Version="0.5.2" />
-    <PackageReference Include="CK.DB.User.UserPassword" Version="28.0.5" />
-    <PackageReference Include="CK.DB.Workspace" Version="15.1.4" />
+    <PackageReference Include="CK.DB.AspNet.Auth" Version="31.0.6" />
+    <PackageReference Include="CK.DB.User.NamedUser" Version="28.0.6" />
+    <PackageReference Include="CK.DB.User.PreferredCulture" Version="0.5.3" />
+    <PackageReference Include="CK.DB.User.UserPassword" Version="28.0.6" />
+    <PackageReference Include="CK.DB.Workspace" Version="15.1.5" />
       
-    <PackageReference Include="CK.Ng.AspNet.Auth.Basic" Version="0.31.5" />
-    <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="0.7.2" />
-    <PackageReference Include="CK.Ng.Cris.AspNet.Auth" Version="0.55.5" />
+    <PackageReference Include="CK.Ng.AspNet.Auth.Basic" Version="0.31.6" />
+    <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="0.7.3" />
+    <PackageReference Include="CK.Ng.Cris.AspNet.Auth" Version="0.55.6" />
     <!-- TODO: version of the CK-Ng-User-UserProfile release. The whole family must stay on one
          single version: the 0.8.0 of UserPassword.Reset still creates the canActivate block of the
          private page that CK.Ng.UserProfile now owns, and mixing the two emits it twice, which
          breaks every transformer anchored on it. Fill all six in together. -->
-    <PackageReference Include="CK.Ng.UserProfile" Version="0.8.3" />
-    <PackageReference Include="CK.Ng.UserProfile.PreferredCulture" Version="0.8.3" />
-    <PackageReference Include="CK.Ng.UserProfile.UserPassword" Version="0.8.3" />
-    <PackageReference Include="CK.Ng.UserProfile.UserPassword.Lost" Version="0.8.3" />
-    <PackageReference Include="CK.Ng.UserProfile.UserPassword.Reset" Version="0.8.3" />
-    <PackageReference Include="CK.Ng.UserProfile.Workspace" Version="0.8.3" />
+    <PackageReference Include="CK.Ng.UserProfile" Version="0.8.4" />
+    <PackageReference Include="CK.Ng.UserProfile.PreferredCulture" Version="0.8.4" />
+    <PackageReference Include="CK.Ng.UserProfile.UserPassword" Version="0.8.4" />
+    <PackageReference Include="CK.Ng.UserProfile.UserPassword.Lost" Version="0.8.4" />
+    <PackageReference Include="CK.Ng.UserProfile.UserPassword.Reset" Version="0.8.4" />
+    <PackageReference Include="CK.Ng.UserProfile.Workspace" Version="0.8.4" />
 
 
-      <PackageReference Include="CK.SqlServer.Dapper" Version="15.0.4" />
-    <PackageReference Include="CK.SqlServer.Transaction" Version="12.0.4" />
+      <PackageReference Include="CK.SqlServer.Dapper" Version="15.1.0" />
+    <PackageReference Include="CK.SqlServer.Transaction" Version="12.0.5" />
 
-    <PackageReference Include="CK.UserManagement" Version="0.2.3" />
-    <PackageReference Include="CK.UserManagement.UserBanned" Version="0.2.3" />
-    <PackageReference Include="CK.UserManagement.UserInvitation" Version="0.2.3" />
+    <PackageReference Include="CK.UserManagement" Version="0.2.4" />
+    <PackageReference Include="CK.UserManagement.UserBanned" Version="0.2.4" />
+    <PackageReference Include="CK.UserManagement.UserInvitation" Version="0.2.4" />
 
     <!-- TODO: version of the CK-DB-User-UserBanned release carrying BannedActorValidator. -->
-    <PackageReference Include="CK.DB.User.UserBanned" Version="1.0.4" />
+    <PackageReference Include="CK.DB.User.UserBanned" Version="1.0.5" />
     <ProjectReference Include="..\..\CK.Ng.Admin.UserManagement\CK.Ng.Admin.UserManagement.csproj" />
     <ProjectReference Include="..\..\CK.Ng.Admin.UserManagement.UserBanned\CK.Ng.Admin.UserManagement.UserBanned.csproj" />
     <ProjectReference Include="..\..\CK.Ng.Admin.UserManagement.UserInvitation\CK.Ng.Admin.UserManagement.UserInvitation.csproj" />
