@@ -75,7 +75,7 @@ public class AdminTests
             if( idUser <= 0 )
             {
                 idUser = await userTable.CreateUserAsync( ctx, 1, "TestUser" );
-                await groupTable.AddUserAsync( ctx, 1, 3, idUser );
+                await groupTable.AddMemberAsync( ctx, 1, 3, idUser );
                 await w.SetPreferredWorkspaceIdAsync( ctx, dir.Create<ISetPreferredWorkspaceIdCommand>( c =>
                 {
                     c.ActorId = 1;
@@ -89,7 +89,7 @@ public class AdminTests
             if( idAdmin <= 0 )
             {
                 idAdmin = await userTable.CreateUserAsync( ctx, 1, "AdminUser" );
-                await groupTable.AddUserAsync( ctx, 1, 2, idAdmin, true ); // Administrators (grant 127 via the shared AdminZone AclId)
+                await groupTable.AddMemberAsync( ctx, 1, 2, idAdmin, true ); // Administrators (grant 127 via the shared AdminZone AclId)
             }
             await pwdTable.CreateOrUpdatePasswordUserAsync( ctx, 1, idAdmin, "success", DB.Auth.UCLMode.CreateOrUpdate );
         }

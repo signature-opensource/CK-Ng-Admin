@@ -91,7 +91,7 @@ static async Task SeedDemoUsersAsync( IStObjMap map, IActivityMonitor monitor )
     if( idUser <= 0 )
     {
         idUser = await userTable.CreateUserAsync( ctx, 1, "TestUser" );
-        await groupTable.AddUserAsync( ctx, 1, 3, idUser );
+        await groupTable.AddMemberAsync( ctx, 1, 3, idUser );
         await workspace.SetPreferredWorkspaceIdAsync( ctx, dir.Create<ISetPreferredWorkspaceIdCommand>( c =>
         {
             c.ActorId = 1;
@@ -105,7 +105,7 @@ static async Task SeedDemoUsersAsync( IStObjMap map, IActivityMonitor monitor )
     if( idAdmin <= 0 )
     {
         idAdmin = await userTable.CreateUserAsync( ctx, 1, "AdminUser" );
-        await groupTable.AddUserAsync( ctx, 1, 2, idAdmin,true );
+        await groupTable.AddMemberAsync( ctx, 1, 2, idAdmin,true );
         await workspace.SetPreferredWorkspaceIdAsync( ctx, dir.Create<ISetPreferredWorkspaceIdCommand>( c =>
         {
             c.ActorId = 1;
@@ -157,7 +157,7 @@ static async Task SeedSecondWorkspaceAsync( IStObjMap map, IActivityMonitor moni
         }
 
         // autoAddUserInZone also makes AdminUser a member of the Villars workspace itself.
-        await groupTable.AddUserAsync( ctx, 1, groupId, idAdmin, autoAddUserInZone: true );
+        await groupTable.AddMemberAsync( ctx, 1, groupId, idAdmin, autoAddMemberInZone: true );
         monitor.Info( $"Demo workspace '{workspaceName}' is ready with 'AdminUser' in its '{groupName}' group." );
     }
     catch( Exception e )

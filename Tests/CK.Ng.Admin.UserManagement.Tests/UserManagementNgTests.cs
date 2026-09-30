@@ -131,7 +131,7 @@ public class UserManagementNgTests
             // resolves the current workspace from the profile's groups, so the ACL grant alone is not
             // enough — the user must also belong to the zone group. The ACL grant (127) makes the
             // profile report admin grant level on it.
-            await groupTable.AddUserAsync( ctx, 1, workspaceId, idAdmin, true );
+            await groupTable.AddMemberAsync( ctx, 1, workspaceId, idAdmin, true );
             await pwdTable.CreateOrUpdatePasswordUserAsync( ctx, 1, idAdmin, "success", DB.Auth.UCLMode.CreateOrUpdate );
 
             int idMember = await userTable.FindByNameAsync( ctx, "UMMember" );
@@ -139,7 +139,7 @@ public class UserManagementNgTests
             {
                 idMember = await workspacePackage.CreateUserAsync( ctx, 1, "UMMember", workspaceId );
             }
-            await groupTable.AddUserAsync( ctx, 1, workspaceId, idMember, true );
+            await groupTable.AddMemberAsync( ctx, 1, workspaceId, idMember, true );
             await workspacePackage.SetUserPreferredWorkspaceAsync( ctx, 1, idMember, workspaceId );
             await pwdTable.CreateOrUpdatePasswordUserAsync( ctx, 1, idMember, "success", DB.Auth.UCLMode.CreateOrUpdate );
         }
