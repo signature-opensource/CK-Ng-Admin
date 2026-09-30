@@ -7,14 +7,14 @@
     <IsPackable>False</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CK.AppBuilder" Version="34.0.1--ci.1" />
+    <PackageReference Include="CK.AppBuilder" Version="34.0.1-juliet.0.ci.1" />
     <PackageReference Include="CK.AppIdentity.Hosting" Version="1.0.1--ci.1" />
-    <PackageReference Include="CK.Cris.AspNet.Engine" Version="1.0.1--ci.1" />
-    <PackageReference Include="CK.Globalization.Engine" Version="1.0.1--ci.1" />
-    <PackageReference Include="CK.Setupable.Engine" Version="34.0.1--ci.1" />
-    <PackageReference Include="CK.SqlServer.Setup.Engine" Version="34.0.1--ci.1" />
-    <PackageReference Include="CK.TS.Angular.Engine" Version="1.0.1--ci.1" />
-    <PackageReference Include="CK.Template.Fluid.Engine" Version="1.0.1--ci.1" />
+    <PackageReference Include="CK.Cris.AspNet.Engine" Version="2.0.0-juliet.0.ci.3" />
+    <PackageReference Include="CK.Globalization.Engine" Version="1.0.1-juliet.0.ci.1" />
+    <PackageReference Include="CK.Setupable.Engine" Version="35.0.0-juliet.0.ci.5" />
+    <PackageReference Include="CK.SqlServer.Setup.Engine" Version="35.0.0-juliet.0.ci.5" />
+    <PackageReference Include="CK.TS.Angular.Engine" Version="1.0.1-juliet.0.ci.2" />
+    <PackageReference Include="CK.Template.Fluid.Engine" Version="1.0.1-juliet.0.ci.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CK.Ng.Admin.Sample.App\CK.Ng.Admin.Sample.App.csproj" />
