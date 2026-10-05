@@ -9,7 +9,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CK.AppIdentity.Hosting" Version="2.0.0-juliet.0.ci.18" />
-    <PackageReference Include="CK.Cris.AspNet" Version="2.0.0-juliet.0.ci.9" />
+    <PackageReference Include="CK.Cris.AspNet" Version="2.0.0-juliet.0.ci.10" />
     <PackageReference Include="CK.Cris.Auth" Version="2.0.0-juliet.0.ci.15" />
     <PackageReference Include="CK.Cris.Workspace" Version="17.0.0-juliet.0.ci.9" />
       
@@ -20,18 +20,18 @@
     <PackageReference Include="CK.DB.Workspace" Version="17.0.0-juliet.0.ci.9" />
       
     <PackageReference Include="CK.Ng.AspNet.Auth.Basic" Version="2.0.0-juliet.0.ci.10" />
-    <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="2.0.0-juliet.0.ci.8" />
-    <PackageReference Include="CK.Ng.Cris.AspNet.Auth" Version="2.0.0-juliet.0.ci.9" />
+    <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="2.0.0-juliet.0.ci.9" />
+    <PackageReference Include="CK.Ng.Cris.AspNet.Auth" Version="2.0.0-juliet.0.ci.10" />
     <!-- TODO: version of the CK-Ng-User-UserProfile release. The whole family must stay on one
          single version: the 0.8.0 of UserPassword.Reset still creates the canActivate block of the
          private page that CK.Ng.UserProfile now owns, and mixing the two emits it twice, which
          breaks every transformer anchored on it. Fill all six in together. -->
-    <PackageReference Include="CK.Ng.UserProfile" Version="2.0.0-juliet.0.ci.11" />
-    <PackageReference Include="CK.Ng.UserProfile.PreferredCulture" Version="2.0.0-juliet.0.ci.11" />
-    <PackageReference Include="CK.Ng.UserProfile.UserPassword" Version="2.0.0-juliet.0.ci.11" />
-    <PackageReference Include="CK.Ng.UserProfile.UserPassword.Lost" Version="2.0.0-juliet.0.ci.11" />
-    <PackageReference Include="CK.Ng.UserProfile.UserPassword.Reset" Version="2.0.0-juliet.0.ci.11" />
-    <PackageReference Include="CK.Ng.UserProfile.Workspace" Version="2.0.0-juliet.0.ci.11" />
+    <PackageReference Include="CK.Ng.UserProfile" Version="2.0.0-juliet.0.ci.12" />
+    <PackageReference Include="CK.Ng.UserProfile.PreferredCulture" Version="2.0.0-juliet.0.ci.12" />
+    <PackageReference Include="CK.Ng.UserProfile.UserPassword" Version="2.0.0-juliet.0.ci.12" />
+    <PackageReference Include="CK.Ng.UserProfile.UserPassword.Lost" Version="2.0.0-juliet.0.ci.12" />
+    <PackageReference Include="CK.Ng.UserProfile.UserPassword.Reset" Version="2.0.0-juliet.0.ci.12" />
+    <PackageReference Include="CK.Ng.UserProfile.Workspace" Version="2.0.0-juliet.0.ci.12" />
 
 
       <PackageReference Include="CK.SqlServer.Dapper" Version="17.0.0-juliet.0.ci.8" />
