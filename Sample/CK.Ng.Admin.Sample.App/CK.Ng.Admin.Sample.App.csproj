@@ -8,41 +8,41 @@
     <IsPackable>False</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CK.AppIdentity.Hosting" Version="2.0.1-0.nunit-5.0.ci.1" />
-    <PackageReference Include="CK.Cris.AspNet" Version="2.0.1-0.nunit-5.0.ci.1" />
-    <PackageReference Include="CK.Cris.Auth" Version="2.0.1-0.nunit-5.0.ci.1" />
-    <PackageReference Include="CK.Cris.Workspace" Version="17.0.1-0.nunit-5.0.ci.1" />
+    <PackageReference Include="CK.AppIdentity.Hosting" Version="2.0.1" />
+    <PackageReference Include="CK.Cris.AspNet" Version="2.0.1" />
+    <PackageReference Include="CK.Cris.Auth" Version="2.0.1" />
+    <PackageReference Include="CK.Cris.Workspace" Version="17.0.1" />
       
-    <PackageReference Include="CK.DB.AspNet.Auth" Version="33.0.1-0.nunit-5.0.ci.1" />
-    <PackageReference Include="CK.DB.User.NamedUser" Version="30.0.1-0.nunit-5.0.ci.1" />
-    <PackageReference Include="CK.DB.User.PreferredCulture" Version="2.0.1-0.nunit-5.0.ci.1" />
-    <PackageReference Include="CK.DB.User.UserPassword" Version="30.0.1-0.nunit-5.0.ci.1" />
-    <PackageReference Include="CK.DB.Workspace" Version="17.0.1-0.nunit-5.0.ci.1" />
+    <PackageReference Include="CK.DB.AspNet.Auth" Version="33.0.1" />
+    <PackageReference Include="CK.DB.User.NamedUser" Version="30.0.1" />
+    <PackageReference Include="CK.DB.User.PreferredCulture" Version="2.0.1" />
+    <PackageReference Include="CK.DB.User.UserPassword" Version="30.0.1" />
+    <PackageReference Include="CK.DB.Workspace" Version="17.0.1" />
       
-    <PackageReference Include="CK.Ng.AspNet.Auth.Basic" Version="2.0.1-0.nunit-5.0.ci.1" />
-    <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="2.0.1-0.nunit-5.0.ci.1" />
-    <PackageReference Include="CK.Ng.Cris.AspNet.Auth" Version="2.0.1-0.nunit-5.0.ci.1" />
+    <PackageReference Include="CK.Ng.AspNet.Auth.Basic" Version="2.0.1" />
+    <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="2.0.1" />
+    <PackageReference Include="CK.Ng.Cris.AspNet.Auth" Version="2.0.1" />
     <!-- TODO: version of the CK-Ng-User-UserProfile release. The whole family must stay on one
          single version: the 0.8.0 of UserPassword.Reset still creates the canActivate block of the
          private page that CK.Ng.UserProfile now owns, and mixing the two emits it twice, which
          breaks every transformer anchored on it. Fill all six in together. -->
-    <PackageReference Include="CK.Ng.UserProfile" Version="2.0.1-0.nunit-5.0.ci.1" />
-    <PackageReference Include="CK.Ng.UserProfile.PreferredCulture" Version="2.0.1-0.nunit-5.0.ci.1" />
-    <PackageReference Include="CK.Ng.UserProfile.UserPassword" Version="2.0.1-0.nunit-5.0.ci.1" />
-    <PackageReference Include="CK.Ng.UserProfile.UserPassword.Lost" Version="2.0.1-0.nunit-5.0.ci.1" />
-    <PackageReference Include="CK.Ng.UserProfile.UserPassword.Reset" Version="2.0.1-0.nunit-5.0.ci.1" />
-    <PackageReference Include="CK.Ng.UserProfile.Workspace" Version="2.0.1-0.nunit-5.0.ci.1" />
+    <PackageReference Include="CK.Ng.UserProfile" Version="2.0.1" />
+    <PackageReference Include="CK.Ng.UserProfile.PreferredCulture" Version="2.0.1" />
+    <PackageReference Include="CK.Ng.UserProfile.UserPassword" Version="2.0.1" />
+    <PackageReference Include="CK.Ng.UserProfile.UserPassword.Lost" Version="2.0.1" />
+    <PackageReference Include="CK.Ng.UserProfile.UserPassword.Reset" Version="2.0.1" />
+    <PackageReference Include="CK.Ng.UserProfile.Workspace" Version="2.0.1" />
 
 
-      <PackageReference Include="CK.SqlServer.Dapper" Version="17.0.1-0.nunit-5.0.ci.1" />
-    <PackageReference Include="CK.SqlServer.Transaction" Version="14.0.1-0.nunit-5.0.ci.1" />
+      <PackageReference Include="CK.SqlServer.Dapper" Version="17.0.1" />
+    <PackageReference Include="CK.SqlServer.Transaction" Version="14.0.1" />
 
-    <PackageReference Include="CK.UserManagement" Version="2.0.1-0.nunit-5.0.ci.1" />
-    <PackageReference Include="CK.UserManagement.UserBanned" Version="2.0.1-0.nunit-5.0.ci.1" />
-    <PackageReference Include="CK.UserManagement.UserInvitation" Version="2.0.1-0.nunit-5.0.ci.1" />
+    <PackageReference Include="CK.UserManagement" Version="2.0.1" />
+    <PackageReference Include="CK.UserManagement.UserBanned" Version="2.0.1" />
+    <PackageReference Include="CK.UserManagement.UserInvitation" Version="2.0.1" />
 
     <!-- TODO: version of the CK-DB-User-UserBanned release carrying BannedActorValidator. -->
-    <PackageReference Include="CK.DB.User.UserBanned" Version="3.0.1-0.nunit-5.0.ci.1" />
+    <PackageReference Include="CK.DB.User.UserBanned" Version="3.0.1" />
     <ProjectReference Include="..\..\CK.Ng.Admin.UserManagement\CK.Ng.Admin.UserManagement.csproj" />
     <ProjectReference Include="..\..\CK.Ng.Admin.UserManagement.UserBanned\CK.Ng.Admin.UserManagement.UserBanned.csproj" />
     <ProjectReference Include="..\..\CK.Ng.Admin.UserManagement.UserInvitation\CK.Ng.Admin.UserManagement.UserInvitation.csproj" />
