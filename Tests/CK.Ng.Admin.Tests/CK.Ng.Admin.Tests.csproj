@@ -8,11 +8,11 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="CK.Cris.Auth" Version="2.0.1" />
-        <PackageReference Include="CK.DB.AspNet.Auth" Version="33.0.1" />
-        <PackageReference Include="CK.DB.User.UserPassword" Version="30.0.1" />
-        <PackageReference Include="CK.DB.Workspace" Version="17.0.1" />
+        <PackageReference Include="CK.DB.AspNet.Auth" Version="33.0.2" />
+        <PackageReference Include="CK.DB.User.UserPassword" Version="30.0.2" />
+        <PackageReference Include="CK.DB.Workspace" Version="17.0.2" />
         <PackageReference Include="CK.Ng.AspNet.Auth.Basic" Version="2.0.1" />
-        <PackageReference Include="CK.DB.Tests.NUnit" Version="35.0.1" />
+        <PackageReference Include="CK.DB.Tests.NUnit" Version="35.0.2" />
         <PackageReference Include="CK.SqlServer.Dapper" Version="17.0.1" />
 
         <PackageReference Include="CK.SqlServer.Transaction" Version="14.0.1" />
@@ -20,7 +20,7 @@
         <PackageReference Include="CK.Testing.AspNetServer.Auth" Version="32.0.1" />
         <PackageReference Include="CK.Testing.Nunit" Version="17.0.1" />
         <PackageReference Include="CK.Cris.AspNet.Engine" Version="2.0.1" />
-        <PackageReference Include="CK.Testing.SqlServerEngine" Version="35.0.1" />
+        <PackageReference Include="CK.Testing.SqlServerEngine" Version="35.0.2" />
         <PackageReference Include="CK.Testing.TypeScriptEngine" Version="2.0.1" />
         <PackageReference Include="CK.Globalization.Engine" Version="2.0.1" />
         <PackageReference Include="CK.TS.Angular.Engine" Version="2.0.1" />

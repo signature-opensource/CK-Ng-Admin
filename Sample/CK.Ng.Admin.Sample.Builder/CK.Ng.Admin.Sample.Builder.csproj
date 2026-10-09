@@ -11,8 +11,8 @@
     <PackageReference Include="CK.AppIdentity.Hosting" Version="2.0.1" />
     <PackageReference Include="CK.Cris.AspNet.Engine" Version="2.0.1" />
     <PackageReference Include="CK.Globalization.Engine" Version="2.0.1" />
-    <PackageReference Include="CK.Setupable.Engine" Version="35.0.1" />
-    <PackageReference Include="CK.SqlServer.Setup.Engine" Version="35.0.1" />
+    <PackageReference Include="CK.Setupable.Engine" Version="35.0.2" />
+    <PackageReference Include="CK.SqlServer.Setup.Engine" Version="35.0.2" />
     <PackageReference Include="CK.TS.Angular.Engine" Version="2.0.1" />
     <PackageReference Include="CK.Template.Fluid.Engine" Version="2.0.1" />
   </ItemGroup>
