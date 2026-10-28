@@ -7,7 +7,7 @@ begin
     // The generated Poco exposes the ban dates as luxon DateTime (not JS Date).
     ensure import { DateTime } from 'luxon';
     // The banned tag carries a tooltip: the module must join the base component's imports.
-    ensure import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+    ensure import { NzTooltipModule } from 'ng-zorro-antd/tooltip';
 
     // The tag injected into the user-name cell needs the tooltip directive. Only the imports array of
     // the @Component decorator is targeted, so the NzTagModule of the import statement above is left alone.
@@ -15,7 +15,7 @@ begin
         in first {^braces}
             in after "imports:"
                 in first {^[]}
-                    replace "NzTagModule" with "NzTagModule, NzToolTipModule";
+                    replace "NzTagModule" with "NzTagModule, NzTooltipModule";
 
     // The banned-users filter field, and the "currently banned" predicate. A banishment is active when
     // now falls inside [banStartDate, banEndDate[ - the same window as CK.fUserBannedViewAt.
