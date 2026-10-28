@@ -3,7 +3,7 @@
     [headerTitle]="title()"
     [showFilters]="false">
     <div class="layout-content">
-        <nz-tabset class="tabset" [nzSize]="'large'" [nzSelectedIndex]="selectedTabIndex()" (nzSelectedIndexChange)="onTabIndexChange($event)">
+        <nz-tabs class="tabset" [nzSize]="'large'" [nzSelectedIndex]="selectedTabIndex()" (nzSelectedIndexChange)="onTabIndexChange($event)">
             <!-- <PreUserManagementTabsRegistration revert /> -->
             <!-- <PreUsersTab revert /> -->
             <nz-tab [nzTitle]="'CK.Admin.UserManagement.Tab.Users' | translate">
@@ -14,6 +14,6 @@
             </nz-tab>
             <!-- <PostUsersTab /> -->
             <!-- <PostUserManagementTabsRegistration /> -->
-        </nz-tabset>
+        </nz-tabs>
     </div>
 </ck-backoffice-layout-content>
