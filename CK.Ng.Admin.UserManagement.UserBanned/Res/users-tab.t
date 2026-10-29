@@ -1,6 +1,8 @@
 create <ts> transformer
 begin
     ensure import { BanUserForm, DestroyUserBannedCommand, SetUserBannedCommand, SwitchFilter, UserBan } from '@local/ck-gen';
+    // Banning requires the Critical level (a recent login): it is checked before anything is sent.
+    ensure import { AuthLevel, NgAuthService } from '@local/ck-gen';
     ensure import { faBan, faUnlock } from '@fortawesome/free-solid-svg-icons';
     // AbstractControl types the validator that rejects a blank reason.
     ensure import { AbstractControl } from '@angular/forms';
@@ -151,8 +153,17 @@ begin
              return reason + ' - ' + until + ' ' + end.toLocaleString( shortLived ? DateTime.DATETIME_SHORT : DateTime.DATE_SHORT );
            }
 
+           readonly #authService = inject( NgAuthService );
+
+           // Banning and unbanning are administration, high-value actions: they require the Critical level.
+           #recentLoginRequired(): boolean {
+             if ( this.#authService.authenticationInfo().level >= AuthLevel.Critical ) return false;
+             this.#notifService.notifyUserMessage( { level: UserMessageLevel.Error, message: this.#translateService.instant( 'CK.Admin.UserManagement.RecentLoginRequired' ) } as SimpleUserMessage );
+             return true;
+           }
+
            confirmBanUsers( users: Array<WorkspaceUser> ): void {
-             if ( users.length === 0 ) return;
+             if ( users.length === 0 || this.#recentLoginRequired() ) return;
 
              // A single free-text reason: the server stores KeyReason as a plain varchar(128) with no
              // catalog of its own, so there is nothing to pick from.
@@ -212,7 +223,7 @@ begin
            }
 
            confirmUnbanUsers( users: Array<WorkspaceUser> ): void {
-             if ( users.length === 0 ) return;
+             if ( users.length === 0 || this.#recentLoginRequired() ) return;
              const opts: ModalOptions = {
                nzTitle: `${this.#translateService.instant( 'CK.Admin.UserManagement.Modal.UnbanUsers' )} : ${users.map( i => i.userName ).join( ' ,' )} ?`,
                nzOnOk: async () => {

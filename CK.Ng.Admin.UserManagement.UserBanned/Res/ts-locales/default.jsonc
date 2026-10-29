@@ -20,6 +20,7 @@
     "CK.Admin.UserManagement.Ban.EndDatePast": "The end date must be later than now.",
     "CK.Admin.UserManagement.Ban.Eternal": "Permanent deactivation",
     "CK.Admin.UserManagement.Ban.TargetedUsers": "Targeted users",
+    "CK.Admin.UserManagement.RecentLoginRequired": "Disabling or re-enabling users requires a recent login: sign out, then sign in again.",
     "Button.Ban": "Disable",
     "Button.Unban": "Re-enable"
 }

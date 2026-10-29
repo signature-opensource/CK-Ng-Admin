@@ -20,6 +20,7 @@
     "CK.Admin.UserManagement.Ban.EndDatePast": "La date de fin doit être postérieure à maintenant.",
     "CK.Admin.UserManagement.Ban.Eternal": "Désactivation définitive",
     "CK.Admin.UserManagement.Ban.TargetedUsers": "Utilisateurs concernés",
+    "CK.Admin.UserManagement.RecentLoginRequired": "Désactiver ou réactiver des utilisateurs nécessite une connexion récente : déconnectez-vous puis reconnectez-vous.",
     "Button.Ban": "Désactiver",
     "Button.Unban": "Réactiver"
 }
