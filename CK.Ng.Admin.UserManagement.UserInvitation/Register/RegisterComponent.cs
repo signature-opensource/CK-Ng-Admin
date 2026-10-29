@@ -1,5 +1,5 @@
 using CK.Core;
-using CK.Ng.AspNet.Auth;
+using CK.Ng.Cris.AspNet.Authentication;
 using CK.Ng.UserProfile.UserPassword;
 using CK.TS.Angular;
 

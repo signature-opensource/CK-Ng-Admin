@@ -4,6 +4,14 @@ import { AXIOS } from '@local/ck-gen/CK/Ng/AXIOSToken';
 import { ComponentFixtureAutoDetect, TestBed } from '@angular/core/testing';
 import axios from 'axios';
 import { AppComponent } from './app.component';
+import { BasicLoginCommand } from '@local/ck-gen';
+
+function basicLogin( userName: string, password: string ): BasicLoginCommand {
+    const c = new BasicLoginCommand();
+    c.userName = userName;
+    c.password = password;
+    return c;
+}
 
 if ( process.env["VSCODE_INSPECTOR_OPTIONS"] ) jest.setTimeout( 30 * 60 * 1000 ); // 30 minutes
 
@@ -39,20 +47,21 @@ describe( 'integration tests', () => {
 
     afterEach( async () => {
         await ngAuthService.authService.logout();
+        ngAuthService.authService.close();
     } );
 
     it( 'should be able to get profile', async () => {
         const authService = ngAuthService.authService;
 
-        expect( authService.authenticationInfo.level ).toBe( AuthLevel.None );
-        expect( authService.availableSchemes.length ).toBeGreaterThan( 0 );
+        expect( authService.level ).toBe( AuthLevel.None );
+        expect( ( await authService.refreshSchemesAsync() ).length ).toBeGreaterThan( 0 );
 
         expect( ngAuthService.authenticationInfo() ).toStrictEqual( authService.authenticationInfo );
-        await authService.basicLogin( 'TestUser', 'success' );
-        expect( ngAuthService.authenticationInfo().level ).toBe( AuthLevel.Normal );
+        await cris.sendOrThrowAsync( basicLogin( 'TestUser', 'success' ) );
+        expect( ngAuthService.level() ).toBeGreaterThanOrEqual( AuthLevel.Normal );
         expect( ngAuthService.authenticationInfo() ).toStrictEqual( authService.authenticationInfo );
 
-        const profile = await cris.sendOrThrowAsync( new GetUserProfileQCommand( authService.authenticationInfo.user.userId ) );
+        const profile = await cris.sendOrThrowAsync( new GetUserProfileQCommand( authService.actor.actorId ) );
         expect( profile ).not.toBeNull();
         expect( profile!.userName ).toBe( 'TestUser' );
         // CK.Ng.Admin extends user-service with an isAdmin signal computed from groups,
@@ -65,8 +74,8 @@ describe( 'integration tests', () => {
     // looks for a group named 'AdminZone' with grantLevel >= 112 (then falls back to the
     // current workspace's grantLevel) — both checks must fail here.
     it( 'TestUser is not admin', async () => {
-        await ngAuthService.authService.basicLogin( 'TestUser', 'success' );
-        expect( ngAuthService.authenticationInfo().level ).toBe( AuthLevel.Normal );
+        await TestBed.inject( HttpCrisEndpoint ).sendOrThrowAsync( basicLogin( 'TestUser', 'success' ) );
+        expect( ngAuthService.level() ).toBeGreaterThanOrEqual( AuthLevel.Normal );
 
         await userService.refreshUserProfileAsync();
 
@@ -79,8 +88,8 @@ describe( 'integration tests', () => {
     // the same AclId, so CK.fAclGrantLevel returns 127 for AdminUser on AdminZone -> the
     // isAdmin signal's 'AdminZone' branch must fire.
     it( 'AdminUser is admin', async () => {
-        await ngAuthService.authService.basicLogin( 'AdminUser', 'success' );
-        expect( ngAuthService.authenticationInfo().level ).toBe( AuthLevel.Normal );
+        await TestBed.inject( HttpCrisEndpoint ).sendOrThrowAsync( basicLogin( 'AdminUser', 'success' ) );
+        expect( ngAuthService.level() ).toBeGreaterThanOrEqual( AuthLevel.Normal );
 
         await userService.refreshUserProfileAsync();
 

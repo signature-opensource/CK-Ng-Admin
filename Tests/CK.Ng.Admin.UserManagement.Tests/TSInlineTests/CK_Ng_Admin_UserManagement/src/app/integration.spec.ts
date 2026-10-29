@@ -15,6 +15,14 @@ import {
   GetWorkspacePendingInvitationsQCommand
 } from '@local/ck-gen';
 import { DEFAULT_LOCALE_INFO } from '@local/ck-gen/ts-locales/locales';
+import { BasicLoginCommand } from '@local/ck-gen';
+
+function basicLogin( userName: string, password: string ): BasicLoginCommand {
+    const c = new BasicLoginCommand();
+    c.userName = userName;
+    c.password = password;
+    return c;
+}
 
 if ( process.env["VSCODE_INSPECTOR_OPTIONS"] ) jest.setTimeout( 30 * 60 * 1000 ); // 30 minutes
 
@@ -43,11 +51,12 @@ describe( 'user-management integration', () => {
 
   afterEach( async () => {
     await ngAuthService.authService.logout();
+    ngAuthService.authService.close();
   } );
 
   it( 'a workspace admin creates an invitation and lists the workspace users', async () => {
-    await ngAuthService.authService.basicLogin( 'UMAdmin', 'success' );
-    expect( ngAuthService.authenticationInfo().level ).toBe( AuthLevel.Normal );
+    await TestBed.inject( HttpCrisEndpoint ).sendOrThrowAsync( basicLogin( 'UMAdmin', 'success' ) );
+    expect( ngAuthService.level() ).toBeGreaterThanOrEqual( AuthLevel.Normal );
 
     // Sets the current workspace (and the CRIS ambient currentWorkspaceId) from the profile.
     await cris.updateAmbientValuesAsync();
@@ -77,7 +86,7 @@ describe( 'user-management integration', () => {
   } );
 
   it( 'creating the same invitation twice returns an error-level message', async () => {
-    await ngAuthService.authService.basicLogin( 'UMAdmin', 'success' );
+    await TestBed.inject( HttpCrisEndpoint ).sendOrThrowAsync( basicLogin( 'UMAdmin', 'success' ) );
     await cris.updateAmbientValuesAsync();
     await userService.refreshUserProfileAsync();
 
@@ -90,8 +99,8 @@ describe( 'user-management integration', () => {
   } );
 
   it( 'a plain member is not allowed to create an invitation', async () => {
-    await ngAuthService.authService.basicLogin( 'UMMember', 'success' );
-    expect( ngAuthService.authenticationInfo().level ).toBe( AuthLevel.Normal );
+    await TestBed.inject( HttpCrisEndpoint ).sendOrThrowAsync( basicLogin( 'UMMember', 'success' ) );
+    expect( ngAuthService.level() ).toBeGreaterThanOrEqual( AuthLevel.Normal );
     await cris.updateAmbientValuesAsync();
     await userService.refreshUserProfileAsync();
 
@@ -103,14 +112,14 @@ describe( 'user-management integration', () => {
   } );
 
   it( 'UMAdmin is recognized as workspace admin, UMMember is not', async () => {
-    await ngAuthService.authService.basicLogin( 'UMAdmin', 'success' );
+    await TestBed.inject( HttpCrisEndpoint ).sendOrThrowAsync( basicLogin( 'UMAdmin', 'success' ) );
     await cris.updateAmbientValuesAsync();
     await userService.refreshUserProfileAsync();
     expect( userService.isAdmin() ).toBe( true );
 
     await ngAuthService.authService.logout();
 
-    await ngAuthService.authService.basicLogin( 'UMMember', 'success' );
+    await TestBed.inject( HttpCrisEndpoint ).sendOrThrowAsync( basicLogin( 'UMMember', 'success' ) );
     await cris.updateAmbientValuesAsync();
     await userService.refreshUserProfileAsync();
     expect( userService.isAdmin() ).toBe( false );

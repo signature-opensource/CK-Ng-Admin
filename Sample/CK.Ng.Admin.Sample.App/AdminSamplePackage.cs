@@ -1,12 +1,12 @@
 using CK.Core;
-using CK.Ng.AspNet.Auth.Basic;
-using CK.Ng.Cris.AspNet.Auth;
+using CK.Ng.Cris.AspNet.Authentication;
+using CK.Ng.Cris.AspNet.Authentication.Basic;
 using CK.TypeScript;
 
 namespace CK.Ng.Admin.Sample.App;
 
 [TypeScriptPackage]
-[Requires<AspNetAuthBasicPackage, CrisAspNetAuthPackage>]
+[Requires<NgCrisAuthenticationBasicPackage, NgCrisAuthenticationPackage>]
 [Requires<UserManagement.UserManagementTSPackage>]
 //[Requires<UserManagement.UserBanned.UserManagementUserBannedPackage>]
 //[Requires<UserManagement.UserInvitation.UserManagementUserInvitationPackage>]

@@ -5,7 +5,7 @@ using CK.DB.User.UserPassword;
 using CK.IO.UserProfile.Workspace;
 using CK.SqlServer;
 using Dapper;
-using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.DataProtection;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder( args );
@@ -22,18 +22,12 @@ builder.Services.AddControllers();
 builder.Services.AddCors();
 builder.Services.AddHttpClient();
 
-var authBuilder = new AuthenticationBuilder( builder.Services );
-
 builder.AddWebSocketChannel();
 
-builder.AddWebFrontAuth( o => {
-    o.ExpireTimeSpan = TimeSpan.FromHours( 1 );
-    o.SlidingExpirationTime = TimeSpan.FromHours( 1 );
-    o.SchemesCriticalTimeSpan = new Dictionary<string, TimeSpan>
-    {
-        { "Basic", new TimeSpan( 0, 5, 0 ) }
-    };
-} );
+// This application is its own AuthCenter (its "Local" allows the "AuthCenter" feature, see appsettings.json) and its
+// HTTP front: the session commands on "/.cris/auth", the other commands on "/.cris".
+builder.Services.AddDataProtection();
+builder.Services.AddCrisAuthentication();
 
 var map = StObjContextRoot.Load( Assembly.GetExecutingAssembly(), builder.GetBuilderMonitor() );
 
@@ -55,7 +49,6 @@ await SeedSecondWorkspaceAsync( map!, monitor );
 var app = builder.CKBuild( map );
 
 app.UseRouting();
-app.UseAuthentication();
 app.UseCors( c => c.SetIsOriginAllowed( host => true )
                    .AllowAnyMethod()
                    .AllowAnyHeader()
@@ -63,6 +56,7 @@ app.UseCors( c => c.SetIsOriginAllowed( host => true )
 app.UseAuthorization();
 app.UseStaticFiles();
 app.UseWebSocketChannel();
+app.UseCrisAuthentication();
 app.UseCris();
 app.UseSpa( ( b ) =>
 {

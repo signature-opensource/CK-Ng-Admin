@@ -36,11 +36,10 @@ public class UserManagementNgTests
         configuration.FirstBinPath.Path = TestHelper.BinFolder;
         configuration.EnsureSqlServerConfigurationAspect();
 
+        // The application is its own AuthCenter (with its HTTP front).
+        configuration.FirstBinPath.AddAuthCenterApplication();
         configuration.FirstBinPath.Assemblies.AddRange( [
-            "CK.Cris.Auth",
-            "CK.Ng.Cris.AspNet.Auth",
-            "CK.DB.AspNet.Auth",
-            "CK.Ng.AspNet.Auth.Basic",
+            "CK.Ng.Cris.AspNet.Authentication.Basic",
             "CK.DB.User.UserPassword",
             "CK.DB.User.NamedUser",
             "CK.DB.User.PreferredCulture",
@@ -146,17 +145,14 @@ public class UserManagementNgTests
         #endregion
 
         var builder = WebApplication.CreateSlimBuilder();
-        // CK.UserManagement transitively pulls CK.AppIdentity (via CK.Mailer): provide a minimal
-        // AppIdentity configuration so its hosted ApplicationIdentityService can start.
-        builder.Configuration.AddInMemoryCollection( new Dictionary<string, string?>
-        {
-            ["CK-AppIdentity:FullName"] = "UMTest/$Server",
-            ["CK-AppIdentity:Local:FrontUrl"] = "http://localhost:4200"
-        } );
-        builder.AddApplicationIdentityServiceConfiguration();
         builder.AddUnsafeAllowAllCors();
-        builder.AddWebFrontAuth( ao => ao.SlidingExpirationTime = TimeSpan.FromMinutes( 10 ) );
-        await using var server = await builder.CreateRunningAspNetServerAsync( map, app => { app.UseMiddleware<CrisMiddleware>(); app.UseCris(); } );
+        // The application is its own AuthCenter. CK.UserManagement (via CK.Mailer) reads its FrontUrl.
+        await using var server = await builder.CreateRunningAuthCenterApplicationAsync( map, c =>
+        {
+            c["FullName"] = "UMTest/$Server";
+            c["Local:AllowFeatures"] = "AuthCenter";
+            c["Local:FrontUrl"] = "http://localhost:4200";
+        } );
         await using var runner = TestHelper.CreateTypeScriptRunner( targetProjectPath, server.ServerAddress );
         await TestHelper.SuspendAsync( resume => resume );
         runner.Run();

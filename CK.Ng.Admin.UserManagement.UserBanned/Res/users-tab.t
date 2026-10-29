@@ -157,7 +157,7 @@ begin
 
            // Banning and unbanning are administration, high-value actions: they require the Critical level.
            #recentLoginRequired(): boolean {
-             if ( this.#authService.authenticationInfo().level >= AuthLevel.Critical ) return false;
+             if ( this.#authService.level() >= AuthLevel.Critical ) return false;
              this.#notifService.notifyUserMessage( { level: UserMessageLevel.Error, message: this.#translateService.instant( 'CK.Admin.UserManagement.RecentLoginRequired' ) } as SimpleUserMessage );
              return true;
            }
