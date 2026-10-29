@@ -39,7 +39,7 @@ public class UserManagementNgTests
         // The application is its own AuthCenter (with its HTTP front).
         configuration.FirstBinPath.AddAuthCenterApplication();
         configuration.FirstBinPath.Assemblies.AddRange( [
-            "CK.Ng.Cris.AspNet.Authentication.Basic", "CK.Cris.Authentication.Basic",
+            "CK.Ng.Cris.AspNet.Authentication.Basic",
             "CK.DB.User.UserPassword",
             "CK.DB.User.NamedUser",
             "CK.DB.User.PreferredCulture",
