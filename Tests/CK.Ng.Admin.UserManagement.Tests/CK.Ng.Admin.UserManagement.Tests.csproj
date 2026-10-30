@@ -25,8 +25,8 @@
         <PackageReference Include="CK.Template.Fluid.Engine" Version="2.0.2-0.cris-auth.0.ci.4" />
         <!-- CK.UserManagement pulls CK.Mailer -> CK.AppIdentity; the host must provide its configuration. -->
         <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.cris-auth.0.ci.9" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
-        <PackageReference Include="NUnit3TestAdapter" Version="6.3.0" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
+        <PackageReference Include="NUnit3TestAdapter" Version="6.3.1" />
         <!-- Backend command handlers/services exercised by the integration spec, now consumed as a published package. -->
         <PackageReference Include="CK.UserManagement" Version="3.0.0-0.cris-auth.0.ci.12" />
         <PackageReference Include="CK.UserManagement.UserBanned" Version="3.0.0-0.cris-auth.0.ci.12" />

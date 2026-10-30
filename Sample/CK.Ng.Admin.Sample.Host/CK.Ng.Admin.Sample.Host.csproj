@@ -10,9 +10,9 @@
   <ItemGroup>
     <!-- CKBuild: the application built on its StObjMap. -->
     <PackageReference Include="CK.AspNet" Version="24.0.0-0.cris-auth.0.ci.6" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.3.0" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.12" />
-    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="10.0.12" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.3.1" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.14" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="10.0.14" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CK.Ng.Admin.Sample.App\CK.Ng.Admin.Sample.App.csproj" />
