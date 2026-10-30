@@ -1,5 +1,7 @@
 <!-- <PreGroupPicker revert /> -->
-<nz-select [formControl]="control()" nzMode="multiple">
+<!-- nz-select finds its nz-option children through a content query, so each branch declares them inline. -->
+@if ( control(); as formControl ) {
+<nz-select [formControl]="formControl" nzMode="multiple">
     @for ( group of groups(); track group.groupId ) {
         <nz-option
             [nzValue]="group.groupId"
@@ -9,4 +11,16 @@
         </nz-option>
     }
 </nz-select>
+} @else {
+<nz-select [ngModel]="value()" (ngModelChange)="value.set( $event )" (nzBlur)="touch.emit()" nzMode="multiple">
+    @for ( group of groups(); track group.groupId ) {
+        <nz-option
+            [nzValue]="group.groupId"
+            nzCustomContent
+            [nzLabel]="selectedLabel(group)">
+            <div [innerHtml]="dropdownLabel(group)"></div>
+        </nz-option>
+    }
+</nz-select>
+}
 <!-- <PostGroupPicker /> -->

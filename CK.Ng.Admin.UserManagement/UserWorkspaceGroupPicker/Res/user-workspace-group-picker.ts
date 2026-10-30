@@ -1,21 +1,36 @@
-import { Component, inject, input } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { Component, inject, input, model, output } from '@angular/core';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormValueControl } from '@angular/forms/signals';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { GroupInfos } from '@local/ck-gen';
 
+/**
+ * Multiple select of workspace groups, bound with `[formField]` to a `number[]` field of group ids.
+ */
 @Component( {
   selector: 'ck-user-workspace-group-picker',
   templateUrl: './user-workspace-group-picker.html',
-  imports: [ReactiveFormsModule, TranslateModule, NzSelectModule]
+  imports: [FormsModule, ReactiveFormsModule, TranslateModule, NzSelectModule]
 } )
-export class UserWorkspaceGroupPicker {
+export class UserWorkspaceGroupPicker implements FormValueControl<number[]> {
   // <PreViewChildren revert />
   // <PostViewChildren />
 
   // <PreInputOutput revert />
-  readonly control = input.required<FormControl<Array<number>>>();
+  /**
+   * Reactive-forms binding. When set, it drives the select and {@link value} is neither read nor written.
+   */
+  readonly control = input<FormControl<Array<number>>>();
   readonly groups = input.required<Array<GroupInfos>>();
+  /**
+   * Ids of the selected groups, kept in sync with the field bound by `[formField]`.
+   */
+  readonly value = model<number[]>( [] );
+  /**
+   * Emitted when the select loses focus, so a `[formField]` field is marked touched.
+   */
+  readonly touch = output<void>();
   // <PostInputOutput />
 
   // <PreDependencyInjection revert />
