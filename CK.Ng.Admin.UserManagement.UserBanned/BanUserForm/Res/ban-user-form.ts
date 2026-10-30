@@ -1,14 +1,12 @@
-import { Component, Signal, inject, viewChild } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { GenericForm, GenericFormData } from '@local/ck-gen';
+import { Component, TemplateRef, inject, signal, viewChild } from '@angular/core';
+import { FormField, required, validate } from '@angular/forms/signals';
 import { DateTime, DurationLikeObject } from 'luxon';
 import { TranslateModule } from '@ngx-translate/core';
 import { NZ_MODAL_DATA } from 'ng-zorro-antd/modal';
-import { NzFormModule } from 'ng-zorro-antd/form';
-import { NzSelectModule } from 'ng-zorro-antd/select';
 import { DisabledTimeFn, NzDatePickerModule } from 'ng-zorro-antd/date-picker';
+import { CustomFieldContext, customField, GenericFields, GenericForm, genericForm, GenericFormHandle, selectField } from '@local/ck-gen';
 
-// The nz-date-picker of the GenericForm yields JS Dates; the commands take luxon DateTime.
+// nz-date-picker yields JS Dates; the commands take luxon DateTime.
 function toDateTime( value: Date | null | undefined ): DateTime | undefined {
   return value ? DateTime.fromJSDate( value ).toUTC() : undefined;
 }
@@ -20,6 +18,12 @@ function isSameDay( a: Date, b: Date ): boolean {
 // [from, to[ as an array, the shape ng-zorro expects for its disabled hour/minute lists.
 function range( from: number, to: number ): Array<number> {
   return Array.from( { length: Math.max( 0, to - from ) }, ( _, i ) => from + i );
+}
+
+// The picker rules out past slots, but its "Now" shortcut still lands on the current instant, which
+// is already past by the time the command reaches the server.
+function hasElapsed( end: Date | null ): boolean {
+  return !!end && end.getTime() <= Date.now();
 }
 
 export type BanDurationKey = 'eternal' | 'hour' | 'day' | 'week' | 'month' | 'custom';
@@ -35,14 +39,16 @@ export const BAN_DURATIONS: ReadonlyArray<{ key: BanDurationKey, labelKey: strin
   { key: 'custom', labelKey: 'CK.Admin.UserManagement.Ban.DurationCustom' }
 ];
 
+type BanFormValue = { keyReason: string, banDuration: BanDurationKey, customEndDate: Date | null };
+
 @Component( {
   selector: 'ck-ban-user-form',
   templateUrl: './ban-user-form.html',
-  imports: [TranslateModule, FormsModule, ReactiveFormsModule, NzFormModule, NzSelectModule, NzDatePickerModule, GenericForm]
+  imports: [FormField, TranslateModule, NzDatePickerModule, GenericForm]
 } )
 export class BanUserForm {
   // <PreViewChildren revert />
-  readonly formComponent: Signal<GenericForm | undefined> = viewChild( 'formComp' );
+  protected readonly endDateTemplate = viewChild<TemplateRef<CustomFieldContext<Date | null>>>( 'endDateTemplate' );
   // <PostViewChildren />
 
   // <PreDependencyInjection revert />
@@ -50,29 +56,38 @@ export class BanUserForm {
   // <PostDependencyInjection />
 
   // <PreLocalVariables revert />
-  // Scalar-field config (the free-text keyReason) consumed by the GenericForm. The GenericForm
-  // also reads it from NZ_MODAL_DATA (modal mode); binding it satisfies its required input.
-  public formData: GenericFormData<unknown, unknown>;
   // Names of the users being banned, shown as a reminder in the modal.
   public userNames: Array<string>;
-  public readonly durations = BAN_DURATIONS;
-  // Selected duration. Permanent by default: it is the common case and it reproduces the behaviour
-  // of the former "eternal" checkbox, which was checked by default.
-  public banDuration: BanDurationKey = 'eternal';
-  // Absolute end date, entered only when banDuration is 'custom'.
-  public customEndDate: Date | null = null;
-  // Set on the first rejected confirmation so the missing end date is reported. The GenericForm
-  // only renders its own control errors once the form is dirty or touched.
-  public submitAttempted: boolean = false;
+  /**
+   * The `keyReason` field given by the opener in `NZ_MODAL_DATA.fields`, then `banDuration` (permanent
+   * by default, the common case) and `customEndDate`, shown and required only for the 'custom' duration.
+   * Its fields are fixed when the component is created.
+   */
+  public readonly banForm: GenericFormHandle<GenericFields>;
+  // The end-date rule reads Date.now(), which no signal tracks: bumping this re-runs it.
+  readonly #clock = signal( 0 );
   // <PostLocalVariables />
 
   constructor() {
-    this.formData = this.#nzModalData.formData;
     this.userNames = this.#nzModalData.userNames ?? [];
-  }
-
-  get isCustomDuration(): boolean {
-    return this.banDuration === 'custom';
+    const reasonFields: GenericFields = this.#nzModalData.fields;
+    this.banForm = genericForm<GenericFields>( () => ( {
+      ...reasonFields,
+      banDuration: selectField<BanDurationKey>( 'CK.Admin.UserManagement.Ban.Duration', 'eternal', {
+        options: BAN_DURATIONS.map( d => ( { label: d.labelKey, value: d.key } ) )
+      } ),
+      customEndDate: customField<Date | null>( 'CK.Admin.UserManagement.Ban.EndDate', null, {
+        template: this.endDateTemplate()!,
+        show: m => m['banDuration'] === 'custom',
+        rules: p => {
+          required( p, { message: 'CK.Admin.UserManagement.Ban.EndDateRequired' } );
+          validate( p, ( { value } ) => {
+            this.#clock();
+            return hasElapsed( value() ) ? { kind: 'endDatePast', message: 'CK.Admin.UserManagement.Ban.EndDatePast' } : undefined;
+          } );
+        }
+      } )
+    } ) );
   }
 
   // A banishment cannot end before it starts (check constraint BanStartDate <= BanEndDate).
@@ -98,42 +113,34 @@ export class BanUserForm {
     };
   };
 
-  // Called by UsersTab when a confirmation is rejected: surfaces every pending validation message.
+  // Called by UsersTab when a confirmation is rejected: surfaces every pending validation message,
+  // including an end date that has elapsed since it was picked.
   showErrors(): void {
-    this.submitAttempted = true;
-    this.formComponent()?.form()?.markAllAsTouched();
+    this.#clock.update( n => n + 1 );
+    this.banForm.form().markAsTouched();
   }
 
-  get missingEndDate(): boolean {
-    return this.submitAttempted && this.isCustomDuration && !this.customEndDate;
-  }
-
-  // The picker rules out past slots, but its "Now" shortcut still lands on the current instant, which
-  // is already past by the time the command reaches the server.
-  get pastEndDate(): boolean {
-    return this.submitAttempted && this.isCustomDuration
-      && !!this.customEndDate && this.customEndDate.getTime() <= Date.now();
-  }
-
+  // The end date is checked against the clock here too: the form's own rule only re-runs on a change.
   get valid(): boolean {
-    const form = this.formComponent()?.form();
-    if ( !form || !form.valid ) return false;
-    // In 'custom' mode the end date is mandatory and must still be in the future.
-    return !this.isCustomDuration || ( !!this.customEndDate && this.customEndDate.getTime() > Date.now() );
+    const v = this.#value();
+    return this.banForm.form().valid() && !( v.banDuration === 'custom' && hasElapsed( v.customEndDate ) );
   }
 
   getValue(): { keyReason: string, banEndDate?: DateTime } {
-    const raw = this.formComponent()!.form()!.getRawValue();
+    const v = this.#value();
     // The reason is free text: only the surrounding whitespace is dropped.
-    const keyReason = ( raw.keyReason as string ).trim();
-    return { keyReason, banEndDate: this.#computeEndDate() };
+    return { keyReason: v.keyReason.trim(), banEndDate: this.#computeEndDate( v ) };
+  }
+
+  #value(): BanFormValue {
+    return this.banForm.model() as BanFormValue;
   }
 
   // An eternal banishment is expressed by leaving the end date undefined: the server stores 9999-12-31.
   // Seconds are always dropped: the picker works at the minute and a ban end needs no finer grain.
-  #computeEndDate(): DateTime | undefined {
-    if ( this.banDuration === 'custom' ) return toDateTime( this.customEndDate )?.startOf( 'minute' );
-    const d = BAN_DURATIONS.find( o => o.key === this.banDuration )?.duration;
+  #computeEndDate( v: BanFormValue ): DateTime | undefined {
+    if ( v.banDuration === 'custom' ) return toDateTime( v.customEndDate )?.startOf( 'minute' );
+    const d = BAN_DURATIONS.find( o => o.key === v.banDuration )?.duration;
     return d ? DateTime.utc().plus( d ).startOf( 'minute' ) : undefined;
   }
 }
