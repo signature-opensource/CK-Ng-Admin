@@ -421,8 +421,8 @@ export class UsersTab implements OnInit, AfterViewInit {
       nzTitle: `${this.#translateService.instant( 'CK.Admin.UserManagement.Modal.ForceResetPassword' )} : ${user.userName} ?`,
       nzCancelText: this.#translateService.instant( 'Button.Cancel' ),
       nzOkText: this.#translateService.instant( 'Button.Confirm' ),
-      // A dedicated component rather than the shared GenericForm: the password field carries a
-      // regenerate button as its suffix, which GenericForm cannot render.
+      // A dedicated component around the shared GenericForm: it adds the user reminder above the form,
+      // and the regenerate suffix button and strength meter to the password field.
       nzContent: ForceResetPasswordForm,
       nzData: { userName: user.userName },
       nzOnOk: async ( cmp: ForceResetPasswordForm ) => {
