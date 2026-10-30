@@ -42,8 +42,7 @@ public class AdminTests
 
         // The engine only scans assemblies listed above (DiscoverAssembliesFromPath=false by default).
         // Register the test-project types explicitly so the Cris engine picks up the override handler.
-        configuration.FirstBinPath.Types.Add( typeof( TestCommandHandler ),
-                                              typeof( User.UserQueries ),
+        configuration.FirstBinPath.Types.Add( typeof( User.UserQueries ),
                                               typeof( User.GetUserProfileCommandHandler ) );
 
         var tsConfig = configuration.FirstBinPath.EnsureTypeScriptConfigurationAspect( targetProjectPath,
