@@ -9,7 +9,7 @@
   <ItemGroup>
     <PackageReference Include="CK.AppBuilder" Version="36.0.0-0.cris-auth" />
     <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.cris-auth" />
-    <PackageReference Include="CK.Cris.AspNet.Engine" Version="3.0.0-0.cris-auth" />
+    <PackageReference Include="CK.Cris.AspNet.Engine" Version="3.0.0-0.cris-auth.0.ci.53" />
     <PackageReference Include="CK.Globalization.Engine" Version="3.0.0-0.cris-auth" />
     <PackageReference Include="CK.Setupable.Engine" Version="36.0.0-0.cris-auth" />
     <PackageReference Include="CK.SqlServer.Setup.Engine" Version="36.0.0-0.cris-auth" />

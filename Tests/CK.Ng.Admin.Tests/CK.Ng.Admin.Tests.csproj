@@ -9,16 +9,16 @@
     <ItemGroup>
         <PackageReference Include="CK.DB.User.UserPassword" Version="31.0.0-0.cris-auth" />
         <PackageReference Include="CK.DB.Workspace" Version="18.0.0-0.cris-auth" />
-        <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Basic" Version="3.0.0-0.cris-auth" />
+        <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Basic" Version="3.0.0-0.cris-auth.0.ci.53" />
         <PackageReference Include="CK.DB.Tests.NUnit" Version="36.0.0-0.cris-auth" />
         <PackageReference Include="CK.SqlServer.Dapper" Version="18.0.0-0.cris-auth" />
 
         <PackageReference Include="CK.SqlServer.Transaction" Version="15.0.0-0.cris-auth" />
         <!-- The IUpdateUserCommand handler. -->
-        <PackageReference Include="CK.UserProfile" Version="3.0.0-0.cris-auth" />
-        <PackageReference Include="CK.Testing.AppIdentity.Cris.AuthCenter" Version="3.0.0-0.cris-auth" />
+        <PackageReference Include="CK.UserProfile" Version="3.0.0-0.cris-auth.0.ci.34" />
+        <PackageReference Include="CK.Testing.AppIdentity.Cris.AuthCenter" Version="3.0.0-0.cris-auth.0.ci.67" />
         <PackageReference Include="CK.Testing.Nunit" Version="18.0.0-0.cris-auth" />
-        <PackageReference Include="CK.Cris.AspNet.Engine" Version="3.0.0-0.cris-auth" />
+        <PackageReference Include="CK.Cris.AspNet.Engine" Version="3.0.0-0.cris-auth.0.ci.53" />
         <PackageReference Include="CK.Testing.SqlServerEngine" Version="36.0.0-0.cris-auth" />
         <PackageReference Include="CK.Testing.TypeScriptEngine" Version="3.0.0-0.cris-auth" />
         <PackageReference Include="CK.Globalization.Engine" Version="3.0.0-0.cris-auth" />
