@@ -32,6 +32,8 @@
     <PackageReference Include="CK.Ng.UserProfile.UserPassword.Lost" Version="3.0.0-0.cris-auth.0.ci.25" />
     <!-- The server side of the lost password flow (its handler): this sample is its own authentication center. -->
     <PackageReference Include="CK.UserProfile.UserPassword.Lost" Version="3.0.0-0.cris-auth.0.ci.25" />
+    <!-- The server side of the profile (the IUpdateUserCommand handler). -->
+    <PackageReference Include="CK.UserProfile" Version="3.0.0-0.cris-auth.0.ci.25" />
     <PackageReference Include="CK.Ng.UserProfile.UserPassword.Reset" Version="3.0.0-0.cris-auth.0.ci.25" />
     <PackageReference Include="CK.Ng.UserProfile.Workspace" Version="3.0.0-0.cris-auth.0.ci.25" />
 
