@@ -26,16 +26,16 @@
          single version: the 0.8.0 of UserPassword.Reset still creates the canActivate block of the
          private page that CK.Ng.UserProfile now owns, and mixing the two emits it twice, which
          breaks every transformer anchored on it. Fill all six in together. -->
-    <PackageReference Include="CK.Ng.UserProfile" Version="3.0.0-0.cris-auth.0.ci.26" />
-    <PackageReference Include="CK.Ng.UserProfile.PreferredCulture" Version="3.0.0-0.cris-auth.0.ci.26" />
-    <PackageReference Include="CK.Ng.UserProfile.UserPassword" Version="3.0.0-0.cris-auth.0.ci.26" />
-    <PackageReference Include="CK.Ng.UserProfile.UserPassword.Lost" Version="3.0.0-0.cris-auth.0.ci.26" />
+    <PackageReference Include="CK.Ng.UserProfile" Version="3.0.0-0.cris-auth.0.ci.28" />
+    <PackageReference Include="CK.Ng.UserProfile.PreferredCulture" Version="3.0.0-0.cris-auth.0.ci.28" />
+    <PackageReference Include="CK.Ng.UserProfile.UserPassword" Version="3.0.0-0.cris-auth.0.ci.28" />
+    <PackageReference Include="CK.Ng.UserProfile.UserPassword.Lost" Version="3.0.0-0.cris-auth.0.ci.28" />
     <!-- The server side of the lost password flow (its handler): this sample is its own authentication center. -->
-    <PackageReference Include="CK.UserProfile.UserPassword.Lost" Version="3.0.0-0.cris-auth.0.ci.26" />
+    <PackageReference Include="CK.UserProfile.UserPassword.Lost" Version="3.0.0-0.cris-auth.0.ci.28" />
     <!-- The server side of the profile (the IUpdateUserCommand handler). -->
-    <PackageReference Include="CK.UserProfile" Version="3.0.0-0.cris-auth.0.ci.26" />
-    <PackageReference Include="CK.Ng.UserProfile.UserPassword.Reset" Version="3.0.0-0.cris-auth.0.ci.26" />
-    <PackageReference Include="CK.Ng.UserProfile.Workspace" Version="3.0.0-0.cris-auth.0.ci.26" />
+    <PackageReference Include="CK.UserProfile" Version="3.0.0-0.cris-auth.0.ci.28" />
+    <PackageReference Include="CK.Ng.UserProfile.UserPassword.Reset" Version="3.0.0-0.cris-auth.0.ci.28" />
+    <PackageReference Include="CK.Ng.UserProfile.Workspace" Version="3.0.0-0.cris-auth.0.ci.28" />
 
 
       <PackageReference Include="CK.SqlServer.Dapper" Version="18.0.0-0.cris-auth.0.ci.8" />
