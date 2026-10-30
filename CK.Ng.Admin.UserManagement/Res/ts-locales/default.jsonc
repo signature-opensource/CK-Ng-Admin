@@ -13,6 +13,7 @@
     "CK.Admin.UserManagement.Button.ResetPassword": "Reset password",
     "CK.Admin.UserManagement.Form.DefaultLanguage": "Default language",
     "CK.Admin.UserManagement.Form.Groups": "Groups",
+    "CK.Admin.UserManagement.Form.GroupsRequired": "Select at least one group.",
     "CK.Admin.UserManagement.Form.RegeneratePassword": "Generate a new password",
     "CK.Admin.UserManagement.User.FirstName": "First name",
     "CK.Admin.UserManagement.User.LastName": "Last name",

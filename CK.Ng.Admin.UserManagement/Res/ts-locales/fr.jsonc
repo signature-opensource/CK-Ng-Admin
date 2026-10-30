@@ -13,6 +13,7 @@
     "CK.Admin.UserManagement.Button.ResetPassword": "Réinitialiser le mot de passe",
     "CK.Admin.UserManagement.Form.DefaultLanguage": "Langue par défaut",
     "CK.Admin.UserManagement.Form.Groups": "Groupes",
+    "CK.Admin.UserManagement.Form.GroupsRequired": "Sélectionnez au moins un groupe.",
     "CK.Admin.UserManagement.Form.RegeneratePassword": "Générer un nouveau mot de passe",
     "CK.Admin.UserManagement.User.FirstName": "Prénom",
     "CK.Admin.UserManagement.User.LastName": "Nom",

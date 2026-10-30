@@ -7,6 +7,7 @@ namespace CK.Ng.Admin.UserManagement;
 [NgComponent]
 [Package<UserManagementTSPackage>]
 [Requires<PasswordStrengthComponent>]
+[Requires<Zorro.GenericFormComponent>]
 public sealed class EditUserFormComponent : NgComponent
 {
 }
