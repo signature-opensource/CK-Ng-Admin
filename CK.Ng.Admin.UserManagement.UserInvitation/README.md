@@ -20,8 +20,9 @@ invitation-based user creation flow. It injects into the base
 
 - [`UserManagementTSPackage`](../CK.Ng.Admin.UserManagement/README.md)
 - `CK.Ng.UserProfile.UserPassword.Lost` - the invitation link and the password-recovery link are the
-  same kind of anonymous token flow, and the mail infrastructure comes from there. This is why
-  referencing this package pulls the e-mail feature in.
+  same kind of anonymous token flow: the registration page comes with the lost password pages. Their
+  server sides (the handlers and the mails) are `CK.UserManagement.UserInvitation` and
+  `CK.UserProfile.UserPassword.Lost`, where the database is.
 - `CK.IO.UserManagement.UserInvitation`
 
 ## It extends a generated command.

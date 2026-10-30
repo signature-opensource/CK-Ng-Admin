@@ -3,4 +3,5 @@ deactivate and delete actions, the e-mail column and field, and the anonymous re
 reached through the invited link.
 
 It also extends the generated edit command with the Email property, so referencing this package is what
-puts the address on the form. It brings the e-mail feature in through CK.Ng.UserProfile.UserPassword.Lost.
+puts the address on the form. The invitations and their mails are handled by CK.UserManagement.UserInvitation,
+where the database is.

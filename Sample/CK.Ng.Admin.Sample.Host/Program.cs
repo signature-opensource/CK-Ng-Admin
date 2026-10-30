@@ -1,4 +1,3 @@
-using CK.AspNet.WebSocketChannel;
 using CK.Core;
 using CK.DB.Actor;
 using CK.DB.User.UserPassword;
@@ -21,8 +20,6 @@ monitor.Info( "Globalization files should have been loaded." );
 builder.Services.AddControllers();
 builder.Services.AddCors();
 builder.Services.AddHttpClient();
-
-builder.AddWebSocketChannel();
 
 // This application is its own AuthCenter (its "Local" allows the "AuthCenter" feature, see appsettings.json) and its
 // HTTP front: the session commands on "/.cris/auth", the other commands on "/.cris".
@@ -55,7 +52,6 @@ app.UseCors( c => c.SetIsOriginAllowed( host => true )
                    .AllowCredentials() );
 app.UseAuthorization();
 app.UseStaticFiles();
-app.UseWebSocketChannel();
 app.UseCrisAuthentication();
 app.UseCris();
 app.UseSpa( ( b ) =>
