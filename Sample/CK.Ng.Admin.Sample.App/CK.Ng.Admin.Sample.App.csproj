@@ -9,44 +9,44 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.cris-auth.0.ci.15" />
-    <PackageReference Include="CK.Cris.AspNet" Version="3.0.0-0.cris-auth.0.ci.57" />
+    <PackageReference Include="CK.Cris.AspNet" Version="3.0.0-0.cris-auth.0.ci.59" />
     <!-- This application is its own AuthCenter (with its HTTP front). -->
-    <PackageReference Include="CK.AppIdentity.Cris.AuthCenter.Local" Version="3.0.0-0.cris-auth.0.ci.76" />
-    <PackageReference Include="CK.Cris.AspNet.Authentication" Version="3.0.0-0.cris-auth.0.ci.57" />
-    <PackageReference Include="CK.Cris.Workspace" Version="18.0.0-0.cris-auth.0.ci.17" />
+    <PackageReference Include="CK.AppIdentity.Cris.AuthCenter.Local" Version="3.0.0-0.cris-auth.0.ci.77" />
+    <PackageReference Include="CK.Cris.AspNet.Authentication" Version="3.0.0-0.cris-auth.0.ci.59" />
+    <PackageReference Include="CK.Cris.Workspace" Version="18.0.0-0.cris-auth.0.ci.18" />
       
-    <PackageReference Include="CK.DB.User.NamedUser" Version="31.0.0-0.cris-auth.0.ci.23" />
-    <PackageReference Include="CK.DB.User.PreferredCulture" Version="3.0.0-0.cris-auth.0.ci.23" />
-    <PackageReference Include="CK.DB.User.UserPassword" Version="31.0.0-0.cris-auth.0.ci.29" />
-    <PackageReference Include="CK.DB.Workspace" Version="18.0.0-0.cris-auth.0.ci.17" />
+    <PackageReference Include="CK.DB.User.NamedUser" Version="31.0.0-0.cris-auth.0.ci.24" />
+    <PackageReference Include="CK.DB.User.PreferredCulture" Version="3.0.0-0.cris-auth.0.ci.24" />
+    <PackageReference Include="CK.DB.User.UserPassword" Version="31.0.0-0.cris-auth.0.ci.30" />
+    <PackageReference Include="CK.DB.Workspace" Version="18.0.0-0.cris-auth.0.ci.18" />
       
-    <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Basic" Version="3.0.0-0.cris-auth.0.ci.57" />
-    <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="3.0.0-0.cris-auth.0.ci.30" />
+    <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Basic" Version="3.0.0-0.cris-auth.0.ci.59" />
+    <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="3.0.0-0.cris-auth.0.ci.31" />
     <!-- TODO: version of the CK-Ng-User-UserProfile release. The whole family must stay on one
          single version: the 0.8.0 of UserPassword.Reset still creates the canActivate block of the
          private page that CK.Ng.UserProfile now owns, and mixing the two emits it twice, which
          breaks every transformer anchored on it. Fill all six in together. -->
-    <PackageReference Include="CK.Ng.UserProfile" Version="3.0.0-0.cris-auth.0.ci.40" />
-    <PackageReference Include="CK.Ng.UserProfile.PreferredCulture" Version="3.0.0-0.cris-auth.0.ci.40" />
-    <PackageReference Include="CK.Ng.UserProfile.UserPassword" Version="3.0.0-0.cris-auth.0.ci.40" />
-    <PackageReference Include="CK.Ng.UserProfile.UserPassword.Lost" Version="3.0.0-0.cris-auth.0.ci.40" />
+    <PackageReference Include="CK.Ng.UserProfile" Version="3.0.0-0.cris-auth.0.ci.41" />
+    <PackageReference Include="CK.Ng.UserProfile.PreferredCulture" Version="3.0.0-0.cris-auth.0.ci.41" />
+    <PackageReference Include="CK.Ng.UserProfile.UserPassword" Version="3.0.0-0.cris-auth.0.ci.41" />
+    <PackageReference Include="CK.Ng.UserProfile.UserPassword.Lost" Version="3.0.0-0.cris-auth.0.ci.41" />
     <!-- The server side of the lost password flow (its handler): this sample is its own authentication center. -->
-    <PackageReference Include="CK.UserProfile.UserPassword.Lost" Version="3.0.0-0.cris-auth.0.ci.40" />
+    <PackageReference Include="CK.UserProfile.UserPassword.Lost" Version="3.0.0-0.cris-auth.0.ci.41" />
     <!-- The server side of the profile (the IUpdateUserCommand handler). -->
-    <PackageReference Include="CK.UserProfile" Version="3.0.0-0.cris-auth.0.ci.40" />
-    <PackageReference Include="CK.Ng.UserProfile.UserPassword.Reset" Version="3.0.0-0.cris-auth.0.ci.40" />
-    <PackageReference Include="CK.Ng.UserProfile.Workspace" Version="3.0.0-0.cris-auth.0.ci.40" />
+    <PackageReference Include="CK.UserProfile" Version="3.0.0-0.cris-auth.0.ci.41" />
+    <PackageReference Include="CK.Ng.UserProfile.UserPassword.Reset" Version="3.0.0-0.cris-auth.0.ci.41" />
+    <PackageReference Include="CK.Ng.UserProfile.Workspace" Version="3.0.0-0.cris-auth.0.ci.41" />
 
 
-      <PackageReference Include="CK.SqlServer.Dapper" Version="18.0.0-0.cris-auth.0.ci.13" />
+      <PackageReference Include="CK.SqlServer.Dapper" Version="18.0.0-0.cris-auth.0.ci.14" />
     <PackageReference Include="CK.SqlServer.Transaction" Version="15.0.0-0.cris-auth.0.ci.6" />
 
-    <PackageReference Include="CK.UserManagement" Version="3.0.0-0.cris-auth.0.ci.18" />
-    <PackageReference Include="CK.UserManagement.UserBanned" Version="3.0.0-0.cris-auth.0.ci.18" />
-    <PackageReference Include="CK.UserManagement.UserInvitation" Version="3.0.0-0.cris-auth.0.ci.18" />
+    <PackageReference Include="CK.UserManagement" Version="3.0.0-0.cris-auth.0.ci.19" />
+    <PackageReference Include="CK.UserManagement.UserBanned" Version="3.0.0-0.cris-auth.0.ci.19" />
+    <PackageReference Include="CK.UserManagement.UserInvitation" Version="3.0.0-0.cris-auth.0.ci.19" />
 
     <!-- TODO: version of the CK-DB-User-UserBanned release carrying BannedActorValidator. -->
-    <PackageReference Include="CK.DB.User.UserBanned" Version="4.0.0-0.cris-auth.0.ci.19" />
+    <PackageReference Include="CK.DB.User.UserBanned" Version="4.0.0-0.cris-auth.0.ci.20" />
     <ProjectReference Include="..\..\CK.Ng.Admin.UserManagement\CK.Ng.Admin.UserManagement.csproj" />
     <ProjectReference Include="..\..\CK.Ng.Admin.UserManagement.UserBanned\CK.Ng.Admin.UserManagement.UserBanned.csproj" />
     <ProjectReference Include="..\..\CK.Ng.Admin.UserManagement.UserInvitation\CK.Ng.Admin.UserManagement.UserInvitation.csproj" />
