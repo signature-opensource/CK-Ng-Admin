@@ -54,10 +54,12 @@ knowing it, but two packages contributing to the *same server-side answer* canno
 something has to decide what the combined listing is, and only the application knows which
 contributors it has.
 
-## The forced reset modal does not use GenericForm.
+## The forced reset modal is one custom GenericForm field.
 
 [`ForceResetPasswordFormComponent`](ForceResetPasswordForm/ForceResetPasswordFormComponent.cs) is a
-single password field, pre-filled with a strong value and regenerable. It deliberately does **not**
-use the shared `GenericForm`: the regenerate button is a suffix of the input, which `GenericForm`
-cannot render. The field otherwise mirrors the one of the creation flow, so the two stay consistent by
+single password field, pre-filled with a strong value and regenerable. It renders through the shared
+`GenericForm` as a `customField`: its template carries the input, the regenerate suffix button and the
+`ck-password-strength` meter, while `GenericForm` renders the label and the required message. The
+public handle is `userForm`; `valid`, `getValue()`, `showErrors()` and `regeneratePassword()` read and
+write it. The field mirrors the password field of the creation flow, so the two stay consistent by
 convention rather than by sharing code.
