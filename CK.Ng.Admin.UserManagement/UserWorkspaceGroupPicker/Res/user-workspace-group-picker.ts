@@ -1,5 +1,5 @@
 import { Component, inject, input, model, output } from '@angular/core';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { FormValueControl } from '@angular/forms/signals';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NzSelectModule } from 'ng-zorro-antd/select';
@@ -11,17 +11,13 @@ import { GroupInfos } from '@local/ck-gen';
 @Component( {
   selector: 'ck-user-workspace-group-picker',
   templateUrl: './user-workspace-group-picker.html',
-  imports: [FormsModule, ReactiveFormsModule, TranslateModule, NzSelectModule]
+  imports: [FormsModule, TranslateModule, NzSelectModule]
 } )
 export class UserWorkspaceGroupPicker implements FormValueControl<number[]> {
   // <PreViewChildren revert />
   // <PostViewChildren />
 
   // <PreInputOutput revert />
-  /**
-   * Reactive-forms binding. When set, it drives the select and {@link value} is neither read nor written.
-   */
-  readonly control = input<FormControl<Array<number>>>();
   readonly groups = input.required<Array<GroupInfos>>();
   /**
    * Ids of the selected groups, kept in sync with the field bound by `[formField]`.

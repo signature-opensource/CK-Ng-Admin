@@ -54,26 +54,16 @@ begin
              g.unshift( workspace );
 
              const defaultCultureName = languages[0]?.name ?? 'fr';
-             const formData: GenericFormData<unknown, unknown> = {
-               formControls: {
-                 email: new FormControlConfig( 'text',
-                   this.#translateService.instant( 'CK.Admin.UserManagement.User.Email' ),
-                   '',
-                   {
-                     placeholder: this.#translateService.instant( 'CK.Admin.UserManagement.User.Email' ),
-                     required: true,
-                     validators: [Validators.required, Validators.email],
-                     errorMessages: { email: this.#translateService.instant( 'CK.Admin.UserManagement.Form.InvalidEmail' ) }
-                   } ),
-                 cultureName: new FormControlConfig( 'select',
-                   this.#translateService.instant( 'CK.Admin.UserManagement.Form.DefaultLanguage' ),
-                   defaultCultureName,
-                   {
-                     required: true,
-                     validators: [Validators.required],
-                     options: languages.map( l => ( { label: l.nativeName, value: l.name } ) )
-                   } ),
-               }
+             const fields: GenericFields = {
+               email: textField( 'CK.Admin.UserManagement.User.Email', '', {
+                 placeholder: 'CK.Admin.UserManagement.User.Email',
+                 rules: p => {
+                   required( p );
+                   email( p, { message: 'CK.Admin.UserManagement.Form.InvalidEmail' } );
+                 }
+               } ),
+               cultureName: selectField( 'CK.Admin.UserManagement.Form.DefaultLanguage', defaultCultureName,
+                 { options: languages.map( l => ( { label: l.nativeName, value: l.name } ) ), rules: p => required( p ) } ),
              };
 
              const opts: ModalOptions = {
@@ -81,7 +71,7 @@ begin
                nzCancelText: this.#translateService.instant( 'Button.Cancel' ),
                nzOkText: this.#translateService.instant( 'Button.Confirm' ),
                nzContent: UserForm,
-               nzData: { formData, groupInfos: g.sort( ( a, b ) => a.groupId - b.groupId ), languages: languages },
+               nzData: { groupInfos: g.sort( ( a, b ) => a.groupId - b.groupId ), languages: languages, fields },
                nzOnOk: async ( cmp: UserForm ) => {
                  if ( !cmp.valid ) return Promise.reject();
                  const v = cmp.getValue();
