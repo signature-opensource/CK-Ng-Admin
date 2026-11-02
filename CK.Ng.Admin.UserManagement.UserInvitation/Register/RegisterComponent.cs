@@ -8,6 +8,7 @@ namespace CK.Ng.Admin.UserManagement;
 [NgRoutedComponent<AuthenticationPageComponent>( Route = "register/:token", RegistrationMode = RouteRegistrationMode.Lazy )]
 [Package<UserInvitation.UserManagementUserInvitationPackage>]
 [Requires<PasswordStrengthComponent>]
+[Requires<Zorro.GenericFormComponent>]
 public sealed class RegisterComponent : NgRoutedComponent
 {
 }
