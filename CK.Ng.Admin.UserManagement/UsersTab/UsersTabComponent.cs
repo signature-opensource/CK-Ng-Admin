@@ -7,6 +7,7 @@ namespace CK.Ng.Admin.UserManagement;
 [NgComponent]
 [Package<UserManagementTSPackage>]
 [Requires<AdaptivePageLayoutComponent>]
+[Requires<GenericFormComponent>]
 public sealed class UsersTabComponent : NgComponent
 {
 }
