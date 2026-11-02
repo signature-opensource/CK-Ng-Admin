@@ -80,8 +80,11 @@ describe( 'ck-user-form', () => {
     const box = boxOf( scope, roleKey );
     return box.classList.contains( 'ant-checkbox-wrapper-checked' ) && box.querySelector<HTMLInputElement>( 'input' )!.checked;
   };
+  // The dropdown's virtual scroll viewport renders its options one animation frame after opening.
   const chooseOrg = async ( groupName: string ) => {
     host.querySelector<HTMLElement>( '.org-select .ant-select-selector' )!.click();
+    await render();
+    await new Promise( r => requestAnimationFrame( r ) );
     await render();
     Array.from( document.querySelectorAll<HTMLElement>( 'nz-option-item' ) )
       .find( o => o.textContent?.includes( groupName ) )!

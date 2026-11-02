@@ -28,10 +28,13 @@ describe( 'ck-user-workspace-group-picker', () => {
   };
   const host = () => fixture.nativeElement as HTMLElement;
   // A click on the select toggles its dropdown, which stays open after an option click in multiple mode.
+  // The dropdown's virtual scroll viewport renders its options one animation frame after opening.
   const tick = async ( groupName: string ) => {
     const select = host().querySelector<HTMLElement>( 'nz-select' )!;
     if ( !select.classList.contains( 'ant-select-open' ) ) {
       select.querySelector<HTMLElement>( '.ant-select-selector' )!.click();
+      await render();
+      await new Promise( r => requestAnimationFrame( r ) );
       await render();
     }
     Array.from( document.querySelectorAll<HTMLElement>( 'nz-option-item' ) )
