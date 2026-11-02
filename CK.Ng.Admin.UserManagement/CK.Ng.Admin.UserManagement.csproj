@@ -7,9 +7,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="CK.IO.UserManagement" Version="2.1.0--ci.4" />
-        <PackageReference Include="CK.Ng.UserProfile.UserPassword.Reset" Version="3.0.0--ci.12" />
-        <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="3.0.0--ci.11" />
+        <PackageReference Include="CK.IO.UserManagement" Version="3.0.0--ci.5" />
+        <PackageReference Include="CK.Ng.UserProfile.UserPassword.Reset" Version="3.0.0--ci.17" />
+        <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="3.0.0--ci.12" />
     </ItemGroup>
 
     <ItemGroup>
