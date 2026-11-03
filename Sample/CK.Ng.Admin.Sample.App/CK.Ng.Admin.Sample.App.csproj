@@ -9,10 +9,14 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.cris-auth.0.ci.24" />
-    <PackageReference Include="CK.Cris.AspNet" Version="3.0.0-0.cris-auth.0.ci.70" />
+    <PackageReference Include="CK.Cris.AspNet" Version="3.0.0-0.cris-auth.0.ci.71" />
+    <!-- The host is a party whose web server is its "HttpEndpoint" feature (see appsettings.json of the host). -->
+    <PackageReference Include="CK.AppIdentity.HttpEndpoint" Version="24.0.0-0.cris-auth.0.ci.30" />
+    <!-- Serves the client application (Clients/App of the host): its dev server in Development, its dist otherwise. -->
+    <PackageReference Include="CK.TS.AspNet.Clients" Version="3.0.0-0.cris-auth.0.ci.46" />
     <!-- This application is its own AuthCenter (with its HTTP front). -->
     <PackageReference Include="CK.AppIdentity.Cris.AuthCenter.Local" Version="3.0.0-0.cris-auth.0.ci.91" />
-    <PackageReference Include="CK.Cris.AspNet.Authentication" Version="3.0.0-0.cris-auth.0.ci.70" />
+    <PackageReference Include="CK.Cris.AspNet.Authentication" Version="3.0.0-0.cris-auth.0.ci.71" />
     <PackageReference Include="CK.Cris.Workspace" Version="18.0.0-0.cris-auth.0.ci.23" />
       
     <PackageReference Include="CK.DB.User.NamedUser" Version="31.0.0-0.cris-auth.0.ci.29" />
@@ -20,7 +24,7 @@
     <PackageReference Include="CK.DB.User.UserPassword" Version="31.0.0-0.cris-auth.0.ci.35" />
     <PackageReference Include="CK.DB.Workspace" Version="18.0.0-0.cris-auth.0.ci.23" />
       
-    <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Basic" Version="3.0.0-0.cris-auth.0.ci.70" />
+    <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Basic" Version="3.0.0-0.cris-auth.0.ci.71" />
     <PackageReference Include="CK.Ng.Zorro.BackOffice" Version="3.0.0-0.cris-auth.0.ci.42" />
     <!-- TODO: version of the CK-Ng-User-UserProfile release. The whole family must stay on one
          single version: the 0.8.0 of UserPassword.Reset still creates the canActivate block of the

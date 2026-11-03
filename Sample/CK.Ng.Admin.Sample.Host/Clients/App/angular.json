@@ -3,11 +3,11 @@
   "version": 1,
   "cli": {
     "packageManager": "yarn",
-    "analytics": "57f856cd-e663-451a-9762-671cbe3b46be"
+    "analytics": false
   },
   "newProjectRoot": "projects",
   "projects": {
-    "Admin.Sample.Web": {
+    "App": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -21,7 +21,6 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "outputPath": "dist/admin.sample.web",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -42,7 +41,8 @@
             "styles": [
               "src/styles.less"
             ],
-            "scripts": []
+            "scripts": [],
+            "baseHref": "/"
           },
           "configurations": {
             "production": {
@@ -72,13 +72,16 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "Admin.Sample.Web:build:production"
+              "buildTarget": "App:build:production"
             },
             "development": {
-              "buildTarget": "Admin.Sample.Web:build:development"
+              "buildTarget": "App:build:development"
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "development",
+          "options": {
+            "port": 4500
+          }
         },
         "extract-i18n": {
           "builder": "@angular/build:extract-i18n"

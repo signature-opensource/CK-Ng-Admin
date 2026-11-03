@@ -21,4 +21,4 @@ The client side of a banishment - the ejection of the banished user - lives in
 it extends the user profile, not the admin page. The ban and unban *actions* are here, in
 [CK.Ng.Admin.UserManagement.UserBanned](CK.Ng.Admin.UserManagement.UserBanned/README.md).
 
-`Sample/` builds a runnable application over these packages.
+[`Sample/`](Sample/README.md) builds a runnable application over these packages.

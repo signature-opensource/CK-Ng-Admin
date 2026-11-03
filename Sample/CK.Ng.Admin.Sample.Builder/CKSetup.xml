@@ -10,7 +10,7 @@
     <BinPaths>
         <BinPath>
             <Globalization ActiveCultures="fr" />
-            <TypeScript IntegrationMode="Inline" TargetProjectPath="{ProjectPath}/Admin.Sample.Web" DefaultCulture="fr" ActiveCultures="fr-CA, de-be, nl-BE, zh">
+            <TypeScript Name="App" Kind="DefaultApp" DevServerPort="4500" IntegrationMode="Inline" DefaultCulture="fr" ActiveCultures="fr-CA, de-be, nl-BE, zh">
                 <Types>
                 </Types>
             </TypeScript>
