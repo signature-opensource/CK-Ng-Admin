@@ -9,11 +9,11 @@
   <ItemGroup>
     <PackageReference Include="CK.AppBuilder" Version="36.0.0-0.cris-auth.0.ci.27" />
     <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.cris-auth.0.ci.26" />
-    <PackageReference Include="CK.Cris.AspNet.Engine" Version="3.0.0-0.cris-auth.0.ci.74" />
+    <PackageReference Include="CK.Cris.AspNet.Engine" Version="3.0.0-0.cris-auth.0.ci.76" />
     <PackageReference Include="CK.Globalization.Engine" Version="3.0.0-0.cris-auth.0.ci.20" />
     <PackageReference Include="CK.Setupable.Engine" Version="36.0.0-0.cris-auth.0.ci.36" />
     <PackageReference Include="CK.SqlServer.Setup.Engine" Version="36.0.0-0.cris-auth.0.ci.36" />
-    <PackageReference Include="CK.TS.Angular.Engine" Version="3.0.0-0.cris-auth.0.ci.50" />
+    <PackageReference Include="CK.TS.Angular.Engine" Version="3.0.0-0.cris-auth.0.ci.51" />
     <PackageReference Include="CK.Template.Fluid.Engine" Version="3.0.0-0.cris-auth.0.ci.17" />
   </ItemGroup>
   <ItemGroup>
