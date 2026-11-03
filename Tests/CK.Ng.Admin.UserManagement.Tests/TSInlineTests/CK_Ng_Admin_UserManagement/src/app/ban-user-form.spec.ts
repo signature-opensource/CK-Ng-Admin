@@ -5,10 +5,12 @@ import { firstValueFrom } from 'rxjs';
 import { NzDatePickerComponent } from 'ng-zorro-antd/date-picker';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import {
+  AuthLevel,
   BanUserForm,
   GetWorkspaceUsersQCommand,
   GroupInfos,
   HttpCrisEndpoint,
+  NgAuthService,
   NotificationService,
   UsersTab,
   UserService,
@@ -65,11 +67,17 @@ describe( 'ck-ban-user-form', () => {
       providers: [
         ...appConfig.providers,
         { provide: UserService, useValue: { userProfile: signal( undefined ) } },
+        // Banning requires the Critical level (a recent login).
+        { provide: NgAuthService, useValue: { level: signal( AuthLevel.Critical ) } },
         {
           provide: HttpCrisEndpoint,
           useValue: {
             sendOrThrowAsync: jest.fn( async ( cmd: unknown ) => cmd instanceof GetWorkspaceUsersQCommand ? [] : undefined ),
-            updateAmbientValuesAsync: jest.fn().mockResolvedValue( undefined )
+            updateAmbientValuesAsync: jest.fn().mockResolvedValue( undefined ),
+            // The AuthService of the Cris authentication hooks the endpoint and refreshes its session through sendAsync:
+            // with no result, it stays anonymous.
+            addHook: jest.fn(),
+            sendAsync: jest.fn().mockResolvedValue( {} )
           }
         },
         { provide: NotificationService, useValue: { notifyUserMessage: jest.fn() } }
