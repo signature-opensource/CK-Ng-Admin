@@ -177,7 +177,8 @@ export class Register implements OnInit {
     const raw = this.registerForm.getRawValue();
     try {
       const extendedCultureId = this.languages.find( l => l.name === raw.cultureName )?.id ?? this.languages[0]?.id ?? 0;
-      const command = new CompleteRegistrationCommand( raw.email, raw.firstName, raw.lastName, extendedCultureId, raw.password, this.#token );
+      // No e-mail: the backend registers the address the invitation was sent to (the disabled field only shows it).
+      const command = new CompleteRegistrationCommand( raw.firstName, raw.lastName, extendedCultureId, raw.password, this.#token );
       // Optional nickname: leave unset when blank so the backend falls back to the e-mail. Set by
       // property (not positional) because the generated ctor places the ambient culture parameter last.
       command.userName = raw.userName?.trim() || undefined;
