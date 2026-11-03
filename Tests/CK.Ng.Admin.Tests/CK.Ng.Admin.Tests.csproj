@@ -15,7 +15,7 @@
 
         <PackageReference Include="CK.SqlServer.Transaction" Version="15.0.0-0.cris-auth.0.ci.6" />
         <!-- The IUpdateUserCommand handler. -->
-        <PackageReference Include="CK.UserProfile" Version="3.0.0-0.cris-auth.0.ci.55" />
+        <PackageReference Include="CK.UserProfile" Version="3.0.0-0.cris-auth.0.ci.57" />
         <PackageReference Include="CK.Testing.AppIdentity.Cris.AuthCenter" Version="3.0.0-0.cris-auth.0.ci.92" />
         <PackageReference Include="CK.Testing.Nunit" Version="18.0.0-0.cris-auth" />
         <PackageReference Include="CK.Cris.AspNet.Engine" Version="3.0.0-0.cris-auth.0.ci.72" />
