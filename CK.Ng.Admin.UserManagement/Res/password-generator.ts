@@ -1,5 +1,5 @@
 /**
- * Builds a strong random password, guaranteed to satisfy `passwordComplexityValidator` (it always
+ * Builds a strong random password, guaranteed to satisfy the `passwordComplexity` rule (it always
  * carries at least one uppercase, one lowercase, one digit and one special character).
  *
  * Ambiguous characters (0/O, 1/l/I) are excluded so the value stays easy to read and to dictate: an

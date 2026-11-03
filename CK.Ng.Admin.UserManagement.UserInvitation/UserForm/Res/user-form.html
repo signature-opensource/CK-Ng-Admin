@@ -1,11 +1,11 @@
 <div class="platform-user-form-container">
-    <ck-generic-form #formComp [inputFormData]="formData"></ck-generic-form>
+    <ck-generic-form [form]="userForm" />
 
-    <form nz-form [formGroup]="customForm" nzLayout="vertical">
+    <!-- <PreGroupsFormItem revert /> -->
+    <ng-template #groupsTemplate let-field>
         <!-- <PreOrgGroupSelection revert /> -->
         @if ( selectedOrg ) {
             <div class="groups">
-                <div class="form-label">{{ 'CK.Admin.UserManagement.Form.Groups' | translate }}</div>
                 <nz-select class="org-select" [style]="{ 'width': '100%', 'margin-bottom': '2%' }" [(ngModel)]="selectedOrg" [ngModelOptions]="{standalone: true}">
                     @for ( org of getOrgs(); track org.groupId ) {
                         <nz-option [nzValue]="org" [nzLabel]="org.groupName"></nz-option>
@@ -16,14 +16,14 @@
                         nz-checkbox
                         [(ngModel)]="map.get( selectedOrg.groupId )!.checked"
                         [ngModelOptions]="{standalone: true}"
-                        (click)="selectGroup( selectedOrg.groupId )">
+                        (nzCheckedChange)="selectGroup( selectedOrg.groupId, $event ); field().markAsTouched()">
                         {{ 'CK.Admin.UserManagement.Role.Member' | translate }}
                     </label>
                     <label
                         nz-checkbox
                         [(ngModel)]="map.get( getAdminGroupId( selectedOrg.groupId ) )!.checked"
                         [ngModelOptions]="{standalone: true}"
-                        (click)="selectAdminGroup( selectedOrg.groupId )">
+                        (nzCheckedChange)="selectAdminGroup( selectedOrg.groupId, $event ); field().markAsTouched()">
                         {{ 'CK.Admin.UserManagement.Role.Administrator' | translate }}
                     </label>
                 </div>
@@ -38,14 +38,14 @@
                                 nz-checkbox
                                 [(ngModel)]="map.get( w.groupId )!.checked"
                                 [ngModelOptions]="{standalone: true}"
-                                (click)="selectGroup( w.groupId )">
+                                (nzCheckedChange)="selectGroup( w.groupId, $event ); field().markAsTouched()">
                                 {{ 'CK.Admin.UserManagement.Role.Member' | translate }}
                             </label>
                             <label
                                 nz-checkbox
-                                [ngModel]="map.get( getAdminGroupId( w.groupId ) )!.checked"
+                                [(ngModel)]="map.get( getAdminGroupId( w.groupId ) )!.checked"
                                 [ngModelOptions]="{standalone: true}"
-                                (click)="selectAdminGroup( w.groupId )">
+                                (nzCheckedChange)="selectAdminGroup( w.groupId, $event ); field().markAsTouched()">
                                 {{ 'CK.Admin.UserManagement.Role.Administrator' | translate }}
                             </label>
                         </div>
@@ -54,16 +54,12 @@
             </div>
         } @else {
             <!-- <PreGroupPickerFallback revert /> -->
-            <nz-form-item>
-                <nz-form-label class="form-label" nzRequired>{{'CK.Admin.UserManagement.Form.Groups' | translate}}</nz-form-label>
-                <nz-form-control>
-                    <ck-user-workspace-group-picker
-                        [control]="groupsControl"
-                        [groups]="groupInfos" />
-                </nz-form-control>
-            </nz-form-item>
+            <ck-user-workspace-group-picker
+                [formField]="field"
+                [groups]="groupInfos" />
             <!-- <PostGroupPickerFallback /> -->
         }
         <!-- <PostOrgGroupSelection /> -->
-    </form>
+    </ng-template>
+    <!-- <PostGroupsFormItem /> -->
 </div>

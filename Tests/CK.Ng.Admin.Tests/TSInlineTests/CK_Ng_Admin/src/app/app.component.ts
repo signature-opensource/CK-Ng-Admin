@@ -1,12 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CKGenAppModule } from '@local/ck-gen/CK/Angular/CKGenAppModule';
-import { CommonModule } from '@angular/common';
+
 
 @Component( {
   selector: 'app-root',
-  imports: [RouterOutlet, CommonModule, CKGenAppModule],
+  imports: [RouterOutlet, CKGenAppModule],
   templateUrl: './app.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './app.component.less'
 } )
 export class AppComponent {

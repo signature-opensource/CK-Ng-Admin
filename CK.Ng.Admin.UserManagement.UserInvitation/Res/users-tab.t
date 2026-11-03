@@ -1,6 +1,7 @@
 create <ts> transformer
 begin
     ensure import { CreateInvitationCommand, GetWorkspaceInvitationDataQCommand, UserForm } from '@local/ck-gen';
+    ensure import { email } from '@angular/forms/signals';
 
     // Search also matches the e-mail.
     inject """
@@ -53,26 +54,16 @@ begin
              g.unshift( workspace );
 
              const defaultCultureName = languages[0]?.name ?? 'fr';
-             const formData: GenericFormData<unknown, unknown> = {
-               formControls: {
-                 email: new FormControlConfig( 'text',
-                   this.#translateService.instant( 'CK.Admin.UserManagement.User.Email' ),
-                   '',
-                   {
-                     placeholder: this.#translateService.instant( 'CK.Admin.UserManagement.User.Email' ),
-                     required: true,
-                     validators: [Validators.required, Validators.email],
-                     errorMessages: { email: this.#translateService.instant( 'CK.Admin.UserManagement.Form.InvalidEmail' ) }
-                   } ),
-                 cultureName: new FormControlConfig( 'select',
-                   this.#translateService.instant( 'CK.Admin.UserManagement.Form.DefaultLanguage' ),
-                   defaultCultureName,
-                   {
-                     required: true,
-                     validators: [Validators.required],
-                     options: languages.map( l => ( { label: l.nativeName, value: l.name } ) )
-                   } ),
-               }
+             const fields: GenericFields = {
+               email: textField( 'CK.Admin.UserManagement.User.Email', '', {
+                 placeholder: 'CK.Admin.UserManagement.User.Email',
+                 rules: p => {
+                   required( p );
+                   email( p, { message: 'CK.Admin.UserManagement.Form.InvalidEmail' } );
+                 }
+               } ),
+               cultureName: selectField( 'CK.Admin.UserManagement.Form.DefaultLanguage', defaultCultureName,
+                 { options: languages.map( l => ( { label: l.nativeName, value: l.name } ) ), rules: p => required( p ) } ),
              };
 
              const opts: ModalOptions = {
@@ -80,7 +71,7 @@ begin
                nzCancelText: this.#translateService.instant( 'Button.Cancel' ),
                nzOkText: this.#translateService.instant( 'Button.Confirm' ),
                nzContent: UserForm,
-               nzData: { formData, groupInfos: g.sort( ( a, b ) => a.groupId - b.groupId ), languages: languages },
+               nzData: { groupInfos: g.sort( ( a, b ) => a.groupId - b.groupId ), languages: languages, fields },
                nzOnOk: async ( cmp: UserForm ) => {
                  if ( !cmp.valid ) return Promise.reject();
                  const v = cmp.getValue();
@@ -107,34 +98,22 @@ begin
 
              const languages = Object.values( locales );
              const currentCultureName = languages.find( l => l.id === user.extendedCultureId )?.name ?? languages[0]?.name ?? 'fr';
-             const formData: GenericFormData<unknown, unknown> = {
-               formControls: {
-                 firstName: new FormControlConfig( 'text',
-                   this.#translateService.instant( 'CK.Admin.UserManagement.User.FirstName' ),
-                   user.firstName,
-                   { placeholder: this.#translateService.instant( 'CK.Admin.UserManagement.User.FirstName' ), required: true, validators: [Validators.required] } ),
-                 lastName: new FormControlConfig( 'text',
-                   this.#translateService.instant( 'CK.Admin.UserManagement.User.LastName' ),
-                   user.lastName,
-                   { placeholder: this.#translateService.instant( 'CK.Admin.UserManagement.User.LastName' ), required: true, validators: [Validators.required] } ),
-                 userName: new FormControlConfig( 'text',
-                   this.#translateService.instant( 'CK.Admin.UserManagement.User.UserName' ),
-                   user.userName,
-                   { placeholder: this.#translateService.instant( 'CK.Admin.UserManagement.User.UserName' ), required: true, validators: [Validators.required] } ),
-                 email: new FormControlConfig( 'text',
-                   this.#translateService.instant( 'CK.Admin.UserManagement.User.Email' ),
-                   user.email,
-                   {
-                     placeholder: this.#translateService.instant( 'CK.Admin.UserManagement.User.Email' ),
-                     required: true,
-                     validators: [Validators.required, Validators.email],
-                     errorMessages: { email: this.#translateService.instant( 'CK.Admin.UserManagement.Form.InvalidEmail' ) }
-                   } ),
-                 cultureName: new FormControlConfig( 'select',
-                   this.#translateService.instant( 'CK.Admin.UserManagement.Form.DefaultLanguage' ),
-                   currentCultureName,
-                   { required: true, validators: [Validators.required], options: languages.map( l => ( { label: l.nativeName, value: l.name } ) ) } ),
-               }
+             const fields: GenericFields = {
+               firstName: textField( 'CK.Admin.UserManagement.User.FirstName', user.firstName,
+                 { placeholder: 'CK.Admin.UserManagement.User.FirstName', rules: p => required( p ) } ),
+               lastName: textField( 'CK.Admin.UserManagement.User.LastName', user.lastName,
+                 { placeholder: 'CK.Admin.UserManagement.User.LastName', rules: p => required( p ) } ),
+               userName: textField( 'CK.Admin.UserManagement.User.UserName', user.userName,
+                 { placeholder: 'CK.Admin.UserManagement.User.UserName', rules: p => required( p ) } ),
+               email: textField( 'CK.Admin.UserManagement.User.Email', user.email, {
+                 placeholder: 'CK.Admin.UserManagement.User.Email',
+                 rules: p => {
+                   required( p );
+                   email( p, { message: 'CK.Admin.UserManagement.Form.InvalidEmail' } );
+                 }
+               } ),
+               cultureName: selectField( 'CK.Admin.UserManagement.Form.DefaultLanguage', currentCultureName,
+                 { options: languages.map( l => ( { label: l.nativeName, value: l.name } ) ), rules: p => required( p ) } ),
              };
 
              const opts: ModalOptions = {
@@ -142,7 +121,7 @@ begin
                nzCancelText: this.#translateService.instant( 'Button.Cancel' ),
                nzOkText: this.#translateService.instant( 'Button.Confirm' ),
                nzContent: EditUserForm,
-               nzData: { user, workspace, formData },
+               nzData: { user, workspace, fields },
                nzOnOk: async ( cmp: EditUserForm ) => {
                  if ( !cmp.valid ) return Promise.reject();
                  const v = cmp.getValue();

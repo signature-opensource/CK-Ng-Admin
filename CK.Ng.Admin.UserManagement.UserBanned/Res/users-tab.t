@@ -1,15 +1,14 @@
 create <ts> transformer
 begin
-    ensure import { BanUserForm, DestroyUserBannedCommand, SetUserBannedCommand, SwitchFilter, UserBan } from '@local/ck-gen';
+    ensure import { BanUserForm, DestroyUserBannedCommand, GenericFields, SetUserBannedCommand, SwitchFilter, textField, UserBan } from '@local/ck-gen';
     // Banning requires the Critical level (a recent login): it is checked before anything is sent.
     ensure import { AuthLevel, NgAuthService } from '@local/ck-gen';
     ensure import { faBan, faUnlock } from '@fortawesome/free-solid-svg-icons';
-    // AbstractControl types the validator that rejects a blank reason.
-    ensure import { AbstractControl } from '@angular/forms';
+    ensure import { pattern, required, validate } from '@angular/forms/signals';
     // The generated Poco exposes the ban dates as luxon DateTime (not JS Date).
     ensure import { DateTime } from 'luxon';
     // The banned tag carries a tooltip: the module must join the base component's imports.
-    ensure import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+    ensure import { NzTooltipModule } from 'ng-zorro-antd/tooltip';
 
     // The tag injected into the user-name cell needs the tooltip directive. Only the imports array of
     // the @Component decorator is targeted, so the NzTagModule of the import statement above is left alone.
@@ -17,7 +16,7 @@ begin
         in first {^braces}
             in after "imports:"
                 in first {^[]}
-                    replace "NzTagModule" with "NzTagModule, NzToolTipModule";
+                    replace "NzTagModule" with "NzTagModule, NzTooltipModule";
 
     // The banned-users filter field, and the "currently banned" predicate. A banishment is active when
     // now falls inside [banStartDate, banEndDate[ - the same window as CK.fUserBannedViewAt.
@@ -167,30 +166,26 @@ begin
 
              // A single free-text reason: the server stores KeyReason as a plain varchar(128) with no
              // catalog of its own, so there is nothing to pick from.
-             const formData: GenericFormData<unknown, { keyReason: string }> = {
-               formControls: {
-                 keyReason: new FormControlConfig( 'text',
-                   this.#translateService.instant( 'CK.Admin.UserManagement.Ban.KeyReason' ),
-                   '',
-                   {
-                     placeholder: this.#translateService.instant( 'CK.Admin.UserManagement.Ban.ReasonPlaceholder' ),
-                     required: true,
-                     validators: [
-                       // Validators.required accepts a run of spaces: the check is done on the trimmed
-                       // value, and reports 'required' so the message stays the same.
-                       ( c: AbstractControl ) => ( ( c.value ?? '' ) as string ).trim() ? null : { required: true },
-                       Validators.maxLength( 128 ),
-                       // CK.sUserBannedSet matches with LIKE: a % or a _ in the reason would target
-                       // another banishment instead of creating one.
-                       Validators.pattern( /^[^%_\[\]]*$/ )
-                     ],
-                     errorMessages: {
-                       required: this.#translateService.instant( 'CK.Admin.UserManagement.Ban.ReasonRequired' ),
-                       maxlength: this.#translateService.instant( 'CK.Admin.UserManagement.Ban.ReasonTooLong' ),
-                       pattern: this.#translateService.instant( 'CK.Admin.UserManagement.Ban.ReasonInvalidChars' )
-                     }
-                   } ),
-               }
+             const fields: GenericFields = {
+               keyReason: textField( 'CK.Admin.UserManagement.Ban.KeyReason', '', {
+                 placeholder: 'CK.Admin.UserManagement.Ban.ReasonPlaceholder',
+                 rules: p => {
+                   required( p, { message: 'CK.Admin.UserManagement.Ban.ReasonRequired' } );
+                   // required() accepts a run of spaces: the trimmed value is checked too, with the same
+                   // message, and only when not empty so that an empty reason shows it once.
+                   validate( p, ( { value } ) => value() !== '' && !value().trim()
+                     ? { kind: 'required', message: 'CK.Admin.UserManagement.Ban.ReasonRequired' }
+                     : undefined );
+                   // Not maxLength(): it also sets the input's native maxlength, which cuts a pasted
+                   // reason at 128 without a word instead of showing the message.
+                   validate( p, ( { value } ) => value().length > 128
+                     ? { kind: 'maxLength', message: 'CK.Admin.UserManagement.Ban.ReasonTooLong' }
+                     : undefined );
+                   // CK.sUserBannedSet matches with LIKE: a % or a _ in the reason would target
+                   // another banishment instead of creating one.
+                   pattern( p, /^[^%_\[\]]*$/, { message: 'CK.Admin.UserManagement.Ban.ReasonInvalidChars' } );
+                 }
+               } )
              };
 
              const opts: ModalOptions = {
@@ -198,7 +193,7 @@ begin
                nzCancelText: this.#translateService.instant( 'Button.Cancel' ),
                nzOkText: this.#translateService.instant( 'Button.Confirm' ),
                nzContent: BanUserForm,
-               nzData: { formData, userNames: users.map( u => u.userName ) },
+               nzData: { userNames: users.map( u => u.userName ), fields },
                nzOnOk: async ( cmp: BanUserForm ) => {
                  // Keep the modal open and reveal what is missing: with no default reason, a silent
                  // rejection would leave the administrator without any clue.

@@ -1,13 +1,5 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators
-} from '@angular/forms';
+import { Component, computed, effect, inject, OnInit, signal, TemplateRef, untracked, viewChild } from '@angular/core';
+import { FormField, required } from '@angular/forms/signals';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -22,48 +14,57 @@ import {
 
 import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { NzButtonModule } from 'ng-zorro-antd/button';
-import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 
 import {
   CompleteRegistrationCommand,
+  CustomFieldContext,
+  customField,
+  GenericForm,
+  genericForm,
   HttpCrisEndpoint,
   NotificationService,
+  passwordComplexity,
+  passwordsMatch,
   PasswordStrength,
-  passwordComplexityValidator,
-  passwordsMatchValidator,
   PendingUser,
+  textField,
+  UserMessageLevel,
   ValidateInvitationTokenCommand
 } from '@local/ck-gen';
 import { LocaleInfo, LocaleService, locales } from '@local/ck-gen/ts-locales/locales';
-import { UserMessageLevel } from '@local/ck-gen';
 
 @Component( {
   selector: 'ck-register',
   templateUrl: './register.html',
   imports: [
-    FormsModule,
-    ReactiveFormsModule,
+    FormField,
     TranslateModule,
     FontAwesomeModule,
     NzAlertModule,
     NzButtonModule,
-    NzFormModule,
     NzInputModule,
     NzSelectModule,
     NzSpinModule,
+    GenericForm,
     PasswordStrength
   ]
 } )
 export class Register implements OnInit {
   // <PreViewChildren revert />
+  protected readonly firstNameError = viewChild<TemplateRef<CustomFieldContext<string>>>( 'firstNameError' );
+  protected readonly lastNameError = viewChild<TemplateRef<CustomFieldContext<string>>>( 'lastNameError' );
+  protected readonly cultureTemplate = viewChild<TemplateRef<CustomFieldContext<string>>>( 'cultureTemplate' );
+  protected readonly passwordTemplate = viewChild<TemplateRef<CustomFieldContext<string>>>( 'passwordTemplate' );
+  protected readonly passwordError = viewChild<TemplateRef<CustomFieldContext<string>>>( 'passwordError' );
+  protected readonly confirmTemplate = viewChild<TemplateRef<CustomFieldContext<string>>>( 'confirmTemplate' );
+  protected readonly confirmError = viewChild<TemplateRef<CustomFieldContext<string>>>( 'confirmError' );
   // <PostViewChildren />
 
   // <PreDependencyInjection revert />
   readonly #crisEndpoint = inject( HttpCrisEndpoint );
-  readonly #formBuilder = inject( FormBuilder );
   readonly #notifService = inject( NotificationService );
   readonly #route = inject( ActivatedRoute );
   readonly #router = inject( Router );
@@ -91,48 +92,70 @@ export class Register implements OnInit {
   protected readonly showConfirmPassword = signal( false );
   protected readonly languages: Array<LocaleInfo> = Object.values( locales );
 
-  protected readonly registerForm: FormGroup = this.#formBuilder.group(
-    {
-      // <PreEmailFormControlDefinition revert />
-      email: new FormControl<string>( { value: '', disabled: true }, { nonNullable: true, validators: [Validators.required, Validators.email] } ),
-      // <PostEmailFormControlDefinition />
-      // <PreUserNameFormControlDefinition revert />
-      // Optional nickname. When left blank the backend uses the e-mail as the user name.
-      userName: new FormControl<string>( '', { nonNullable: true } ),
-      // <PostUserNameFormControlDefinition />
-      // <PreFirstNameFormControlDefinition revert />
-      firstName: new FormControl<string>( '', { nonNullable: true, validators: [Validators.required] } ),
-      // <PostFirstNameFormControlDefinition />
-      // <PreLastNameFormControlDefinition revert />
-      lastName: new FormControl<string>( '', { nonNullable: true, validators: [Validators.required] } ),
-      // <PostLastNameFormControlDefinition />
-      // <PreCultureNameFormControlDefinition revert />
-      cultureName: new FormControl<string>( 'fr', { nonNullable: true, validators: [Validators.required] } ),
-      // <PostCultureNameFormControlDefinition />
-      // <PrePasswordFormControlDefinition revert />
-      password: new FormControl<string>( '', {
-        nonNullable: true,
-        validators: [Validators.required, passwordComplexityValidator]
-      } ),
-      // <PostPasswordFormControlDefinition />
-      // <PreConfirmPasswordFormControlDefinition revert />
-      confirmPassword: new FormControl<string>( '', { nonNullable: true, validators: [Validators.required] } )
-      // <PostConfirmPasswordFormControlDefinition />
-    },
-    { validators: [passwordsMatchValidator( 'password', 'confirmPassword' )] }
-  );
+  protected readonly registerForm = genericForm( () => ( {
+    // <PreEmailFormControlDefinition revert />
+    // Filled from the invitation and never edited: a disabled field skips validation, so it carries no rules.
+    email: textField( 'CK.Admin.Register.Email.Placeholder', '', { prefixIcon: this.emailIcon, disabled: true } ),
+    // <PostEmailFormControlDefinition />
+    // <PreUserNameFormControlDefinition revert />
+    // Optional nickname. When left blank the backend uses the e-mail as the user name.
+    userName: textField( 'CK.Admin.Register.UserName.Placeholder', '', { prefixIcon: this.userIcon, autocomplete: 'username' } ),
+    // <PostUserNameFormControlDefinition />
+    // <PreFirstNameFormControlDefinition revert />
+    firstName: textField( 'CK.Admin.Register.FirstName.Placeholder', '', {
+      prefixIcon: this.userIcon,
+      autocomplete: 'given-name',
+      errorTemplate: this.firstNameError(),
+      rules: p => required( p, { message: 'CK.Admin.Register.FirstName.Required' } )
+    } ),
+    // <PostFirstNameFormControlDefinition />
+    // <PreLastNameFormControlDefinition revert />
+    lastName: textField( 'CK.Admin.Register.LastName.Placeholder', '', {
+      prefixIcon: this.userIcon,
+      autocomplete: 'family-name',
+      errorTemplate: this.lastNameError(),
+      rules: p => required( p, { message: 'CK.Admin.Register.LastName.Required' } )
+    } ),
+    // <PostLastNameFormControlDefinition />
+    // <PreCultureNameFormControlDefinition revert />
+    cultureName: customField( 'CK.Admin.UserManagement.Form.DefaultLanguage', 'fr', {
+      template: this.cultureTemplate()!,
+      rules: p => required( p )
+    } ),
+    // <PostCultureNameFormControlDefinition />
+    // <PrePasswordFormControlDefinition revert />
+    password: customField( 'CK.Admin.Register.Password.Placeholder', '', {
+      template: this.passwordTemplate()!,
+      errorTemplate: this.passwordError(),
+      rules: p => {
+        required( p, { message: 'CK.Admin.Register.Password.Required' } );
+        passwordComplexity( p );
+      }
+    } ),
+    // <PostPasswordFormControlDefinition />
+    // <PreConfirmPasswordFormControlDefinition revert />
+    confirmPassword: customField( 'CK.Admin.Register.ConfirmPassword.Placeholder', '', {
+      template: this.confirmTemplate()!,
+      errorTemplate: this.confirmError(),
+      rules: p => required( p, { message: 'CK.Admin.Register.ConfirmPassword.Required' } )
+    } )
+    // <PostConfirmPasswordFormControlDefinition />
+  } ), { rules: p => passwordsMatch( p.password, p.confirmPassword, { message: 'CK.Admin.Register.ConfirmPassword.Mismatch' } ) } );
 
+  readonly #cultureName = computed( () => this.registerForm.model().cultureName );
   #token = '';
   // <PostLocalVariables />
 
   constructor() {
-    // Keep the app locale (ngx-translate + ng-zorro i18n) in sync with the
-    // form's selected language so labels/placeholders/error tips re-translate
-    // live as the user changes the dropdown. Also covers the initial patch
-    // from `user.cultureName` in ngOnInit.
-    this.registerForm.get( 'cultureName' )!.valueChanges
-      .pipe( takeUntilDestroyed() )
-      .subscribe( v => { if ( v ) this.#localeService.setLocale( v ); } );
+    // A language the user picks switches the app locale (ngx-translate and ng-zorro i18n) so the page
+    // re-translates live. Only a user change marks the field dirty: the construction default switches
+    // nothing, and ngOnInit applies the invitation's language itself.
+    effect( () => {
+      const cultureName = this.#cultureName();
+      if ( untracked( () => this.registerForm.form.cultureName().dirty() ) ) {
+        this.#localeService.setLocale( cultureName );
+      }
+    } );
   }
 
   async ngOnInit(): Promise<void> {
@@ -157,10 +180,9 @@ export class Register implements OnInit {
 
       const user: PendingUser = tokenRes.user;
       const matchedLocale = this.languages.find( l => l.id === user.defaultXLCID );
-      this.registerForm.patchValue( {
-        email: user.email,
-        cultureName: matchedLocale?.name ?? this.languages[0]?.name ?? 'fr'
-      } );
+      const cultureName = matchedLocale?.name ?? this.languages[0]?.name ?? 'fr';
+      this.registerForm.model.update( m => ( { ...m, email: user.email, cultureName } ) );
+      this.#localeService.setLocale( cultureName );
     } catch {
       this.tokenError.set( this.#translateService.instant( 'CK.Admin.Register.InvalidToken' ) );
     } finally {
@@ -171,10 +193,10 @@ export class Register implements OnInit {
 
   async submit(): Promise<void> {
     // <PreCompleteRegistration revert />
-    if ( !this.registerForm.valid || this.submitting() ) return;
+    if ( !this.registerForm.form().valid() || this.submitting() ) return;
     this.submitting.set( true );
 
-    const raw = this.registerForm.getRawValue();
+    const raw = this.registerForm.model();
     try {
       const extendedCultureId = this.languages.find( l => l.name === raw.cultureName )?.id ?? this.languages[0]?.id ?? 0;
       // No e-mail: the backend registers the address the invitation was sent to (the disabled field only shows it).

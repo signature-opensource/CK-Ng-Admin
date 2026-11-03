@@ -1,23 +1,25 @@
-import { Component, OnInit, Signal, inject, viewChild } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, OnInit, TemplateRef, inject, viewChild } from '@angular/core';
+import { FormField, required, validate } from '@angular/forms/signals';
 import { TranslateModule } from '@ngx-translate/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faRotate } from '@fortawesome/free-solid-svg-icons';
 import { NZ_MODAL_DATA } from 'ng-zorro-antd/modal';
 import { NzButtonModule } from 'ng-zorro-antd/button';
-import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
-import { generateStrongPassword, GenericForm, GenericFormData, GetWorkspaceUserEditDataQCommand, GroupInfos, HttpCrisEndpoint, PasswordStrength, passwordComplexityValidator, UserWorkspaceGroupPicker, WorkspaceUser } from '@local/ck-gen';
+import { CustomFieldContext, customField, generateStrongPassword, GenericFields, GenericForm, genericForm, GenericFormHandle, GetWorkspaceUserEditDataQCommand, GroupInfos, HttpCrisEndpoint, passwordComplexity, PasswordStrength, UserWorkspaceGroupPicker, WorkspaceUser } from '@local/ck-gen';
+
+type EditUserFormValue = { firstName: string, lastName: string, userName: string, email: string, cultureName: string, groups: Array<number>, password?: string };
 
 @Component({
     selector: 'ck-edit-user-form',
     templateUrl: './edit-user-form.html',
     styleUrls: ['./edit-user-form.less'],
-    imports: [FormsModule, ReactiveFormsModule, NzFormModule, NzInputModule, NzButtonModule, FontAwesomeModule, TranslateModule, UserWorkspaceGroupPicker, GenericForm, PasswordStrength]
+    imports: [FormField, NzInputModule, NzButtonModule, FontAwesomeModule, TranslateModule, UserWorkspaceGroupPicker, GenericForm, PasswordStrength]
 })
 export class EditUserForm implements OnInit {
     // <PreViewChildren revert />
-    readonly formComponent: Signal<GenericForm | undefined> = viewChild('formComp');
+    protected readonly groupsTemplate = viewChild<TemplateRef<CustomFieldContext<number[]>>>('groupsTemplate');
+    protected readonly passwordTemplate = viewChild<TemplateRef<CustomFieldContext<string>>>('passwordTemplate');
     // <PostViewChildren />
 
     // <PreDependencyInjection revert />
@@ -38,56 +40,61 @@ export class EditUserForm implements OnInit {
     public workspace: GroupInfos;
     // Basic user creation (userId === 0) provisions an initial sign-in password; the edit flow does not.
     public readonly isCreate: boolean;
-    // Scalar-field config (firstName/lastName/userName/email) consumed by the GenericForm. The GenericForm
-    // also reads it from NZ_MODAL_DATA (modal mode); binding it satisfies its required input.
-    public formData: GenericFormData<unknown, unknown>;
-    // The groups picker (and, on create, the generated password) are not GenericForm field types, so they live here.
-    public customForm: FormGroup;
+    /**
+     * The scalar fields given by the opener in `NZ_MODAL_DATA.fields`, then `groups` and, on create, `password`.
+     * Its fields are fixed when the component is created.
+     */
+    public readonly userForm: GenericFormHandle<GenericFields>;
     // <PostLocalVariables />
 
     constructor() {
         this.user = this.#nzModalData.user;
         this.workspace = this.#nzModalData.workspace;
-        this.formData = this.#nzModalData.formData;
         this.isCreate = this.user.userId === 0;
-        // <PreCustomFormDefinition revert />
-        const controls: { [key: string]: AbstractControl } = {
-            // <PreGroupsFormControlDefinition revert />
-            groups: new FormControl<Array<number>>([], { nonNullable: true, validators: [Validators.required] })
-            // <PostGroupsFormControlDefinition />
-        };
+        const scalarFields: GenericFields = this.#nzModalData.fields;
         // On create, the admin sets an initial basic-authentication password (pre-filled with a strong
         // random value, regenerable from the input) so the new user can sign in right away.
-        if (this.isCreate) {
-            controls['password'] = new FormControl<string>(generateStrongPassword(), {
-                nonNullable: true,
-                validators: [Validators.required, passwordComplexityValidator]
-            });
-        }
-        this.customForm = new FormGroup(controls);
+        const initialPassword = this.isCreate ? generateStrongPassword() : '';
+        // <PreCustomFormDefinition revert />
+        this.userForm = genericForm<GenericFields>(() => ({
+            ...scalarFields,
+            // <PreGroupsFormControlDefinition revert />
+            groups: customField<number[]>('CK.Admin.UserManagement.Form.Groups', [], {
+                template: this.groupsTemplate()!,
+                rules: p => {
+                    // required() gives the label its mark but sees no error in an empty array.
+                    required(p);
+                    validate(p, ({ value }) => value().length ? undefined : { kind: 'required', message: 'CK.Admin.UserManagement.Form.GroupsRequired' });
+                }
+            }),
+            // <PostGroupsFormControlDefinition />
+            ...(this.isCreate ? {
+                password: customField<string>('CK.Admin.UserManagement.User.Password', initialPassword, {
+                    template: this.passwordTemplate()!,
+                    rules: p => {
+                        required(p, { message: 'CK.Admin.UserManagement.User.PasswordRequired' });
+                        // No message: ck-password-strength under the input lists the unmet criteria.
+                        passwordComplexity(p);
+                    }
+                })
+            } : {})
+        }));
         // <PostCustomFormDefinition />
     }
 
-    get groupsControl(): FormControl<Array<number>> {
-        return this.customForm.get('groups') as FormControl<Array<number>>;
-    }
-
-    get passwordControl(): FormControl<string> | null {
-        return this.customForm.get('password') as FormControl<string> | null;
-    }
-
     get valid(): boolean {
-        const scalarForm = this.formComponent()?.form();
-        return !!scalarForm && scalarForm.valid && this.customForm.valid;
+        return this.userForm.form().valid();
     }
 
-    getValue(): { firstName: string, lastName: string, userName: string, email: string, cultureName: string, groups: Array<number>, password?: string } {
-        return { ...this.formComponent()!.form()!.getRawValue(), ...this.customForm.getRawValue() };
+    getValue(): EditUserFormValue {
+        return { ...this.userForm.model() } as EditUserFormValue;
     }
 
     // Regenerates the create-flow password into the input (bound to the refresh button).
     regeneratePassword(): void {
-        this.passwordControl?.setValue(generateStrongPassword());
+        if (this.isCreate) {
+            this.userForm.model.update(m => ({ ...m, password: generateStrongPassword() }));
+        }
     }
 
     async ngOnInit(): Promise<void> {
@@ -111,7 +118,7 @@ export class EditUserForm implements OnInit {
                     }
                 }
             });
-            this.customForm.patchValue({ groups: userGroups.map(g => g.groupId) });
+            this.userForm.model.update(m => ({ ...m, groups: userGroups.map(g => g.groupId) }));
             this.workspaceGroups = [...groups];
         }
         // <PostGetEditUserData />

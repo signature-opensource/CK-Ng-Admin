@@ -8,14 +8,15 @@ namespace CK.Ng.Admin.UserManagement;
 /// Modal content of the forced password reset: a single password field, pre-filled with a strong
 /// value and regenerable, before a <c>ForceResetUserPasswordCommand</c> is sent.
 /// <para>
-/// It does not use the shared <c>GenericForm</c>: the regenerate button is a suffix of the input,
-/// which <c>GenericForm</c> cannot render. The field mirrors the one of the creation flow
-/// (see <see cref="EditUserFormComponent"/>).
+/// The password is a custom field rendered by the shared <c>GenericForm</c>; its template, declared
+/// here, carries the input, its regenerate suffix button and the strength meter. It mirrors the
+/// password field of the creation flow (see <see cref="EditUserFormComponent"/>).
 /// </para>
 /// </summary>
 [NgComponent]
 [Package<UserManagementTSPackage>]
 [Requires<PasswordStrengthComponent>]
+[Requires<Zorro.GenericFormComponent>]
 public sealed class ForceResetPasswordFormComponent : NgComponent
 {
 }

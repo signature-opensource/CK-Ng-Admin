@@ -1,5 +1,5 @@
 <!-- <PreGroupPicker revert /> -->
-<nz-select [formControl]="control()" nzMode="multiple">
+<nz-select [ngModel]="value()" (ngModelChange)="value.set( $event )" (nzBlur)="touch.emit()" nzMode="multiple">
     @for ( group of groups(); track group.groupId ) {
         <nz-option
             [nzValue]="group.groupId"

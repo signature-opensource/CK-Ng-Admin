@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, DestroyRef, OnInit, TemplateRef, WritableSignal, effect, inject, input, output, signal, untracked, viewChild } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Validators } from '@angular/forms';
+import { required } from '@angular/forms/signals';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { first } from 'rxjs';
 import { ModalOptions, NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
@@ -16,17 +16,18 @@ import {
   Filter,
   ForceResetPasswordForm,
   ForceResetUserPasswordCommand,
-  FormControlConfig,
-  GenericFormData,
+  GenericFields,
   GetWorkspaceUsersQCommand,
   GroupInfos,
   HttpCrisEndpoint,
   NotificationService,
   SelectFilter,
+  selectField,
   SimpleUserMessage,
   TableAction,
   TableCellContext,
   TableColumn,
+  textField,
   UserMessageLevel,
   WorkspaceUser
 } from '@local/ck-gen';
@@ -420,8 +421,8 @@ export class UsersTab implements OnInit, AfterViewInit {
       nzTitle: `${this.#translateService.instant( 'CK.Admin.UserManagement.Modal.ForceResetPassword' )} : ${user.userName} ?`,
       nzCancelText: this.#translateService.instant( 'Button.Cancel' ),
       nzOkText: this.#translateService.instant( 'Button.Confirm' ),
-      // A dedicated component rather than the shared GenericForm: the password field carries a
-      // regenerate button as its suffix, which GenericForm cannot render.
+      // A dedicated component around the shared GenericForm: it adds the user reminder above the form,
+      // and the regenerate suffix button and strength meter to the password field.
       nzContent: ForceResetPasswordForm,
       nzData: { userName: user.userName },
       nzOnOk: async ( cmp: ForceResetPasswordForm ) => {
@@ -453,41 +454,23 @@ export class UsersTab implements OnInit, AfterViewInit {
 
     const languages = Object.values( locales );
     const defaultCultureName = languages[0]?.name ?? 'fr';
-    const formData: GenericFormData<unknown, unknown> = {
-      formControls: {
-        userName: new FormControlConfig( 'text',
-          this.#translateService.instant( 'CK.Admin.UserManagement.User.UserName' ),
-          '',
-          {
-            placeholder: this.#translateService.instant( 'CK.Admin.UserManagement.User.UserName' ),
-            required: true,
-            validators: [Validators.required]
-          } ),
-        firstName: new FormControlConfig( 'text',
-          this.#translateService.instant( 'CK.Admin.UserManagement.User.FirstName' ),
-          '',
-          {
-            placeholder: this.#translateService.instant( 'CK.Admin.UserManagement.User.FirstName' ),
-            required: true,
-            validators: [Validators.required]
-          } ),
-        lastName: new FormControlConfig( 'text',
-          this.#translateService.instant( 'CK.Admin.UserManagement.User.LastName' ),
-          '',
-          {
-            placeholder: this.#translateService.instant( 'CK.Admin.UserManagement.User.LastName' ),
-            required: true,
-            validators: [Validators.required]
-          } ),
-        cultureName: new FormControlConfig( 'select',
-          this.#translateService.instant( 'CK.Admin.UserManagement.Form.DefaultLanguage' ),
-          defaultCultureName,
-          {
-            required: true,
-            validators: [Validators.required],
-            options: languages.map( l => ( { label: l.nativeName, value: l.name } ) )
-          } ),
-      }
+    const fields: GenericFields = {
+      userName: textField( 'CK.Admin.UserManagement.User.UserName', '', {
+        placeholder: 'CK.Admin.UserManagement.User.UserName',
+        rules: p => required( p )
+      } ),
+      firstName: textField( 'CK.Admin.UserManagement.User.FirstName', '', {
+        placeholder: 'CK.Admin.UserManagement.User.FirstName',
+        rules: p => required( p )
+      } ),
+      lastName: textField( 'CK.Admin.UserManagement.User.LastName', '', {
+        placeholder: 'CK.Admin.UserManagement.User.LastName',
+        rules: p => required( p )
+      } ),
+      cultureName: selectField( 'CK.Admin.UserManagement.Form.DefaultLanguage', defaultCultureName, {
+        options: languages.map( l => ( { label: l.nativeName, value: l.name } ) ),
+        rules: p => required( p )
+      } ),
     };
 
     const opts: ModalOptions = {
@@ -495,7 +478,7 @@ export class UsersTab implements OnInit, AfterViewInit {
       nzCancelText: this.#translateService.instant( 'Button.Cancel' ),
       nzOkText: this.#translateService.instant( 'Button.Confirm' ),
       nzContent: EditUserForm,
-      nzData: { user: { userId: 0 }, workspace, formData },
+      nzData: { user: { userId: 0 }, workspace, fields },
       nzOnOk: async ( cmp: EditUserForm ) => {
         if ( !cmp.valid ) return Promise.reject();
         const v = cmp.getValue();
@@ -521,41 +504,23 @@ export class UsersTab implements OnInit, AfterViewInit {
 
     const languages = Object.values( locales );
     const currentCultureName = languages.find( l => l.id === user.extendedCultureId )?.name ?? languages[0]?.name ?? 'fr';
-    const formData: GenericFormData<unknown, unknown> = {
-      formControls: {
-        firstName: new FormControlConfig( 'text',
-          this.#translateService.instant( 'CK.Admin.UserManagement.User.FirstName' ),
-          user.firstName,
-          {
-            placeholder: this.#translateService.instant( 'CK.Admin.UserManagement.User.FirstName' ),
-            required: true,
-            validators: [Validators.required]
-          } ),
-        lastName: new FormControlConfig( 'text',
-          this.#translateService.instant( 'CK.Admin.UserManagement.User.LastName' ),
-          user.lastName,
-          {
-            placeholder: this.#translateService.instant( 'CK.Admin.UserManagement.User.LastName' ),
-            required: true,
-            validators: [Validators.required]
-          } ),
-        userName: new FormControlConfig( 'text',
-          this.#translateService.instant( 'CK.Admin.UserManagement.User.UserName' ),
-          user.userName,
-          {
-            placeholder: this.#translateService.instant( 'CK.Admin.UserManagement.User.UserName' ),
-            required: true,
-            validators: [Validators.required]
-          } ),
-        cultureName: new FormControlConfig( 'select',
-          this.#translateService.instant( 'CK.Admin.UserManagement.Form.DefaultLanguage' ),
-          currentCultureName,
-          {
-            required: true,
-            validators: [Validators.required],
-            options: languages.map( l => ( { label: l.nativeName, value: l.name } ) )
-          } ),
-      }
+    const fields: GenericFields = {
+      firstName: textField( 'CK.Admin.UserManagement.User.FirstName', user.firstName, {
+        placeholder: 'CK.Admin.UserManagement.User.FirstName',
+        rules: p => required( p )
+      } ),
+      lastName: textField( 'CK.Admin.UserManagement.User.LastName', user.lastName, {
+        placeholder: 'CK.Admin.UserManagement.User.LastName',
+        rules: p => required( p )
+      } ),
+      userName: textField( 'CK.Admin.UserManagement.User.UserName', user.userName, {
+        placeholder: 'CK.Admin.UserManagement.User.UserName',
+        rules: p => required( p )
+      } ),
+      cultureName: selectField( 'CK.Admin.UserManagement.Form.DefaultLanguage', currentCultureName, {
+        options: languages.map( l => ( { label: l.nativeName, value: l.name } ) ),
+        rules: p => required( p )
+      } ),
     };
 
     const opts: ModalOptions = {
@@ -563,7 +528,7 @@ export class UsersTab implements OnInit, AfterViewInit {
       nzCancelText: this.#translateService.instant( 'Button.Cancel' ),
       nzOkText: this.#translateService.instant( 'Button.Confirm' ),
       nzContent: EditUserForm,
-      nzData: { user, workspace, formData },
+      nzData: { user, workspace, fields },
       nzOnOk: async ( cmp: EditUserForm ) => {
         if ( !cmp.valid ) return Promise.reject();
         const v = cmp.getValue();

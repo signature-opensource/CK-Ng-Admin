@@ -37,6 +37,18 @@ ck-register {
     flex-direction: column;
     width: 70%;
     gap: 0.5rem;
+
+    // The fields are items of GenericForm's own form: the same gap spaces them as it spaces the button.
+    ck-generic-form > form {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
+.ck-register-language {
+    display: flex;
+    align-items: center;
 }
 
 .ck-register-select {

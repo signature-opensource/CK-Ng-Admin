@@ -1,7 +1,8 @@
-import { Component, OnInit, Signal, inject, viewChild } from '@angular/core';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, OnInit, TemplateRef, inject, viewChild } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { FormField, required, validate } from '@angular/forms/signals';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import { GenericForm, GenericFormData, GroupInfos, UserWorkspaceGroupPicker } from '@local/ck-gen';
+import { CustomFieldContext, customField, GenericFields, GenericForm, genericForm, GenericFormHandle, GroupInfos, UserWorkspaceGroupPicker } from '@local/ck-gen';
 import { LocaleInfo } from '@local/ck-gen/ts-locales/locales';
 import { TranslateModule } from '@ngx-translate/core';
 import { NZ_MODAL_DATA } from 'ng-zorro-antd/modal';
@@ -14,11 +15,11 @@ import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 @Component( {
   selector: 'ck-user-form',
   templateUrl: './user-form.html',
-  imports: [TranslateModule, FormsModule, ReactiveFormsModule, NzFormModule, NzSelectModule, FontAwesomeModule, NzTagModule, NzCheckboxModule, UserWorkspaceGroupPicker, GenericForm]
+  imports: [TranslateModule, FormsModule, FormField, NzFormModule, NzSelectModule, FontAwesomeModule, NzTagModule, NzCheckboxModule, UserWorkspaceGroupPicker, GenericForm]
 } )
 export class UserForm implements OnInit {
   // <PreViewChildren revert />
-  readonly formComponent: Signal<GenericForm | undefined> = viewChild( 'formComp' );
+  protected readonly groupsTemplate = viewChild<TemplateRef<CustomFieldContext<number[]>>>( 'groupsTemplate' );
   // <PostViewChildren />
 
   // <PreDependencyInjection revert />
@@ -38,38 +39,40 @@ export class UserForm implements OnInit {
   public languages: Array<LocaleInfo>;
   public selectedOrg?: GroupInfos;
   public map: Map<number, { label: string, checked: boolean, value: number }> = new Map<number, { label: string, checked: boolean, value: number }>();
-  // Scalar-field config (email/cultureName) consumed by the GenericForm. The GenericForm also reads
-  // it from NZ_MODAL_DATA (modal mode); binding it satisfies its required input.
-  public formData: GenericFormData<unknown, unknown>;
-  // The bespoke org/role group hierarchy is not a GenericForm field type, so its value lives here.
-  public customForm: FormGroup;
-  #selectedGroups: Array<number> = [];
+  /**
+   * The scalar fields given by the opener in `NZ_MODAL_DATA.fields`, then `groups`.
+   * Its fields are fixed when the component is created.
+   */
+  public readonly userForm: GenericFormHandle<GenericFields>;
   // <PostLocalVariables />
 
   constructor() {
     this.groupInfos = this.#nzModalData.groupInfos;
     this.languages = this.#nzModalData.languages;
-    this.formData = this.#nzModalData.formData;
+    const scalarFields: GenericFields = this.#nzModalData.fields;
     // <PreCustomFormDefinition revert />
-    this.customForm = new FormGroup( {
+    this.userForm = genericForm<GenericFields>( () => ( {
+      ...scalarFields,
       // <PreGroupsFormControlDefinition revert />
-      groups: new FormControl<Array<number>>( [], { nonNullable: true, validators: [Validators.required] } )
+      groups: customField<number[]>( 'CK.Admin.UserManagement.Form.Groups', [], {
+        template: this.groupsTemplate()!,
+        rules: p => {
+          // required() gives the label its mark but sees no error in an empty array.
+          required( p );
+          validate( p, ( { value } ) => value().length ? undefined : { kind: 'required', message: 'CK.Admin.UserManagement.Form.GroupsRequired' } );
+        }
+      } )
       // <PostGroupsFormControlDefinition />
-    } );
+    } ) );
     // <PostCustomFormDefinition />
   }
 
-  get groupsControl(): FormControl<Array<number>> {
-    return this.customForm.get( 'groups' ) as FormControl<Array<number>>;
-  }
-
   get valid(): boolean {
-    const scalarForm = this.formComponent()?.form();
-    return !!scalarForm && scalarForm.valid && this.customForm.valid;
+    return this.userForm.form().valid();
   }
 
   getValue(): { email: string, cultureName: string, groups: Array<number> } {
-    return { ...this.formComponent()!.form()!.getRawValue(), ...this.customForm.getRawValue() };
+    return { ...this.userForm.model() } as { email: string, cultureName: string, groups: Array<number> };
   }
 
   async ngOnInit(): Promise<void> {
@@ -103,24 +106,28 @@ export class UserForm implements OnInit {
     return this.groupInfos.filter( g => g.zoneId === oId && g.groupName !== 'Administrators' );
   }
 
-  selectGroup( id: number ): void {
-    if ( this.#selectedGroups.includes( id ) ) {
-      this.#selectedGroups = this.#selectedGroups.filter( g => g !== id );
-    } else {
-      this.#selectedGroups.push( id );
-    }
-
-    this.customForm.patchValue( { 'groups': this.#selectedGroups } );
+  /**
+   * Adds the group id to the `groups` field, or removes it when already there.
+   * The hierarchy checkboxes call it from `nzCheckedChange` with the new checked state, so a repeated emission
+   * leaves the field unchanged; without `checked` it toggles. Their checked state is bound to {@link map}, not read from the field.
+   */
+  selectGroup( id: number, checked?: boolean ): void {
+    const groups: Array<number> = this.userForm.model()['groups'];
+    const want = checked ?? !groups.includes( id );
+    if ( want === groups.includes( id ) ) return;
+    const next = want ? [...groups, id] : groups.filter( g => g !== id );
+    this.userForm.model.update( m => ( { ...m, groups: next } ) );
   }
 
-  selectAdminGroup( wId: number ): void {
-    this.selectGroup( this.getAdminGroupId( wId ) );
+  selectAdminGroup( wId: number, checked?: boolean ): void {
+    this.selectGroup( this.getAdminGroupId( wId ), checked );
   }
 
   shouldBeDisabled( group: GroupInfos ): boolean {
     const siblings = this.groupInfos.filter( g => g.zoneId === group.zoneId );
+    const selectedGroups: Array<number> = this.userForm.model()['groups'];
     let res = false;
-    this.#selectedGroups.forEach( g => {
+    selectedGroups.forEach( g => {
       if ( siblings.findIndex( s => s.groupId === g ) ) {
         res = true;
       }
