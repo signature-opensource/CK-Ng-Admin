@@ -145,12 +145,11 @@ public class UserManagementNgTests
         #endregion
 
         var builder = WebApplication.CreateSlimBuilder();
-        // The application is its own AuthCenter. CK.UserManagement (via CK.Mailer) reads its FrontUrl.
+        // The application is its own AuthCenter (the invitation mails are captured by the FakeUserManagementMailer).
         await using var server = await builder.CreateRunningAuthCenterApplicationAsync( map, c =>
         {
             c["FullName"] = "UMTest/$Server";
             c["Local:AllowFeatures"] = "AuthCenter";
-            c["Local:FrontUrl"] = "http://localhost:4200";
         } );
         await using var runner = TestHelper.CreateTypeScriptRunner( targetProjectPath, server.ServerAddress );
         await TestHelper.SuspendAsync( resume => resume );
