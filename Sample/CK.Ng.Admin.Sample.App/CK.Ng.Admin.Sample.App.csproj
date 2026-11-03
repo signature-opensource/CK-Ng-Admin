@@ -15,7 +15,7 @@
     <!-- Serves the client application (Clients/App of the host): its dev server in Development, its dist otherwise. -->
     <PackageReference Include="CK.TS.AspNet.Clients" Version="3.0.0-0.cris-auth.0.ci.51" />
     <!-- This application is its own AuthCenter (with its HTTP front). -->
-    <PackageReference Include="CK.AppIdentity.Cris.AuthCenter.Local" Version="3.0.0-0.cris-auth.0.ci.98" />
+    <PackageReference Include="CK.AppIdentity.AuthCenter.Local" Version="3.0.0-0.cris-auth.0.ci.98" />
     <PackageReference Include="CK.Cris.AspNet.Authentication" Version="3.0.0-0.cris-auth.0.ci.76" />
     <PackageReference Include="CK.Cris.Workspace" Version="18.0.0-0.cris-auth.0.ci.24" />
       
