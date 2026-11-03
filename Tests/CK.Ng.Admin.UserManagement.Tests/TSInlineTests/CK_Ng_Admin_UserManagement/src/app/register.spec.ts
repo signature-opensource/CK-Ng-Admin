@@ -218,8 +218,8 @@ describe( 'ck-register', () => {
     await render();
 
     expect( sentCompletions() ).toHaveLength( 1 );
+    // No e-mail: the registration registers the address of the invitation (the token).
     expect( sentCompletions()[0] ).toMatchObject( {
-      email: EMAIL,
       firstName: 'Ada',
       lastName: 'Lovelace',
       extendedCultureId: FR_ID,
