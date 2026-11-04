@@ -60,7 +60,7 @@ const setUp = async ( extra: Provider[], imports: Type<unknown>[] ) => {
       { provide: UserService, useValue: { userProfile: signal( undefined ) } },
       // The AuthService of the Cris authentication hooks the endpoint and refreshes its session through sendAsync:
       // with no result, it stays anonymous.
-      { provide: HttpCrisEndpoint, useValue: { sendOrThrowAsync: send, updateAmbientValuesAsync: jest.fn().mockResolvedValue( undefined ), addHook: jest.fn(), sendAsync: jest.fn().mockResolvedValue( {} ) } },
+      { provide: HttpCrisEndpoint, useValue: { ambientValuesOverride: {}, sendOrThrowAsync: send, updateAmbientValuesAsync: jest.fn().mockResolvedValue( undefined ), addHook: jest.fn(), sendAsync: jest.fn().mockResolvedValue( {} ) } },
       { provide: NotificationService, useValue: { notifyUserMessage: jest.fn() } },
       ...extra
     ],

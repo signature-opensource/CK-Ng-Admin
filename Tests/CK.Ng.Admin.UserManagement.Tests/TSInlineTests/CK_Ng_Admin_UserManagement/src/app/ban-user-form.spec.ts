@@ -72,6 +72,7 @@ describe( 'ck-ban-user-form', () => {
         {
           provide: HttpCrisEndpoint,
           useValue: {
+            ambientValuesOverride: {},
             sendOrThrowAsync: jest.fn( async ( cmd: unknown ) => cmd instanceof GetWorkspaceUsersQCommand ? [] : undefined ),
             updateAmbientValuesAsync: jest.fn().mockResolvedValue( undefined ),
             // The AuthService of the Cris authentication hooks the endpoint and refreshes its session through sendAsync:
