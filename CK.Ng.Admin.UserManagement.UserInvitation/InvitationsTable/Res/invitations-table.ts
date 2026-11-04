@@ -1,7 +1,7 @@
 import { Component, TemplateRef, computed, effect, inject, input, output, signal, untracked, viewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DateTime } from 'luxon';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { startWith, switchMap } from 'rxjs';
 import { faBan, faEnvelope, faRotate, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ModalOptions, NzModalService } from 'ng-zorro-antd/modal';
@@ -30,7 +30,7 @@ import {
 @Component( {
   selector: 'ck-invitations-table',
   templateUrl: './invitations-table.html',
-  imports: [AdaptivePageLayout, TranslateModule, NzTagModule]
+  imports: [AdaptivePageLayout, TranslatePipe, NzTagModule]
 } )
 export class InvitationsTable {
   // <PreViewChildren revert />

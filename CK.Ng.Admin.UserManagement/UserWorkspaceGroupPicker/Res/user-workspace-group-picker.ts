@@ -1,7 +1,7 @@
 import { Component, inject, input, model, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FormValueControl } from '@angular/forms/signals';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { GroupInfos } from '@local/ck-gen';
 
@@ -11,7 +11,7 @@ import { GroupInfos } from '@local/ck-gen';
 @Component( {
   selector: 'ck-user-workspace-group-picker',
   templateUrl: './user-workspace-group-picker.html',
-  imports: [FormsModule, TranslateModule, NzSelectModule]
+  imports: [FormsModule, TranslatePipe, NzSelectModule]
 } )
 export class UserWorkspaceGroupPicker implements FormValueControl<number[]> {
   // <PreViewChildren revert />

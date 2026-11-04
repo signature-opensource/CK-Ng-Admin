@@ -4,7 +4,7 @@ import { FormField, required, validate } from '@angular/forms/signals';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { CustomFieldContext, customField, GenericFields, GenericForm, genericForm, GenericFormHandle, GroupInfos, UserWorkspaceGroupPicker } from '@local/ck-gen';
 import { LocaleInfo } from '@local/ck-gen/ts-locales/locales';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { NZ_MODAL_DATA } from 'ng-zorro-antd/modal';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzSelectModule } from 'ng-zorro-antd/select';
@@ -15,7 +15,7 @@ import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 @Component( {
   selector: 'ck-user-form',
   templateUrl: './user-form.html',
-  imports: [TranslateModule, FormsModule, FormField, NzFormModule, NzSelectModule, FontAwesomeModule, NzTagModule, NzCheckboxModule, UserWorkspaceGroupPicker, GenericForm]
+  imports: [TranslatePipe, FormsModule, FormField, NzFormModule, NzSelectModule, FontAwesomeModule, NzTagModule, NzCheckboxModule, UserWorkspaceGroupPicker, GenericForm]
 } )
 export class UserForm implements OnInit {
   // <PreViewChildren revert />

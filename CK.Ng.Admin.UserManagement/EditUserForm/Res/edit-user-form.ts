@@ -1,6 +1,6 @@
 import { Component, OnInit, TemplateRef, inject, viewChild } from '@angular/core';
 import { FormField, required, validate } from '@angular/forms/signals';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faRotate } from '@fortawesome/free-solid-svg-icons';
 import { NZ_MODAL_DATA } from 'ng-zorro-antd/modal';
@@ -14,7 +14,7 @@ type EditUserFormValue = { firstName: string, lastName: string, userName: string
     selector: 'ck-edit-user-form',
     templateUrl: './edit-user-form.html',
     styleUrls: ['./edit-user-form.less'],
-    imports: [FormField, NzInputModule, NzButtonModule, FontAwesomeModule, TranslateModule, UserWorkspaceGroupPicker, GenericForm, PasswordStrength]
+    imports: [FormField, NzInputModule, NzButtonModule, FontAwesomeModule, TranslatePipe, UserWorkspaceGroupPicker, GenericForm, PasswordStrength]
 })
 export class EditUserForm implements OnInit {
     // <PreViewChildren revert />

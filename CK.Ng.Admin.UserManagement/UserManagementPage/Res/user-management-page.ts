@@ -1,6 +1,6 @@
 import { Component, DestroyRef, WritableSignal, computed, inject, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { first } from 'rxjs';
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import {
@@ -17,7 +17,7 @@ import {
   imports: [
     LayoutContent,
     NzTabsModule,
-    TranslateModule,
+    TranslatePipe,
     UsersTab,
     // <PostPageComponentImports />
   ]

@@ -2,7 +2,7 @@ import { AfterViewInit, Component, DestroyRef, OnInit, TemplateRef, WritableSign
 import { NgTemplateOutlet } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { required } from '@angular/forms/signals';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { first } from 'rxjs';
 import { ModalOptions, NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 import { NzTagModule } from 'ng-zorro-antd/tag';
@@ -36,7 +36,7 @@ import { locales } from '@local/ck-gen/ts-locales/locales';
 @Component( {
   selector: 'ck-users-tab',
   templateUrl: './users-tab.html',
-  imports: [TranslateModule, AdaptivePageLayout, NgTemplateOutlet, NzModalModule, NzTagModule]
+  imports: [TranslatePipe, AdaptivePageLayout, NgTemplateOutlet, NzModalModule, NzTagModule]
 } )
 export class UsersTab implements OnInit, AfterViewInit {
   // <PreViewChildren revert />

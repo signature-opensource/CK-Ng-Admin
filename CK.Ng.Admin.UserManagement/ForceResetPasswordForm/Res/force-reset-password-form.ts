@@ -1,6 +1,6 @@
 import { Component, TemplateRef, inject, viewChild } from '@angular/core';
 import { FormField, required } from '@angular/forms/signals';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faRotate } from '@fortawesome/free-solid-svg-icons';
 import { NZ_MODAL_DATA } from 'ng-zorro-antd/modal';
@@ -12,7 +12,7 @@ import { CustomFieldContext, customField, generateStrongPassword, GenericForm, g
   selector: 'ck-force-reset-password-form',
   templateUrl: './force-reset-password-form.html',
   styleUrls: ['./force-reset-password-form.less'],
-  imports: [FormField, TranslateModule, FontAwesomeModule, NzButtonModule, NzInputModule, GenericForm, PasswordStrength]
+  imports: [FormField, TranslatePipe, FontAwesomeModule, NzButtonModule, NzInputModule, GenericForm, PasswordStrength]
 } )
 export class ForceResetPasswordForm {
   // <PreViewChildren revert />

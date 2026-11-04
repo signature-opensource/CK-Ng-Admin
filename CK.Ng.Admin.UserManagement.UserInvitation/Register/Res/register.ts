@@ -1,7 +1,7 @@
 import { Component, computed, effect, inject, OnInit, signal, TemplateRef, untracked, viewChild } from '@angular/core';
 import { FormField, required } from '@angular/forms/signals';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   faEnvelope,
@@ -41,7 +41,7 @@ import { LocaleInfo, LocaleService, locales } from '@local/ck-gen/ts-locales/loc
   templateUrl: './register.html',
   imports: [
     FormField,
-    TranslateModule,
+    TranslatePipe,
     FontAwesomeModule,
     NzAlertModule,
     NzButtonModule,

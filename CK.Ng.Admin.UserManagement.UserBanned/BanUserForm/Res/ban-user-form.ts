@@ -1,7 +1,7 @@
 import { Component, TemplateRef, inject, signal, viewChild } from '@angular/core';
 import { FormField, required, validate } from '@angular/forms/signals';
 import { DateTime, DurationLikeObject } from 'luxon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { NZ_MODAL_DATA } from 'ng-zorro-antd/modal';
 import { DisabledTimeFn, NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 import { CustomFieldContext, customField, GenericFields, GenericForm, genericForm, GenericFormHandle, selectField } from '@local/ck-gen';
@@ -44,7 +44,7 @@ type BanFormValue = { keyReason: string, banDuration: BanDurationKey, customEndD
 @Component( {
   selector: 'ck-ban-user-form',
   templateUrl: './ban-user-form.html',
-  imports: [FormField, TranslateModule, NzDatePickerModule, GenericForm]
+  imports: [FormField, TranslatePipe, NzDatePickerModule, GenericForm]
 } )
 export class BanUserForm {
   // <PreViewChildren revert />
