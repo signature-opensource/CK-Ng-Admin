@@ -40,6 +40,7 @@ public class UserQueries : IAutoService
                   ,u.UserName
                   ,u.PreferredWorkspaceId
                   ,u.ExtendedCultureId
+                  ,IsPlatformAdmin = CK.fIsUserPlatformAdmin( u.UserId )
                   ,IsTemporaryPassword = isnull( p.IsTemporary, cast( 0 as bit ) )
                    -- An "exists" and not a join: a user can carry several active banishments at once,
                    -- and a join would duplicate the row (this select is already grouped by user).
@@ -77,6 +78,7 @@ public class UserQueries : IAutoService
                     up.ExtendedCultureId = user.ExtendedCultureId;
                     up.IsTemporaryPassword = user.IsTemporaryPassword;
                     up.IsBanned = user.IsBanned;
+                    up.IsPlatformAdmin = user.IsPlatformAdmin;
                     foreach( var g in u.Where( r => r.GroupId != 0 ).DistinctBy( r => r.GroupId ) )
                     {
                         up.Groups.Add( _pocoDirectory.Create<IUserGroup>( ug =>
@@ -106,6 +108,7 @@ record FlatUserProfile
     public int ExtendedCultureId { get; init; }
     public bool IsTemporaryPassword { get; init; }
     public bool IsBanned { get; init; }
+    public bool IsPlatformAdmin { get; init; }
     public int GroupId { get; init; }
     public string GroupName { get; init; } = string.Empty;
     public bool IsZone { get; init; }

@@ -70,9 +70,9 @@ describe( 'integration tests', () => {
         expect( profile!.preferredWorkspaceId ).toBeDefined();
     } );
 
-    // TestUser is a plain member of AdminZone (group 3) with grantLevel 16. The isAdmin signal
-    // looks for a group named 'AdminZone' with grantLevel >= 112 (then falls back to the
-    // current workspace's grantLevel) — both checks must fail here.
+    // TestUser is a plain member of AdminZone (group 3) with grantLevel 16. The isAdmin signal reads
+    // isPlatformAdmin of the profile (the server rule, CK.fIsUserPlatformAdmin), then falls back to the
+    // current workspace's grantLevel: both checks must fail here.
     it( 'TestUser is not admin', async () => {
         await TestBed.inject( HttpCrisEndpoint ).sendOrThrowAsync( basicLogin( 'TestUser', 'success' ) );
         expect( ngAuthService.level() ).toBeGreaterThanOrEqual( AuthLevel.Normal );
@@ -81,12 +81,12 @@ describe( 'integration tests', () => {
 
         expect( userService.userProfile() ).toBeDefined();
         expect( userService.userProfile()!.userName ).toBe( 'TestUser' );
+        expect( userService.userProfile()!.isPlatformAdmin ).toBe( false );
         expect( userService.isAdmin() ).toBe( false );
     } );
 
-    // AdminUser is a member of Administrators (group 2). Administrators and AdminZone share
-    // the same AclId, so CK.fAclGrantLevel returns 127 for AdminUser on AdminZone -> the
-    // isAdmin signal's 'AdminZone' branch must fire.
+    // AdminUser is a member of Administrators (group 2, the platform administrators): it has 127 on the
+    // platform ACL, the profile says it is a platform administrator, and the isAdmin signal follows.
     it( 'AdminUser is admin', async () => {
         await TestBed.inject( HttpCrisEndpoint ).sendOrThrowAsync( basicLogin( 'AdminUser', 'success' ) );
         expect( ngAuthService.level() ).toBeGreaterThanOrEqual( AuthLevel.Normal );
@@ -95,6 +95,7 @@ describe( 'integration tests', () => {
 
         expect( userService.userProfile() ).toBeDefined();
         expect( userService.userProfile()!.userName ).toBe( 'AdminUser' );
+        expect( userService.userProfile()!.isPlatformAdmin ).toBe( true );
         expect( userService.isAdmin() ).toBe( true );
     } );
 } );

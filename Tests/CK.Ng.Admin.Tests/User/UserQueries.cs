@@ -32,6 +32,9 @@ public class UserQueries : IAutoService
                    u.UserId
                   ,u.UserName
                   ,u.PreferredWorkspaceId
+                  -- CK.fIsUserPlatformAdmin (CK.UserManagement, not composed here): 127 on the ACL of the platform administrators.
+                  ,IsPlatformAdmin = cast( case when CK.fAclGrantLevel( u.UserId, (select top 1 AclId from CK.tAclConfigMemory where KeyReason = 'AdministratorsGroup') ) = 127
+                                                then 1 else 0 end as bit )
                   ,GroupId    = isnull( g.GroupId, 0 )
                   ,GroupName  = isnull( g.GroupName, '' )
                   ,IsZone     = isnull( g.IsZone, cast( 0 as bit ) )
@@ -58,6 +61,7 @@ public class UserQueries : IAutoService
                     up.UserId = user.UserId;
                     up.UserName = user.UserName;
                     up.PreferredWorkspaceId = user.PreferredWorkspaceId;
+                    ((CK.IO.Admin.IUserProfile)up).IsPlatformAdmin = user.IsPlatformAdmin;
                     foreach( var g in u.Where( r => r.GroupId != 0 ).DistinctBy( r => r.GroupId ) )
                     {
                         up.Groups.Add( _pocoDirectory.Create<IUserGroup>( ug =>
@@ -84,6 +88,7 @@ record FlatUserProfile
     public int UserId { get; init; }
     public string UserName { get; init; } = string.Empty;
     public int PreferredWorkspaceId { get; init; }
+    public bool IsPlatformAdmin { get; init; }
     public int GroupId { get; init; }
     public string GroupName { get; init; } = string.Empty;
     public bool IsZone { get; init; }

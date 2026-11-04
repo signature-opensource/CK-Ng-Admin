@@ -7,8 +7,8 @@ begin
            readonly isAdmin: Signal<boolean> = computed( () => {
              let result = false;
              // <PrePlatformAdmin />
-             const adminZone = this.userProfile()?.groups.find( g => g.group.groupName === 'AdminZone' );
-             if( adminZone && adminZone.grantLevel >= GrantLevel.SafeAdministrator ) {
+             // The server rule (CK.fIsUserPlatformAdmin), given by the profile: no group name nor level is guessed here.
+             if( this.userProfile()?.isPlatformAdmin ) {
                 result = true;
                 // <PostPlatformAdmin />
 

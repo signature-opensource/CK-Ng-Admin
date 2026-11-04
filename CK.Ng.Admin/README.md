@@ -19,10 +19,11 @@ administration features hang off, plus the single answer to "is the current user
 
 ## isAdmin is computed, and it has two branches.
 
-`user-service.t` injects an `isAdmin` signal that reads the groups of the loaded user profile:
+`user-service.t` injects an `isAdmin` signal that reads the loaded user profile:
 
-1. **Platform administrator** - if the user belongs to the `AdminZone` group with a grant level of at
-   least `SafeAdministrator`, it is an administrator everywhere, and the computation stops there.
+1. **Platform administrator** - if the profile says so (`IsPlatformAdmin` of `CK.IO.Admin.IUserProfile`, the
+   server rule `CK.fIsUserPlatformAdmin`: level 127 on the ACL of the platform administrators), it is an
+   administrator everywhere, and the computation stops there. No group name nor level is guessed on the client.
 2. **Workspace administrator** - otherwise the grant level held on the *current* workspace group
    decides, again against `SafeAdministrator`.
 
@@ -36,8 +37,8 @@ extend the rule without rewriting it.
 
 ## What your application must supply.
 
-`isAdmin` reads `Groups` and the current workspace off the loaded user profile - so those fields have
-to be there. The default handler for `IGetUserProfileQCommand` lives in the database layer and returns
+`isAdmin` reads `IsPlatformAdmin`, `Groups` and the current workspace off the loaded user profile - so those
+fields have to be there. The default handler for `IGetUserProfileQCommand` lives in the database layer and returns
 a plainer profile that carries neither - the test handler linked below names it in its own summary.
 An application using this package therefore provides its own:
 
@@ -64,6 +65,9 @@ Two mechanisms in that declaration, and both are load-bearing:
   `CK.Ng.UserProfile.Workspace`, the package referenced here - the shape carrying
   `PreferredWorkspaceId` and the `Groups` list. That is what `isAdmin` consumes. Return the base shape
   and the signal has nothing to evaluate.
+- **`IsPlatformAdmin` is filled from the server rule:** `CK.fIsUserPlatformAdmin( UserId )` (CK.UserManagement)
+  in the query of the profile. A profile that doesn't fill it makes every platform administrator a plain user in
+  the UI (unless it administers the current workspace).
 - **Declaring `ICommandHandler<IGetUserProfileQCommand>` is what wins the election.** The handler's own
   comment states it: doing so *"makes the Cris engine elect this service over any other
   `[CommandHandler]` for the same command"*. You do not deregister the default; you declare the
