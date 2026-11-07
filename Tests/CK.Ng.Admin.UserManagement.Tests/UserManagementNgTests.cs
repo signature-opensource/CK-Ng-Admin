@@ -144,9 +144,8 @@ public class UserManagementNgTests
         }
         #endregion
 
-        var builder = WebApplication.CreateSlimBuilder();
         // The application is its own AuthCenter (the invitation mails are captured by the FakeUserManagementMailer).
-        await using var server = await builder.CreateRunningAuthCenterApplicationAsync( map, c =>
+        await using var server = await map.CreateRunningAuthCenterApplicationAsync( c =>
         {
             c["FullName"] = "UMTest/$Server";
             c["Local:AllowFeatures"] = "AuthCenter";
