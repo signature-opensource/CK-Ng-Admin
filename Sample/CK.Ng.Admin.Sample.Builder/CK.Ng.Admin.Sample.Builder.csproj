@@ -7,6 +7,7 @@
     <IsPackable>False</IsPackable>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="CK.AppIdentity.Engine" Version="3.0.0-0.cris-auth.1.ci.37" />
     <PackageReference Include="CK.AppBuilder" Version="36.0.0-0.cris-auth.1.ci.38" />
     <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.cris-auth.1.ci.35" />
     <PackageReference Include="CK.Cris.AspNet.Engine" Version="3.0.0-0.cris-auth.1.ci.101" />
