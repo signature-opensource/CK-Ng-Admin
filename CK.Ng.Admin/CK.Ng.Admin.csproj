@@ -7,9 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CK.Ng.UserProfile.Workspace" Version="3.0.0-0.cris-auth.1.ci.92" />
+    <PackageReference Include="CK.Ng.UserProfile.Workspace" Version="3.0.0-0.cris-auth.1.ci.98" />
     <!-- The IsPlatformAdmin of the user profile (CK.IO.Admin.IUserProfile): the server rule, read by isAdmin. -->
-    <PackageReference Include="CK.IO.Admin" Version="3.0.0-0.cris-auth.1.ci.53" />
+    <PackageReference Include="CK.IO.Admin" Version="3.0.0-0.cris-auth.1.ci.56" />
   </ItemGroup>
 
 </Project>
