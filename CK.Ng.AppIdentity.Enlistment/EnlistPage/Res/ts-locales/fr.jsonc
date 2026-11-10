@@ -1,0 +1,19 @@
+{
+    "CK.AppIdentity.Enlist.Title": "Approuver une partie",
+    "CK.AppIdentity.Enlist.NoParty": "Aucune partie à approuver : le lien de la page d'approbation nomme la partie (\"?party=\").",
+    "CK.AppIdentity.Enlist.SignInRequired": "Approuver une partie nécessite une connexion récente.",
+    "CK.AppIdentity.Enlist.SignIn": "Se connecter pour approuver",
+    "CK.AppIdentity.Enlist.TimeLeft": "Connecté pour les approbations : encore {{seconds}} secondes.",
+    "CK.AppIdentity.Enlist.CodesHelp": "Saisissez le code d'approbation affiché par la partie (un par partie qu'elle attend).",
+    "CK.AppIdentity.Enlist.CodePlaceholder": "1234-5678",
+    "CK.AppIdentity.Enlist.AddCode": "Ajouter un code",
+    "CK.AppIdentity.Enlist.RemoveCode": "Retirer",
+    "CK.AppIdentity.Enlist.Approve": "Approuver",
+    "CK.AppIdentity.Enlist.NoPendingApproval": "Aucune partie n'attend l'approbation de {{party}}.",
+    "CK.AppIdentity.Enlist.Status.Approved": "Approuvée.",
+    "CK.AppIdentity.Enlist.Status.CodeMismatch": "Le code ne correspond pas.",
+    "CK.AppIdentity.Enlist.Status.NotReady": "Le code ne peut pas encore être vérifié : réessayez dans quelques secondes.",
+    "CK.AppIdentity.Enlist.Status.NoPendingApproval": "Plus aucune approbation n'est en attente.",
+    "CK.AppIdentity.Enlist.Status.Unreachable": "Cette partie ne peut pas être jointe.",
+    "CK.AppIdentity.Enlist.Status.Refused": "Cette partie a refusé l'approbation."
+}

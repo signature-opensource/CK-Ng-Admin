@@ -1,0 +1,19 @@
+{
+    "CK.AppIdentity.Enlist.Title": "Approve a party",
+    "CK.AppIdentity.Enlist.NoParty": "No party to approve: the link of the approval page names the party (\"?party=\").",
+    "CK.AppIdentity.Enlist.SignInRequired": "Approving a party requires a recent sign-in.",
+    "CK.AppIdentity.Enlist.SignIn": "Sign in to approve",
+    "CK.AppIdentity.Enlist.TimeLeft": "Signed in for approvals: {{seconds}} seconds left.",
+    "CK.AppIdentity.Enlist.CodesHelp": "Enter the approval code shown by the party (one per party it waits on).",
+    "CK.AppIdentity.Enlist.CodePlaceholder": "1234-5678",
+    "CK.AppIdentity.Enlist.AddCode": "Add a code",
+    "CK.AppIdentity.Enlist.RemoveCode": "Remove",
+    "CK.AppIdentity.Enlist.Approve": "Approve",
+    "CK.AppIdentity.Enlist.NoPendingApproval": "No party waits for the approval of {{party}}.",
+    "CK.AppIdentity.Enlist.Status.Approved": "Approved.",
+    "CK.AppIdentity.Enlist.Status.CodeMismatch": "The code doesn't match.",
+    "CK.AppIdentity.Enlist.Status.NotReady": "The code can't be checked yet: retry in a few seconds.",
+    "CK.AppIdentity.Enlist.Status.NoPendingApproval": "No approval is pending anymore.",
+    "CK.AppIdentity.Enlist.Status.Unreachable": "This party can't be reached.",
+    "CK.AppIdentity.Enlist.Status.Refused": "This party refused the approval."
+}

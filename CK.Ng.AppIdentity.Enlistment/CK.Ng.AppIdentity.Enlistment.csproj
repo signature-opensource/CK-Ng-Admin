@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <Description>The approval page of a CK-AppIdentity System: a client application built with this package hosts the "Enlistment" route, where an operator approves a party that waits to be enlisted with the codes read on it.</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="CK.IO.AppIdentity.Enlistment" Version="3.0.0-0.cris-auth.1.ci.166" />
+        <PackageReference Include="CK.AppIdentity.PartyClient" Version="3.0.0-0.cris-auth.1.ci.46" />
+        <PackageReference Include="CK.Ng.Cris.AspNet.Authentication" Version="3.0.0-0.cris-auth.1.ci.119" />
+    </ItemGroup>
+
+</Project>
