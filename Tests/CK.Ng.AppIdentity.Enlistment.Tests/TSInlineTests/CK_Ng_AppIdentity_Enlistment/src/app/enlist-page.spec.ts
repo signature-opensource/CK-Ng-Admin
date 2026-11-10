@@ -99,4 +99,45 @@ describe( 'EnlistPage', () => {
         expect( page.outcomes()!.length ).toBe( 0 );
         expect( query( fixture, '.ck-enlist-outcome' ).length ).toBe( 1 );
     } );
+
+    // The list is read once the operator is at the Critical level (an effect of the page).
+    async function waitForListAsync( fixture: ComponentFixture<EnlistPage> ): Promise<void> {
+        for( let i = 0; i < 50 && fixture.componentInstance.pending() === undefined; ++i ) {
+            fixture.detectChanges();
+            await fixture.whenStable();
+            await new Promise( r => setTimeout( r, 100 ) );
+        }
+        fixture.detectChanges();
+    }
+
+    it( 'lists the parties that wait for an approval, at the Critical level', async () => {
+        const fixture = await createAsync( null );
+        const page = fixture.componentInstance;
+        expect( query( fixture, '.ck-enlist-party-link' ).length ).toBe( 0 );
+        await signInAsync();
+        await waitForListAsync( fixture );
+        // The oldest first; a party that waits on two holders is one waiting party.
+        expect( page.waitingParties().map( w => [w.party, w.holders] ) )
+            .toEqual( [['Test/$D', ['Test/$Holder']], ['Test/$Multi', ['Test/$Holder', 'Test/$Holder2']]] );
+        const links = query( fixture, '.ck-enlist-party-link' );
+        expect( links.length ).toBe( 2 );
+        expect( links[0].getAttribute( 'href' ) ).toBe( '?party=Test%2F%24D' );
+    } );
+
+    it( 'gives one code field per holder of the party', async () => {
+        const fixture = await createAsync( 'Test/$Multi' );
+        const page = fixture.componentInstance;
+        await signInAsync();
+        await waitForListAsync( fixture );
+        expect( page.holders().map( h => h.holderFullName ) ).toEqual( ['Test/$Holder', 'Test/$Holder2'] );
+        expect( page.codes() ).toEqual( ['', ''] );
+        expect( page.codeHolder( 1 ) ).toBe( 'Test/$Holder2' );
+        expect( query( fixture, '.ck-enlist-code-input' ).length ).toBe( 2 );
+
+        page.setCode( 0, goodCode );
+        page.setCode( 1, '2222-3333' );
+        await page.approveAsync();
+        expect( page.outcomes()!.map( o => [o.holderFullName, o.status] ) )
+            .toEqual( [['Test/$Holder', PartyApprovalStatus.Approved], ['Test/$Holder2', PartyApprovalStatus.Approved]] );
+    } );
 } );

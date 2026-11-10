@@ -1,20 +1,50 @@
 <div class="ck-enlist-page">
     <span class="header">{{ 'CK.AppIdentity.Enlist.Title' | translate }}</span>
+    @if ( !isCritical() ) {
+        <span class="sub">{{ 'CK.AppIdentity.Enlist.SignInRequired' | translate }}</span>
+        <button nz-button nzType="primary" class="ck-enlist-sign-in" (click)="signInAsync()">
+            {{ 'CK.AppIdentity.Enlist.SignIn' | translate }}
+        </button>
+    } @else {
+        <span class="sub ck-enlist-time-left">{{ 'CK.AppIdentity.Enlist.TimeLeft' | translate: { seconds: secondsLeft() } }}</span>
+    }
+    @if ( error() ) {
+        <nz-alert nzType="error" [nzMessage]="error()!" nzShowIcon />
+    }
     @if ( party === null ) {
-        <nz-alert nzType="info" [nzMessage]="'CK.AppIdentity.Enlist.NoParty' | translate" nzShowIcon />
+        <!-- The parties that wait for an approval: the operator chooses one here rather than following a link. -->
+        @if ( isCritical() ) {
+            <div class="ck-enlist-list-header">
+                <span class="sub">{{ 'CK.AppIdentity.Enlist.WaitingParties' | translate }}</span>
+                <button nz-button nzType="link" class="ck-enlist-refresh" [nzLoading]="loading()" (click)="refreshAsync()">{{ 'CK.AppIdentity.Enlist.Refresh' | translate }}</button>
+            </div>
+            @if ( pending() !== undefined && waitingParties().length === 0 ) {
+                <nz-alert nzType="info" class="ck-enlist-no-waiting" [nzMessage]="'CK.AppIdentity.Enlist.NoWaitingParty' | translate" nzShowIcon />
+            }
+            @for ( w of waitingParties(); track w.party ) {
+                <div class="ck-enlist-waiting">
+                    <a class="ck-enlist-party-link" [href]="partyLink( w.party )">{{ w.party }}</a>
+                    <span class="sub">{{ 'CK.AppIdentity.Enlist.WaitsOn' | translate: { holders: w.holders.join( ', ' ), since: formatSince( w.since ) } }}</span>
+                </div>
+            }
+        }
     } @else {
         <span class="ck-enlist-party">{{ party }}</span>
-        @if ( !isCritical() ) {
-            <span class="sub">{{ 'CK.AppIdentity.Enlist.SignInRequired' | translate }}</span>
-            <button nz-button nzType="primary" class="ck-enlist-sign-in" (click)="signInAsync()">
-                {{ 'CK.AppIdentity.Enlist.SignIn' | translate }}
-            </button>
-        } @else {
-            <span class="sub ck-enlist-time-left">{{ 'CK.AppIdentity.Enlist.TimeLeft' | translate: { seconds: secondsLeft() } }}</span>
+        @if ( holders().length > 0 ) {
+            <div class="ck-enlist-holders">
+                @for ( h of holders(); track h.holderFullName ) {
+                    <span class="ck-enlist-holder sub">
+                        {{ 'CK.AppIdentity.Enlist.Holder' | translate: { holder: h.holderFullName, kind: h.kind, since: formatSince( h.since.toMillis() ), fingerprint: h.keyFingerprint } }}
+                    </span>
+                }
+            </div>
         }
         <span class="sub">{{ 'CK.AppIdentity.Enlist.CodesHelp' | translate }}</span>
         @for ( code of codes(); track $index; let i = $index ) {
             <div class="ck-enlist-code">
+                @if ( codeHolder( i ); as holder ) {
+                    <span class="ck-enlist-code-holder">{{ holder }}</span>
+                }
                 <input nz-input class="ck-enlist-code-input" [ngModel]="code" (ngModelChange)="setCode( i, $event )"
                        [placeholder]="'CK.AppIdentity.Enlist.CodePlaceholder' | translate" autocomplete="off" />
                 @if ( codes().length > 1 ) {
@@ -26,9 +56,6 @@
         <button nz-button nzType="primary" class="ck-enlist-approve" [disabled]="!canApprove()" [nzLoading]="sending()" (click)="approveAsync()">
             {{ 'CK.AppIdentity.Enlist.Approve' | translate }}
         </button>
-        @if ( error() ) {
-            <nz-alert nzType="error" [nzMessage]="error()!" nzShowIcon />
-        }
         @if ( outcomes(); as list ) {
             @if ( list.length === 0 ) {
                 <nz-alert nzType="warning" class="ck-enlist-outcome" [nzMessage]="'CK.AppIdentity.Enlist.NoPendingApproval' | translate: { party: party }" nzShowIcon />

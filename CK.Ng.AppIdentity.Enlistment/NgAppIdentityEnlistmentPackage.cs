@@ -15,6 +15,7 @@ namespace CK.Ng.AppIdentity.Enlistment;
 [Requires<NgCrisAuthenticationPackage>]
 [PartyClientFact( "Enlistment" )]
 [RegisterTypeScriptType( typeof( IApprovePartyCommand ) )]
+[RegisterTypeScriptType( typeof( IGetPendingApprovalsQCommand ) )]
 public class NgAppIdentityEnlistmentPackage : TypeScriptPackage
 {
 }
