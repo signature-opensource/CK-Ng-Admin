@@ -39,6 +39,15 @@
                 }
             </div>
         }
+        @if ( routes().length > 0 ) {
+            <!-- The routes it states that it hosts: authorized with the approval only when the operator checks them. -->
+            <div class="ck-enlist-routes">
+                <span class="sub">{{ 'CK.AppIdentity.Enlist.RoutesHelp' | translate }}</span>
+                @for ( r of routes(); track r ) {
+                    <label nz-checkbox class="ck-enlist-route" [ngModel]="authorizedRoutes().has( r )" (ngModelChange)="setRouteAuthorized( r, $event )">{{ r }}</label>
+                }
+            </div>
+        }
         <span class="sub">{{ 'CK.AppIdentity.Enlist.CodesHelp' | translate }}</span>
         @for ( code of codes(); track $index; let i = $index ) {
             <div class="ck-enlist-code">

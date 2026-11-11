@@ -8,6 +8,7 @@
     "CK.AppIdentity.Enlist.NoWaitingParty": "No party waits for an approval.",
     "CK.AppIdentity.Enlist.WaitsOn": "Waits on {{holders}} since {{since}}.",
     "CK.AppIdentity.Enlist.Holder": "Waits on {{holder}} ({{kind}}) since {{since}}, key {{fingerprint}}.",
+    "CK.AppIdentity.Enlist.RoutesHelp": "It states that it hosts these routes: check the ones it is authorized to host.",
     "CK.AppIdentity.Enlist.CodesHelp": "Enter the approval code shown by the party (one per party it waits on).",
     "CK.AppIdentity.Enlist.CodePlaceholder": "1234-5678",
     "CK.AppIdentity.Enlist.AddCode": "Add a code",

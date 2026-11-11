@@ -8,6 +8,7 @@
     "CK.AppIdentity.Enlist.NoWaitingParty": "Aucune partie n'attend d'approbation.",
     "CK.AppIdentity.Enlist.WaitsOn": "Attend {{holders}} depuis {{since}}.",
     "CK.AppIdentity.Enlist.Holder": "Attend {{holder}} ({{kind}}) depuis {{since}}, clé {{fingerprint}}.",
+    "CK.AppIdentity.Enlist.RoutesHelp": "Elle déclare héberger ces routes : cochez celles qu'elle est autorisée à héberger.",
     "CK.AppIdentity.Enlist.CodesHelp": "Saisissez le code d'approbation affiché par la partie (un par partie qu'elle attend).",
     "CK.AppIdentity.Enlist.CodePlaceholder": "1234-5678",
     "CK.AppIdentity.Enlist.AddCode": "Ajouter un code",

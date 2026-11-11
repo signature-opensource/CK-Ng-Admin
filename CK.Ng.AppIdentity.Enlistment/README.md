@@ -9,8 +9,9 @@ An operator opens the URL, reads the approval code on the waiting party and ente
 ## The package
 
 [`NgAppIdentityEnlistmentPackage`](NgAppIdentityEnlistmentPackage.cs) has the "Enlistment" fact
-(`[PartyClientFact( "Enlistment" )]`): a client application built with it is the approval page, so its party hosts the
-"Enlistment" route of the System, whose target is the URL of the client application followed by `/app-identity/enlist`.
+(`[PartyClientFact( "Enlistment", "app-identity/enlist" )]`, the path of the page): a client application built with it
+is the approval page, so its party hosts the "Enlistment" route of the System, whose target is the URL of the client
+application followed by the value of the fact.
 It registers the `IApprovePartyCommand` and the `IGetPendingApprovalsQCommand` of
 [CK.IO.AppIdentity.Enlistment](https://github.com/signature-opensource/CK-AppIdentity-Transport/blob/stable/CK.IO.AppIdentity.Enlistment/README.md).
 
@@ -26,8 +27,9 @@ It registers the `IApprovePartyCommand` and the `IGetPendingApprovalsQCommand` o
 - without `?party=`, lists the parties that wait for an approval, the oldest first, each one a link to the page for it:
   the operator chooses a party here rather than following a link it received (the enlistment URL reaches the waiting
   party from a listener it doesn't trust yet);
-- with `?party=`, shows the party, the holders it waits on (the kind, since when, the fingerprint of the key), and one
-  code field per holder (a code belongs to a pair of parties; "Add a code" adds one);
+- with `?party=`, shows the party, the holders it waits on (the kind, since when, the fingerprint of the key), the
+  routes it states that it hosts (each one unchecked: the operator checks the ones it is authorized to host, sent in
+  `IApprovePartyCommand.Routes`), and one code field per holder (a code belongs to a pair of parties; "Add a code" adds one);
 - sends the `IApprovePartyCommand` (when the Critical window is over, the Approve click signs in again first, the codes
   are kept) and shows its outcome for each party that holds a pending approval of the party.
 

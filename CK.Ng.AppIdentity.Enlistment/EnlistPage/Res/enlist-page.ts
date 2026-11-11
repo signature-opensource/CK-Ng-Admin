@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { ApprovePartyCommand, AuthLevel, GetPendingApprovalsQCommand, HttpCrisEndpoint, NgAuthService, PartyApprovalOutcome, PartyApprovalStatus, PendingApproval } from '@local/ck-gen';
 
@@ -27,6 +28,7 @@ export interface WaitingParty {
         TranslatePipe,
         NzAlertModule,
         NzButtonModule,
+        NzCheckboxModule,
         NzInputModule
     ],
     templateUrl: './enlist-page.html'
@@ -78,6 +80,10 @@ export class EnlistPage {
     } );
     /** The pending approvals of the party to approve: one per holder it waits on. */
     readonly holders = computed( () => ( this.pending() ?? [] ).filter( p => p.partyFullName === this.party ) );
+    /** The routes the party to approve states that it hosts: the operator can authorize them with the approval. */
+    readonly routes = computed( () => [...new Set( this.holders().flatMap( h => h.routes ) )].sort() );
+    /** The routes the operator authorizes: none by default (an explicit decision). */
+    readonly authorizedRoutes = signal<ReadonlySet<string>>( new Set<string>() );
     // <PostLocalVariables />
 
     constructor() {
@@ -138,6 +144,16 @@ export class EnlistPage {
         this.codes.update( c => c.length > 1 ? c.filter( ( _, i ) => i !== index ) : [''] );
     }
 
+    /** Authorizes a route that the party states it hosts, or not. */
+    setRouteAuthorized( route: string, authorized: boolean ): void {
+        this.authorizedRoutes.update( s => {
+            const n = new Set( s );
+            if( authorized ) n.add( route );
+            else n.delete( route );
+            return n;
+        } );
+    }
+
     /** The holder whose code a field is for, when there is one field per holder. */
     codeHolder( index: number ): string | undefined {
         const holders = this.holders();
@@ -157,6 +173,7 @@ export class EnlistPage {
             const c = new ApprovePartyCommand();
             c.partyFullName = this.party;
             c.codes.push( ...this.codes().map( v => v.trim() ).filter( v => v.length > 0 ) );
+            c.routes.push( ...this.routes().filter( r => this.authorizedRoutes().has( r ) ) );
             this.outcomes.set( await this.#cris.sendOrThrowAsync( c ) ?? [] );
         }
         catch( e ) {
