@@ -7,15 +7,15 @@
     <IsPackable>False</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CK.AppIdentity.Engine" Version="3.0.0-0.cris-auth.1.ci.65" />
-    <PackageReference Include="CK.AppBuilder" Version="36.0.0-0.cris-auth.1.ci.48" />
-    <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.cris-auth.1.ci.65" />
-    <PackageReference Include="CK.Cris.AspNet.Engine" Version="3.0.0-0.cris-auth.1.ci.130" />
-    <PackageReference Include="CK.Globalization.Engine" Version="3.0.0-0.cris-auth.1.ci.31" />
-    <PackageReference Include="CK.Setupable.Engine" Version="36.0.0-0.cris-auth.1.ci.65" />
-    <PackageReference Include="CK.SqlServer.Setup.Engine" Version="36.0.0-0.cris-auth.1.ci.65" />
-    <PackageReference Include="CK.TS.Angular.Engine" Version="3.0.1-0.cris-auth.0.ci.43" />
-    <PackageReference Include="CK.Template.Fluid.Engine" Version="3.0.0-0.cris-auth.1.ci.28" />
+    <PackageReference Include="CK.AppIdentity.Engine" Version="3.0.0-0.uc.0.ci.69" />
+    <PackageReference Include="CK.AppBuilder" Version="36.0.0-0.uc.0.ci.49" />
+    <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.uc.0.ci.69" />
+    <PackageReference Include="CK.Cris.AspNet.Engine" Version="3.0.0-0.uc.0.ci.132" />
+    <PackageReference Include="CK.Globalization.Engine" Version="3.0.0-0.uc.0.ci.34" />
+    <PackageReference Include="CK.Setupable.Engine" Version="36.0.0-0.uc.0.ci.67" />
+    <PackageReference Include="CK.SqlServer.Setup.Engine" Version="36.0.0-0.uc.0.ci.67" />
+    <PackageReference Include="CK.TS.Angular.Engine" Version="3.0.1-0.uc.0.ci.45" />
+    <PackageReference Include="CK.Template.Fluid.Engine" Version="3.0.0-0.uc.0.ci.30" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CK.Ng.Admin.Sample.App\CK.Ng.Admin.Sample.App.csproj" />
