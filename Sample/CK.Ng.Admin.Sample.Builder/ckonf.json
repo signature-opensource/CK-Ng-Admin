@@ -37,7 +37,7 @@
                   "From": "noreply@adminsample.local"
               }
           },
-          "PartyClient": { "App": { "Type": "TypeScript", "Kind": "DefaultApp", "DevServerPort": 4500, "IntegrationMode": "Inline", "DefaultCulture": "fr", "ActiveCultures": "fr-CA, de-be, nl-BE, zh" } }
+          "PartyClient": { "App": { "NgApp": { "IntegrationMode": "Inline", "DefaultCulture": "fr", "ActiveCultures": "fr-CA, de-be, nl-BE, zh" }, "Hosting": { "RequestPath": "/", "DevServerPort": 4500 } } }
       },
       "CK-Monitoring": {
           "LogPath": "Logs",
