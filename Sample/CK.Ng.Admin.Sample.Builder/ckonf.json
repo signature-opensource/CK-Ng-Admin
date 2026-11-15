@@ -25,9 +25,10 @@
           "AuthCenter": {
               "CriticalLifetimes": {
                   "Basic": "00:05:00"
-              }
+              },
+              // The lost password flow (CK.UserProfile.UserPassword.Lost): how long a recovery link stays valid.
+              "PasswordLost": { "TokenLifetime": "02:00:00" }
           },
-          "PasswordLostTokenLifetime": "02:00:00",
           "EmailSender": {
               "Smtp": {
                   "SendEmail": false,
