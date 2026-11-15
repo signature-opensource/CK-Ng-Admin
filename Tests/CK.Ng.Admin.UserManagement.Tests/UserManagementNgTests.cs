@@ -148,7 +148,7 @@ public class UserManagementNgTests
         await using var server = await map.CreateRunningAuthCenterApplicationAsync( c =>
         {
             c["FullName"] = "UMTest/$Server";
-            c["Local:AllowFeatures"] = "AuthCenter";
+            c["Local:AuthCenter"] = "true";
         } );
         await using var runner = TestHelper.CreateTypeScriptRunner( targetProjectPath, server.ServerAddress );
         await TestHelper.SuspendAsync( resume => resume );
