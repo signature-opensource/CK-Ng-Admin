@@ -8,7 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="CK.IO.AppIdentity.Enlistment" Version="3.0.0-0.uc.0.ci.263" />
+        <PackageReference Include="CK.IO.AppIdentity.Enlistment" Version="3.0.0-0.uc.0.ci.265" />
         <PackageReference Include="CK.AppIdentity.PartyClient" Version="3.0.0-0.uc.0.ci.93" />
         <PackageReference Include="CK.Ng.Cris.AspNet.Authentication" Version="3.0.0-0.uc.0.ci.142" />
     </ItemGroup>
