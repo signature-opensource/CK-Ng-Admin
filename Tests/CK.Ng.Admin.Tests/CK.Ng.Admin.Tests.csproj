@@ -9,20 +9,20 @@
     <ItemGroup>
         <PackageReference Include="CK.DB.User.UserPassword" Version="31.0.0-0.uc.0.ci.70" />
         <PackageReference Include="CK.DB.Workspace" Version="18.0.0-0.uc.0.ci.57" />
-        <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Basic" Version="3.0.0-0.uc.0.ci.143" />
+        <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Basic" Version="3.0.0-0.uc.0.ci.144" />
         <PackageReference Include="CK.DB.Tests.NUnit" Version="36.0.0-0.uc.0.ci.76" />
         <PackageReference Include="CK.SqlServer.Dapper" Version="18.0.0-0.uc.0.ci.42" />
 
         <PackageReference Include="CK.SqlServer.Transaction" Version="15.0.0-0.uc.0.ci.14" />
         <!-- The IUpdateUserCommand handler. -->
-        <PackageReference Include="CK.UserProfile" Version="3.0.0-0.uc.0.ci.136" />
-        <PackageReference Include="CK.Testing.AppIdentity.AuthCenter" Version="3.0.0-0.uc.0.ci.266" />
+        <PackageReference Include="CK.UserProfile" Version="3.0.0-0.uc.0.ci.137" />
+        <PackageReference Include="CK.Testing.AppIdentity.AuthCenter" Version="3.0.0-0.uc.0.ci.267" />
         <PackageReference Include="CK.Testing.Nunit" Version="18.0.0-0.cris-auth.0.ci.8" />
-        <PackageReference Include="CK.Cris.AspNet.Engine" Version="3.0.0-0.uc.0.ci.143" />
+        <PackageReference Include="CK.Cris.AspNet.Engine" Version="3.0.0-0.uc.0.ci.144" />
         <PackageReference Include="CK.Testing.SqlServerEngine" Version="36.0.0-0.uc.0.ci.76" />
-        <PackageReference Include="CK.Testing.TypeScriptEngine" Version="3.0.0-0.uc.0.ci.129" />
+        <PackageReference Include="CK.Testing.TypeScriptEngine" Version="3.0.0-0.uc.0.ci.130" />
         <PackageReference Include="CK.Globalization.Engine" Version="3.0.0-0.uc.0.ci.41" />
-        <PackageReference Include="CK.TS.Angular.Engine" Version="3.0.1-0.uc.0.ci.56" />
+        <PackageReference Include="CK.TS.Angular.Engine" Version="3.0.1-0.uc.0.ci.57" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
         <PackageReference Include="NUnit3TestAdapter" Version="6.3.1" />
     </ItemGroup>
