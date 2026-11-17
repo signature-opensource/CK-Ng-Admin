@@ -29,12 +29,14 @@
               // The lost password flow (CK.UserProfile.UserPassword.Lost): how long a recovery link stays valid.
               "PasswordLost": { "TokenLifetime": "02:00:00" }
           },
-          "EmailSender": {
-              "Smtp": {
-                  "SendEmail": false,
-                  "UsePickupDirectory": true,
-                  "PickupDirectory": "MailPickup",
-                  "From": "noreply@adminsample.local"
+          "MailSender": {
+              "MailKit": {
+                  "NoReply": {
+                      "SendEmail": false,
+                      "UsePickupDirectory": true,
+                      "PickupDirectory": "MailPickup",
+                      "From": "noreply@adminsample.local"
+                  }
               }
           },
           "PartyClient": { "App": { "NgApp": { "IntegrationMode": "Inline", "DefaultCulture": "fr", "ActiveCultures": "fr-CA, de-be, nl-BE, zh" }, "Hosting": { "RequestPath": "/", "DevServerPort": 4500 } } }
