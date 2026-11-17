@@ -22,15 +22,15 @@
         <PackageReference Include="CK.Globalization.Engine" Version="3.0.0-0.uc.0.ci.44" />
         <PackageReference Include="CK.TS.Angular.Engine" Version="3.0.1-0.uc.0.ci.63" />
         <!-- Engine-side assembly for the user-invitation Fluid mail templates. -->
-        <PackageReference Include="CK.Template.Fluid.Engine" Version="3.0.0-0.uc.0.ci.40" />
+        <PackageReference Include="CK.Template.Fluid.Engine" Version="3.0.0-0.uc.0.ci.41" />
         <!-- CK.UserManagement pulls CK.Mailer -> CK.AppIdentity; the host must provide its configuration. -->
         <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.uc.0.ci.104" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
         <PackageReference Include="NUnit3TestAdapter" Version="6.3.1" />
         <!-- Backend command handlers/services exercised by the integration spec, now consumed as a published package. -->
-        <PackageReference Include="CK.UserManagement" Version="3.0.0-0.uc.0.ci.95" />
-        <PackageReference Include="CK.UserManagement.UserBanned" Version="3.0.0-0.uc.0.ci.95" />
-        <PackageReference Include="CK.UserManagement.UserInvitation" Version="3.0.0-0.uc.0.ci.95" />
+        <PackageReference Include="CK.UserManagement" Version="3.0.0-0.uc.0.ci.96" />
+        <PackageReference Include="CK.UserManagement.UserBanned" Version="3.0.0-0.uc.0.ci.96" />
+        <PackageReference Include="CK.UserManagement.UserInvitation" Version="3.0.0-0.uc.0.ci.96" />
     </ItemGroup>
     <ItemGroup>
         <!-- NG components (UsersTab, forms, ...) + IO contracts, plus the invitation / banned siblings. -->
