@@ -2,6 +2,11 @@
   // The configuration of the builder: its App "CK.Ng.Admin.Sample" is the CK.Ng.Admin.Sample.App project (its code) and the CK.Ng.Admin.Sample.Host project,
   // whose appsettings.json is generated from the "CK.Ng.Admin.Sample" section below (without its compile time keys; the keys of its
   // party go in the "CK-AppIdentity" section).
+  // The Builder aspects: the database of the engine run; its connection string is projected in the
+  // "SqlServer" section of the hosts' appsettings.json.
+  "Aspects": {
+    "SqlServer": { "DefaultDatabaseConnectionString": "Server=.;Database=AdminSampleDB_LOCAL;Integrated Security=True;TrustServerCertificate=true" }
+  },
   "Apps": {
     "CK.Ng.Admin.Sample": {
       "Aspects": { "Globalization": { "ActiveCultures": "fr" } },

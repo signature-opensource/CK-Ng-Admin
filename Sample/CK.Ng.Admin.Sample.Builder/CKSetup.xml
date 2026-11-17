@@ -1,6 +1,0 @@
-<Setup>
-    <Aspect Type="CK.Setup.SetupableAspectConfiguration, CK.Setupable.Model" Version="1" />
-    <Aspect Type="CK.Setup.SqlSetupAspectConfiguration, CK.SqlServer.Setup.Model">
-        <DefaultDatabaseConnectionString>Server=.;Database=AdminSampleDB_LOCAL;Integrated Security=True;TrustServerCertificate=true</DefaultDatabaseConnectionString>
-    </Aspect>
-</Setup>
