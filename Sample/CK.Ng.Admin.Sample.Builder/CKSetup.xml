@@ -3,6 +3,4 @@
     <Aspect Type="CK.Setup.SqlSetupAspectConfiguration, CK.SqlServer.Setup.Model">
         <DefaultDatabaseConnectionString>Server=.;Database=AdminSampleDB_LOCAL;Integrated Security=True;TrustServerCertificate=true</DefaultDatabaseConnectionString>
     </Aspect>
-
-    <Aspect Type="CK.Setup.FluidAspectConfiguration, CK.Template.Fluid" />
 </Setup>
