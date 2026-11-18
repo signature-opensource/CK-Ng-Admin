@@ -8,6 +8,7 @@
     "CK.AppIdentity.Enlist.NoWaitingParty": "No party waits for an approval.",
     "CK.AppIdentity.Enlist.WaitsOn": "Waits on {{holders}} since {{since}}.",
     "CK.AppIdentity.Enlist.NewInstance": "A new instance of {{template}}.",
+    "CK.AppIdentity.Enlist.CompetingKeys": "{{count}} keys compete for this party name: possible attack. Approve only the code shown by the party you deployed.",
     "CK.AppIdentity.Enlist.Instances": "The approved instances:",
     "CK.AppIdentity.Enlist.InstanceOf": "An instance of {{template}}, held by {{holders}}.",
     "CK.AppIdentity.Enlist.RemoveInstance": "Remove",

@@ -9,7 +9,8 @@ namespace CK.Ng.AppIdentity.Enlistment.Tests;
 /// <list type="bullet">
 ///   <item>"Test/$D" waits on "Test/$Holder", whose code is "1234-5678", and states that it hosts the "MailSender" route;</item>
 ///   <item>"Test/$Multi" waits on "Test/$Holder" (code "1234-5678") and on "Test/$Holder2" (code "2222-3333");</item>
-///   <item>"Test/$Worker-3" (a new instance of the template "$Worker-{Name}") waits on "Test/$Holder" (code "1234-5678");</item>
+///   <item>"Test/$Worker-3" (a new instance of the template "$Worker-{Name}") waits on "Test/$Holder" (code "1234-5678"),
+///   3 keys compete for its approval;</item>
 ///   <item>nobody waits for any other party;</item>
 ///   <item>"Test/$Worker-4" is an approved instance of "$Worker-{Name}" held by "Test/$Holder", until it is removed.</item>
 /// </list>
@@ -60,6 +61,7 @@ public sealed class FakeApprovalHandler : IAutoService
                            a.Since = p.Since;
                            a.Routes.AddRange( p.Routes );
                            a.TemplatePartyName = p.Template;
+                           a.CompetingKeyCount = p.Party == "Test/$Worker-3" ? 3 : 1;
                        } ) )
                        .ToList();
     }

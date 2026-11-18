@@ -1,0 +1,79 @@
+<div class="ck-tenants-page">
+    <span class="header">{{ 'CK.AppIdentity.Tenants.Title' | translate }}</span>
+    @if ( !isCritical() ) {
+        <span class="sub">{{ 'CK.AppIdentity.Tenants.SignInRequired' | translate }}</span>
+        <button nz-button nzType="primary" class="ck-tenants-sign-in" (click)="signInAsync()">
+            {{ 'CK.AppIdentity.Tenants.SignIn' | translate }}
+        </button>
+    } @else {
+        <span class="sub ck-tenants-time-left">{{ 'CK.AppIdentity.Tenants.TimeLeft' | translate: { seconds: secondsLeft() } }}</span>
+        <div class="ck-tenants-list-header">
+            <span class="sub">{{ 'CK.AppIdentity.Tenants.Hosts' | translate }}</span>
+            <button nz-button nzType="link" class="ck-tenants-refresh" [nzLoading]="loading()" (click)="refreshAsync()">{{ 'CK.AppIdentity.Tenants.Refresh' | translate }}</button>
+        </div>
+    }
+    @if ( error() ) {
+        <nz-alert nzType="error" class="ck-tenants-error" [nzMessage]="error()!" nzShowIcon />
+    }
+    @if ( isCritical() && hosts(); as list ) {
+        @if ( list.length === 0 ) {
+            <nz-alert nzType="info" class="ck-tenants-no-host" [nzMessage]="'CK.AppIdentity.Tenants.NoHost' | translate" nzShowIcon />
+        }
+        @for ( h of list; track h.host ) {
+            <div class="ck-tenants-host">
+                <span class="ck-tenants-host-name">{{ h.host }}</span>
+                @if ( h.error ) {
+                    <nz-alert nzType="warning" class="ck-tenants-host-error" [nzMessage]="h.error" nzShowIcon />
+                }
+                @for ( t of h.templates ?? []; track t.templateName ) {
+                    <div class="ck-tenants-template">
+                        <span class="sub ck-tenants-template-name">
+                            {{ 'CK.AppIdentity.Tenants.Template' | translate: { template: t.templateName, count: t.instances.length, max: t.maxInstanceCount } }}
+                        </span>
+                        @for ( i of t.instances; track i.fullName ) {
+                            <div class="ck-tenants-instance" [class.ck-tenants-unloaded]="i.unloadedReason">
+                                <span class="ck-tenants-instance-name">{{ i.name }}</span>
+                                <span class="sub">
+                                    @if ( i.isConfigured ) {
+                                        {{ 'CK.AppIdentity.Tenants.Configured' | translate: { index: i.index } }}
+                                    } @else if ( i.unloadedReason ) {
+                                        {{ 'CK.AppIdentity.Tenants.Unloaded' | translate: { index: i.index ?? '?', reason: i.unloadedReason, message: i.unloadedMessage } }}
+                                    } @else {
+                                        {{ 'CK.AppIdentity.Tenants.Runtime' | translate: { index: i.index } }}
+                                    }
+                                </span>
+                                @if ( isRuntime( i ) ) {
+                                    <div class="ck-tenants-actions">
+                                        <input nz-input class="ck-tenants-index-input" [ngModel]="newIndices()[i.fullName] ?? ''" (ngModelChange)="setNewIndex( i.fullName, $event )"
+                                               [placeholder]="'CK.AppIdentity.Tenants.IndexPlaceholder' | translate" autocomplete="off" />
+                                        <button nz-button nzType="default" class="ck-tenants-move" [nzLoading]="busy() === i.fullName"
+                                                [disabled]="busy() !== undefined" (click)="moveAsync( h.host, i )">
+                                            {{ 'CK.AppIdentity.Tenants.Move' | translate }}
+                                        </button>
+                                        @if ( confirmingRemoval() === i.fullName ) {
+                                            <span class="sub ck-tenants-confirm">{{ 'CK.AppIdentity.Tenants.ConfirmRemoval' | translate }}</span>
+                                            <button nz-button nzType="primary" nzDanger class="ck-tenants-remove-confirm" [disabled]="busy() !== undefined"
+                                                    (click)="removeAsync( h.host, i )">{{ 'CK.AppIdentity.Tenants.Remove' | translate }}</button>
+                                            <button nz-button nzType="text" class="ck-tenants-remove-cancel" (click)="cancelRemoval()">{{ 'CK.AppIdentity.Tenants.Cancel' | translate }}</button>
+                                        } @else {
+                                            <button nz-button nzType="default" nzDanger class="ck-tenants-remove" [disabled]="busy() !== undefined"
+                                                    (click)="removeAsync( h.host, i )">{{ 'CK.AppIdentity.Tenants.Remove' | translate }}</button>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                        <div class="ck-tenants-create">
+                            <input nz-input class="ck-tenants-name-input" [ngModel]="newNames()[templateKey( h.host, t )] ?? ''" (ngModelChange)="setNewName( templateKey( h.host, t ), $event )"
+                                   [placeholder]="'CK.AppIdentity.Tenants.NamePlaceholder' | translate" autocomplete="off" />
+                            <button nz-button nzType="primary" class="ck-tenants-create-button" [nzLoading]="busy() === templateKey( h.host, t )"
+                                    [disabled]="busy() !== undefined" (click)="createAsync( h.host, t )">
+                                {{ 'CK.AppIdentity.Tenants.Create' | translate }}
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    }
+</div>

@@ -16,6 +16,8 @@ export interface WaitingParty {
     readonly since: number;
     /** The party name of the Opened template when the party is a new dynamic instance of it ("$Worker-{Name}"). */
     readonly template?: string;
+    /** The number of keys that compete for the approval of the party (the highest of its holders): more than one is suspect. */
+    readonly competing: number;
 }
 
 /** An approved dynamic instance of an Opened template, with its holders. */
@@ -78,7 +80,7 @@ export class EnlistPage {
     readonly canApprove = computed( () => !this.sending() && this.codes().some( c => c.trim().length > 0 ) );
     /** The parties that wait for an approval, the oldest first. */
     readonly waitingParties = computed<WaitingParty[]>( () => {
-        const byParty = new Map<string, { holders: string[], since: number, template?: string }>();
+        const byParty = new Map<string, { holders: string[], since: number, template?: string, competing: number }>();
         for( const p of this.pending() ?? [] ) {
             const since = p.since.toMillis();
             const e = byParty.get( p.partyFullName );
@@ -86,10 +88,11 @@ export class EnlistPage {
                 e.holders.push( p.holderFullName );
                 e.since = Math.min( e.since, since );
                 e.template ??= p.templatePartyName ?? undefined;
+                e.competing = Math.max( e.competing, p.competingKeyCount );
             }
-            else byParty.set( p.partyFullName, { holders: [p.holderFullName], since, template: p.templatePartyName ?? undefined } );
+            else byParty.set( p.partyFullName, { holders: [p.holderFullName], since, template: p.templatePartyName ?? undefined, competing: p.competingKeyCount } );
         }
-        return [...byParty.entries()].map( ( [party, e] ) => ( { party, holders: e.holders, since: e.since, template: e.template } ) )
+        return [...byParty.entries()].map( ( [party, e] ) => ( { party, holders: e.holders, since: e.since, template: e.template, competing: e.competing } ) )
                                      .sort( ( a, b ) => a.since - b.since );
     } );
     /** The approved dynamic instances, by party. */
@@ -106,6 +109,11 @@ export class EnlistPage {
     readonly template = computed( () => this.holders().find( h => h.templatePartyName )?.templatePartyName ?? undefined );
     /** The pending approvals of the party to approve: one per holder it waits on. */
     readonly holders = computed( () => ( this.pending() ?? [] ).filter( p => p.partyFullName === this.party ) );
+    /**
+     * The number of keys that compete for the approval of the party to approve (the highest of its holders): more than one
+     * is a sign of an attack (anyone can present keys under the name of a waiting party), or of a party that restarted.
+     */
+    readonly competing = computed( () => Math.max( 1, ...this.holders().map( h => h.competingKeyCount ) ) );
     /** The routes the party to approve states that it hosts: the operator can authorize them with the approval. */
     readonly routes = computed( () => [...new Set( this.holders().flatMap( h => h.routes ) )].sort() );
     /** The routes the operator authorizes: none by default (an explicit decision). */

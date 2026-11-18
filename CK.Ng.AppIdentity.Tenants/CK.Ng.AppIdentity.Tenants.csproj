@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <Description>The tenants page of a CK-AppIdentity System: an operator lists the applications that hold Opened tenant templates, and creates, moves and removes their run-time tenant domains.</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="CK.IO.AppIdentity.Tenants" Version="4.0.0-0.uc.0.ci.15" />
+        <PackageReference Include="CK.Ng.Cris.AspNet.Authentication" Version="3.0.0-0.uc.0.ci.159" />
+    </ItemGroup>
+
+</Project>

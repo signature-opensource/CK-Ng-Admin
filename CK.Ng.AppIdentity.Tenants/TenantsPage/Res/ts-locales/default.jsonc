@@ -1,0 +1,20 @@
+{
+    "CK.AppIdentity.Tenants.Title": "Tenants",
+    "CK.AppIdentity.Tenants.SignInRequired": "Seeing and changing the tenants of the applications requires a recent sign-in.",
+    "CK.AppIdentity.Tenants.SignIn": "Sign in to manage the tenants",
+    "CK.AppIdentity.Tenants.TimeLeft": "Signed in for the tenants: {{seconds}} seconds left.",
+    "CK.AppIdentity.Tenants.Hosts": "The applications that hold tenant templates:",
+    "CK.AppIdentity.Tenants.Refresh": "Refresh",
+    "CK.AppIdentity.Tenants.NoHost": "No application holds tenant templates.",
+    "CK.AppIdentity.Tenants.Template": "{{template}}: {{count}} tenant(s), at most {{max}}.",
+    "CK.AppIdentity.Tenants.Configured": "Configured (#{{index}}).",
+    "CK.AppIdentity.Tenants.Runtime": "Created at run time (#{{index}}).",
+    "CK.AppIdentity.Tenants.Unloaded": "Not loaded (#{{index}}, {{reason}}): {{message}}",
+    "CK.AppIdentity.Tenants.IndexPlaceholder": "Index",
+    "CK.AppIdentity.Tenants.Move": "Move",
+    "CK.AppIdentity.Tenants.Remove": "Remove",
+    "CK.AppIdentity.Tenants.ConfirmRemoval": "Its keys will be deleted: a new tenant of the same name is a new identity.",
+    "CK.AppIdentity.Tenants.Cancel": "Cancel",
+    "CK.AppIdentity.Tenants.NamePlaceholder": "New tenant name",
+    "CK.AppIdentity.Tenants.Create": "Create"
+}

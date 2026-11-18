@@ -28,6 +28,9 @@
                     @if ( w.template ) {
                         <span class="sub ck-enlist-new-instance">{{ 'CK.AppIdentity.Enlist.NewInstance' | translate: { template: w.template } }}</span>
                     }
+                    @if ( w.competing > 1 ) {
+                        <span class="sub ck-enlist-competing">{{ 'CK.AppIdentity.Enlist.CompetingKeys' | translate: { count: w.competing } }}</span>
+                    }
                 </div>
             }
             <!-- The approved dynamic instances of the Opened templates: the operator can remove them. -->
@@ -49,6 +52,9 @@
         <span class="ck-enlist-party">{{ party }}</span>
         @if ( template(); as t ) {
             <span class="sub ck-enlist-new-instance">{{ 'CK.AppIdentity.Enlist.NewInstance' | translate: { template: t } }}</span>
+        }
+        @if ( competing() > 1 ) {
+            <nz-alert nzType="warning" class="ck-enlist-competing" [nzMessage]="'CK.AppIdentity.Enlist.CompetingKeys' | translate: { count: competing() }" nzShowIcon />
         }
         @if ( holders().length > 0 ) {
             <div class="ck-enlist-holders">

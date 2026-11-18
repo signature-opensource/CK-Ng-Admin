@@ -23,5 +23,6 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\CK.Ng.AppIdentity.Enlistment\CK.Ng.AppIdentity.Enlistment.csproj" />
+        <ProjectReference Include="..\..\CK.Ng.AppIdentity.Tenants\CK.Ng.AppIdentity.Tenants.csproj" />
     </ItemGroup>
 </Project>

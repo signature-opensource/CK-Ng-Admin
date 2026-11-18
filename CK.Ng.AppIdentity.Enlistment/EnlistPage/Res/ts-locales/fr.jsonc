@@ -8,6 +8,7 @@
     "CK.AppIdentity.Enlist.NoWaitingParty": "Aucune partie n'attend d'approbation.",
     "CK.AppIdentity.Enlist.WaitsOn": "Attend {{holders}} depuis {{since}}.",
     "CK.AppIdentity.Enlist.NewInstance": "Une nouvelle instance de {{template}}.",
+    "CK.AppIdentity.Enlist.CompetingKeys": "{{count}} clés se disputent ce nom de partie : attaque possible. N'approuvez que le code affiché par la partie que vous avez déployée.",
     "CK.AppIdentity.Enlist.Instances": "Les instances approuvées :",
     "CK.AppIdentity.Enlist.InstanceOf": "Une instance de {{template}}, détenue par {{holders}}.",
     "CK.AppIdentity.Enlist.RemoveInstance": "Retirer",

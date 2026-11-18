@@ -19,4 +19,5 @@
   <Project Path="CK.Ng.Admin.UserManagement.UserInvitation/CK.Ng.Admin.UserManagement.UserInvitation.csproj" />
   <Project Path="CK.Ng.Admin/CK.Ng.Admin.csproj" />
   <Project Path="CK.Ng.AppIdentity.Enlistment/CK.Ng.AppIdentity.Enlistment.csproj" />
+  <Project Path="CK.Ng.AppIdentity.Tenants/CK.Ng.AppIdentity.Tenants.csproj" />
 </Solution>

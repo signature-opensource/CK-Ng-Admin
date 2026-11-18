@@ -1,0 +1,20 @@
+{
+    "CK.AppIdentity.Tenants.Title": "Locataires",
+    "CK.AppIdentity.Tenants.SignInRequired": "Voir et modifier les locataires des applications nécessite une connexion récente.",
+    "CK.AppIdentity.Tenants.SignIn": "Se connecter pour gérer les locataires",
+    "CK.AppIdentity.Tenants.TimeLeft": "Connecté pour les locataires : encore {{seconds}} secondes.",
+    "CK.AppIdentity.Tenants.Hosts": "Les applications qui ont des modèles de locataires :",
+    "CK.AppIdentity.Tenants.Refresh": "Actualiser",
+    "CK.AppIdentity.Tenants.NoHost": "Aucune application n'a de modèle de locataires.",
+    "CK.AppIdentity.Tenants.Template": "{{template}} : {{count}} locataire(s), au plus {{max}}.",
+    "CK.AppIdentity.Tenants.Configured": "Configuré (n°{{index}}).",
+    "CK.AppIdentity.Tenants.Runtime": "Créé à l'exécution (n°{{index}}).",
+    "CK.AppIdentity.Tenants.Unloaded": "Non chargé (n°{{index}}, {{reason}}) : {{message}}",
+    "CK.AppIdentity.Tenants.IndexPlaceholder": "Index",
+    "CK.AppIdentity.Tenants.Move": "Déplacer",
+    "CK.AppIdentity.Tenants.Remove": "Retirer",
+    "CK.AppIdentity.Tenants.ConfirmRemoval": "Ses clés seront supprimées : un nouveau locataire du même nom est une nouvelle identité.",
+    "CK.AppIdentity.Tenants.Cancel": "Annuler",
+    "CK.AppIdentity.Tenants.NamePlaceholder": "Nom du nouveau locataire",
+    "CK.AppIdentity.Tenants.Create": "Créer"
+}

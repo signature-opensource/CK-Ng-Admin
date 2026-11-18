@@ -28,9 +28,11 @@ public class EnlistmentNgTests
                 "CK.Ng.Cris.AspNet.Authentication.Basic",
                 "CK.DB.User.UserPassword",
                 "CK.Ng.AppIdentity.Enlistment",
+                "CK.Ng.AppIdentity.Tenants",
                 "CK.SqlServer.Transaction"
             ] );
         configuration.FirstBinPath.Types.Add( typeof( FakeApprovalHandler ) );
+        configuration.FirstBinPath.Types.Add( typeof( FakeTenantHandler ) );
         configuration.FirstBinPath.EnsureTypeScriptConfigurationAspect( targetProjectPath );
 
         var engineRes = await configuration.RunSuccessfullyAsync();

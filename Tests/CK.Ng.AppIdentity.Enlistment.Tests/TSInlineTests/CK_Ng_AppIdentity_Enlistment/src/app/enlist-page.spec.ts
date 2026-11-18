@@ -173,6 +173,25 @@ describe( 'EnlistPage', () => {
         expect( query( fixture, '.ck-enlist-new-instance' ).length ).toBe( 1 );
     } );
 
+    it( 'warns when keys compete for the approval of a party', async () => {
+        // 3 keys compete for "Test/$Worker-3", one for "Test/$D".
+        const fixture = await createAsync( 'Test/$Worker-3' );
+        const page = fixture.componentInstance;
+        await signInAsync();
+        await waitForListAsync( fixture );
+        expect( page.competing() ).toBe( 3 );
+        expect( query( fixture, '.ck-enlist-competing' ).length ).toBe( 1 );
+    } );
+
+    it( 'shows the competing keys in the list of the waiting parties', async () => {
+        const fixture = await createAsync( null );
+        await signInAsync();
+        await waitForListAsync( fixture );
+        expect( fixture.componentInstance.waitingParties().map( w => [w.party, w.competing] ) )
+            .toEqual( [['Test/$D', 1], ['Test/$Multi', 1], ['Test/$Worker-3', 3]] );
+        expect( query( fixture, '.ck-enlist-competing' ).length ).toBe( 1 );
+    } );
+
     // Last: the removal changes the instances of the fake handler.
     it( 'removes an approved instance', async () => {
         const fixture = await createAsync( null );
