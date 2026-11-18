@@ -7,8 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="CK.IO.UserManagement.UserInvitation" Version="3.0.0-0.uc.0.ci.101" />
-        <PackageReference Include="CK.Ng.UserProfile.UserPassword.Lost" Version="3.0.0-0.uc.0.ci.154" />
+        <PackageReference Include="CK.IO.UserManagement.UserInvitation" Version="3.0.0-0.uc.0.ci.102" />
+        <PackageReference Include="CK.Ng.UserProfile.UserPassword.Lost" Version="3.0.0-0.uc.0.ci.155" />
     </ItemGroup>
 
     <ItemGroup>
