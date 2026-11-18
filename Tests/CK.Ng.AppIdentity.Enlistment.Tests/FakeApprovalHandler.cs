@@ -9,7 +9,9 @@ namespace CK.Ng.AppIdentity.Enlistment.Tests;
 /// <list type="bullet">
 ///   <item>"Test/$D" waits on "Test/$Holder", whose code is "1234-5678", and states that it hosts the "MailSender" route;</item>
 ///   <item>"Test/$Multi" waits on "Test/$Holder" (code "1234-5678") and on "Test/$Holder2" (code "2222-3333");</item>
-///   <item>nobody waits for any other party.</item>
+///   <item>"Test/$Worker-3" (a new instance of the template "$Worker-{Name}") waits on "Test/$Holder" (code "1234-5678");</item>
+///   <item>nobody waits for any other party;</item>
+///   <item>"Test/$Worker-4" is an approved instance of "$Worker-{Name}" held by "Test/$Holder", until it is removed.</item>
 /// </list>
 /// The outcome of an approval names its holder, followed by the routes it authorizes when there are some
 /// ("Test/$Holder [MailSender]"): a route that the party doesn't state is refused.
@@ -21,12 +23,16 @@ public sealed class FakeApprovalHandler : IAutoService
 
     static readonly DateTime _since = new DateTime( 2026, 11, 10, 8, 0, 0, DateTimeKind.Utc );
 
-    static readonly (string Party, string Holder, string Code, DateTime Since, string[] Routes)[] _pending =
+    static readonly (string Party, string Holder, string Code, DateTime Since, string[] Routes, string? Template)[] _pending =
     [
-        ("Test/$D", "Test/$Holder", Code, _since, ["MailSender"]),
-        ("Test/$Multi", "Test/$Holder", Code, _since.AddMinutes( 5 ), []),
-        ("Test/$Multi", "Test/$Holder2", Code2, _since.AddMinutes( 6 ), [])
+        ("Test/$D", "Test/$Holder", Code, _since, ["MailSender"], null),
+        ("Test/$Multi", "Test/$Holder", Code, _since.AddMinutes( 5 ), [], null),
+        ("Test/$Multi", "Test/$Holder2", Code2, _since.AddMinutes( 6 ), [], null),
+        ("Test/$Worker-3", "Test/$Holder", Code, _since.AddMinutes( 7 ), [], "$Worker-{Name}")
     ];
+
+    // The approved instances: a removal removes it.
+    static readonly List<(string Party, string Holder, string Template)> _instances = [("Test/$Worker-4", "Test/$Holder", "$Worker-{Name}")];
 
     [CommandHandler]
     public IList<IPartyApprovalOutcome> Handle( IApprovePartyCommand command, PocoDirectory pocos )
@@ -53,7 +59,32 @@ public sealed class FakeApprovalHandler : IAutoService
                            a.Kind = "Local";
                            a.Since = p.Since;
                            a.Routes.AddRange( p.Routes );
+                           a.TemplatePartyName = p.Template;
                        } ) )
                        .ToList();
+    }
+
+    [CommandHandler]
+    public IList<IPartyInstance> Handle( IGetPartyInstancesQCommand command, PocoDirectory pocos )
+    {
+        lock( _instances )
+        {
+            return _instances.Select( i => pocos.Create<IPartyInstance>( p =>
+                             {
+                                 p.PartyFullName = i.Party;
+                                 p.HolderFullName = i.Holder;
+                                 p.TemplatePartyName = i.Template;
+                             } ) )
+                             .ToList();
+        }
+    }
+
+    [CommandHandler]
+    public int Handle( IRemovePartyInstanceCommand command )
+    {
+        lock( _instances )
+        {
+            return _instances.RemoveAll( i => i.Party == command.PartyFullName );
+        }
     }
 }

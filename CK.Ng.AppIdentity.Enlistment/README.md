@@ -12,7 +12,8 @@ An operator opens the URL, reads the approval code on the waiting party and ente
 (`[PartyClientFact( "Enlistment", "app-identity/enlist" )]`, the path of the page): a client application built with it
 is the approval page, so its party hosts the "Enlistment" route of the System, whose target is the URL of the client
 application followed by the value of the fact.
-It registers the `IApprovePartyCommand` and the `IGetPendingApprovalsQCommand` of
+It registers the `IApprovePartyCommand`, the `IGetPendingApprovalsQCommand`, the `IGetPartyInstancesQCommand` and the
+`IRemovePartyInstanceCommand` of
 [CK.IO.AppIdentity.Enlistment](https://github.com/signature-opensource/CK-AppIdentity-Transport/blob/stable/CK.IO.AppIdentity.Enlistment/README.md).
 
 ## The page
@@ -26,7 +27,11 @@ It registers the `IApprovePartyCommand` and the `IGetPendingApprovalsQCommand` o
   Critical level, and again after each approval or on "Refresh";
 - without `?party=`, lists the parties that wait for an approval, the oldest first, each one a link to the page for it:
   the operator chooses a party here rather than following a link it received (the enlistment URL reaches the waiting
-  party from a listener it doesn't trust yet);
+  party from a listener it doesn't trust yet). A new dynamic instance of an Opened template (`IPendingApproval.TemplatePartyName`)
+  says it ("A new instance of $Worker-{Name}");
+- without `?party=`, also lists the approved dynamic instances of the Opened templates (`IGetPartyInstancesQCommand`),
+  each one with a "Remove" button that sends the `IRemovePartyInstanceCommand` (Critical: when the window is over, the
+  click signs in again first): its holders forget its identity, it becomes a candidate again when it calls;
 - with `?party=`, shows the party, the holders it waits on (the kind, since when, the fingerprint of the key), the
   routes it states that it hosts (each one unchecked: the operator checks the ones it is authorized to host, sent in
   `IApprovePartyCommand.Routes`), and one code field per holder (a code belongs to a pair of parties; "Add a code" adds one);

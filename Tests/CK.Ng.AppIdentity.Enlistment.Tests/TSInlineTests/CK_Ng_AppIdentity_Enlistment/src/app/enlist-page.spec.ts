@@ -118,10 +118,16 @@ describe( 'EnlistPage', () => {
         await waitForListAsync( fixture );
         // The oldest first; a party that waits on two holders is one waiting party.
         expect( page.waitingParties().map( w => [w.party, w.holders] ) )
-            .toEqual( [['Test/$D', ['Test/$Holder']], ['Test/$Multi', ['Test/$Holder', 'Test/$Holder2']]] );
+            .toEqual( [['Test/$D', ['Test/$Holder']], ['Test/$Multi', ['Test/$Holder', 'Test/$Holder2']], ['Test/$Worker-3', ['Test/$Holder']]] );
         const links = query( fixture, '.ck-enlist-party-link' );
-        expect( links.length ).toBe( 2 );
+        expect( links.length ).toBe( 3 );
         expect( links[0].getAttribute( 'href' ) ).toBe( '?party=Test%2F%24D' );
+        // A candidate of an Opened template says it.
+        expect( page.waitingParties()[2].template ).toBe( '$Worker-{Name}' );
+        expect( query( fixture, '.ck-enlist-new-instance' ).length ).toBe( 1 );
+        // The approved instances can be removed.
+        expect( page.instanceParties() ).toEqual( [{ party: 'Test/$Worker-4', template: '$Worker-{Name}', holders: ['Test/$Holder'] }] );
+        expect( query( fixture, '.ck-enlist-remove-instance' ).length ).toBe( 1 );
     } );
 
     it( 'authorizes only the routes the operator checks', async () => {
@@ -156,5 +162,28 @@ describe( 'EnlistPage', () => {
         await page.approveAsync();
         expect( page.outcomes()!.map( o => [o.holderFullName, o.status] ) )
             .toEqual( [['Test/$Holder', PartyApprovalStatus.Approved], ['Test/$Holder2', PartyApprovalStatus.Approved]] );
+    } );
+
+    it( 'shows the template of a new instance of an Opened template', async () => {
+        const fixture = await createAsync( 'Test/$Worker-3' );
+        const page = fixture.componentInstance;
+        await signInAsync();
+        await waitForListAsync( fixture );
+        expect( page.template() ).toBe( '$Worker-{Name}' );
+        expect( query( fixture, '.ck-enlist-new-instance' ).length ).toBe( 1 );
+    } );
+
+    // Last: the removal changes the instances of the fake handler.
+    it( 'removes an approved instance', async () => {
+        const fixture = await createAsync( null );
+        const page = fixture.componentInstance;
+        await signInAsync();
+        await waitForListAsync( fixture );
+        expect( page.instanceParties().map( i => i.party ) ).toEqual( ['Test/$Worker-4'] );
+        await page.removeInstanceAsync( 'Test/$Worker-4' );
+        expect( page.error() ).toBeUndefined();
+        expect( page.removing() ).toBeUndefined();
+        expect( page.instanceParties() ).toEqual( [] );
+        expect( query( fixture, '.ck-enlist-instance' ).length ).toBe( 0 );
     } );
 } );

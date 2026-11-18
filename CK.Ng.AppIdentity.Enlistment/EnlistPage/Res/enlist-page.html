@@ -25,11 +25,31 @@
                 <div class="ck-enlist-waiting">
                     <a class="ck-enlist-party-link" [href]="partyLink( w.party )">{{ w.party }}</a>
                     <span class="sub">{{ 'CK.AppIdentity.Enlist.WaitsOn' | translate: { holders: w.holders.join( ', ' ), since: formatSince( w.since ) } }}</span>
+                    @if ( w.template ) {
+                        <span class="sub ck-enlist-new-instance">{{ 'CK.AppIdentity.Enlist.NewInstance' | translate: { template: w.template } }}</span>
+                    }
                 </div>
+            }
+            <!-- The approved dynamic instances of the Opened templates: the operator can remove them. -->
+            @if ( instanceParties().length > 0 ) {
+                <span class="sub">{{ 'CK.AppIdentity.Enlist.Instances' | translate }}</span>
+                @for ( i of instanceParties(); track i.party ) {
+                    <div class="ck-enlist-instance">
+                        <span class="ck-enlist-instance-party">{{ i.party }}</span>
+                        <span class="sub">{{ 'CK.AppIdentity.Enlist.InstanceOf' | translate: { template: i.template, holders: i.holders.join( ', ' ) } }}</span>
+                        <button nz-button nzType="default" nzDanger class="ck-enlist-remove-instance" [nzLoading]="removing() === i.party"
+                                [disabled]="removing() !== undefined" (click)="removeInstanceAsync( i.party )">
+                            {{ 'CK.AppIdentity.Enlist.RemoveInstance' | translate }}
+                        </button>
+                    </div>
+                }
             }
         }
     } @else {
         <span class="ck-enlist-party">{{ party }}</span>
+        @if ( template(); as t ) {
+            <span class="sub ck-enlist-new-instance">{{ 'CK.AppIdentity.Enlist.NewInstance' | translate: { template: t } }}</span>
+        }
         @if ( holders().length > 0 ) {
             <div class="ck-enlist-holders">
                 @for ( h of holders(); track h.holderFullName ) {

@@ -16,6 +16,8 @@ namespace CK.Ng.AppIdentity.Enlistment;
 [PartyClientFact( "Enlistment", "app-identity/enlist" )]
 [RegisterTypeScriptType( typeof( IApprovePartyCommand ) )]
 [RegisterTypeScriptType( typeof( IGetPendingApprovalsQCommand ) )]
+[RegisterTypeScriptType( typeof( IGetPartyInstancesQCommand ) )]
+[RegisterTypeScriptType( typeof( IRemovePartyInstanceCommand ) )]
 public class NgAppIdentityEnlistmentPackage : TypeScriptPackage
 {
 }
