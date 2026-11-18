@@ -1,84 +1,82 @@
 {
-  // The configuration of the builder: its App "CK.Ng.Admin.Sample" is the CK.Ng.Admin.Sample.App project (its code) and the CK.Ng.Admin.Sample.Host project,
-  // whose appsettings.json is generated from the "CK.Ng.Admin.Sample" section below (without its compile time keys; the keys of its
+  // The configuration of the builder: its App "CK.Ng.Admin.Sample" (named after the builder) is the CK.Ng.Admin.Sample.App project (its code) and the CK.Ng.Admin.Sample.Host project,
+  // whose appsettings.json is generated from the "App" section below (without its compile time keys; the keys of its
   // party go in the "CK-AppIdentity" section).
   // The Builder aspects: the database of the engine run; its connection string is projected in the
   // "SqlServer" section of the hosts' appsettings.json.
   "Aspects": {
     "SqlServer": { "DefaultDatabaseConnectionString": "Server=.;Database=AdminSampleDB_LOCAL;Integrated Security=True;TrustServerCertificate=true" }
   },
-  "Apps": {
-    "CK.Ng.Admin.Sample": {
-      "Aspects": { "Globalization": { "ActiveCultures": "fr" } },
-      "AllowedHosts": "*",
-      "Authentication": {
-          "Oidc.SignatureAD": {
-              "Instance": "https://login.microsoftonline.com/",
-              "ClientId": "",
-              "TenantId": "",
-              "ClientSecret": "",
-              "CallbackPath": "/signin-oidc-signature",
-              "SignedOutCallbackPath ": "/signout-callback-oidc-signature",
-              "RequireHttpsMetadata": false
-          }
-      },
-      "FullName": "AdminSample/$Server",
-      "Parties": [],
-      "Local": {
-          // This application is its own AuthCenter, and its web server is its "HttpEndpoint" feature.
-          "HttpEndpoint": { "Urls": "http://localhost:5500" },
-          "AuthCenter": {
-              "CriticalLifetimes": {
-                  "Basic": "00:05:00"
-              },
-              // The lost password flow (CK.UserProfile.UserPassword.Lost): how long a recovery link stays valid.
-              "PasswordLost": { "TokenLifetime": "02:00:00" }
-          },
-          "MailSender": {
-              "MailKit": {
-                  "NoReply": {
-                      "SendEmail": false,
-                      "UsePickupDirectory": true,
-                      "PickupDirectory": "MailPickup",
-                      "From": "noreply@adminsample.local"
-                  }
-              }
-          },
-          "PartyClient": { "App": { "NgApp": { "IntegrationMode": "Inline", "DefaultCulture": "fr", "ActiveCultures": "fr-CA, de-be, nl-BE, zh" }, "Hosting": { "RequestPath": "/", "DevServerPort": 4500 } } }
-      },
-      "CK-Monitoring": {
-          "LogPath": "Logs",
-          "HandleDotNetLogs": true,
-          "DefaultFilter": "Debug",
-          "GrandOutput": {
-              "Handlers": {
-                  "Console": true,
-                  "TextFile": {
-                      "Path": "Text"
-                  }
-              }
-          }
-      },
-      "Logging": {
-          "LogLevel": {
-              "Default": "Information",
-              "Microsoft": "Warning",
-              "Microsoft.Hosting.Lifetime": "Warning"
-          },
-          "Console": {
-              "LogLevel": {
-                  "Default": "None"
-              },
-              "FormatterOptions": {
-                  "IncludeScopes": false
-              }
-          },
-          "Debug": {
-              "LogLevel": {
-                  "Default": "None"
-              }
-          }
-      }
+  "App": {
+    "Aspects": { "Globalization": { "ActiveCultures": "fr" } },
+    "AllowedHosts": "*",
+    "Authentication": {
+        "Oidc.SignatureAD": {
+            "Instance": "https://login.microsoftonline.com/",
+            "ClientId": "",
+            "TenantId": "",
+            "ClientSecret": "",
+            "CallbackPath": "/signin-oidc-signature",
+            "SignedOutCallbackPath ": "/signout-callback-oidc-signature",
+            "RequireHttpsMetadata": false
+        }
+    },
+    "FullName": "AdminSample/$Server",
+    "Parties": [],
+    "Local": {
+        // This application is its own AuthCenter, and its web server is its "HttpEndpoint" feature.
+        "HttpEndpoint": { "Urls": "http://localhost:5500" },
+        "AuthCenter": {
+            "CriticalLifetimes": {
+                "Basic": "00:05:00"
+            },
+            // The lost password flow (CK.UserProfile.UserPassword.Lost): how long a recovery link stays valid.
+            "PasswordLost": { "TokenLifetime": "02:00:00" }
+        },
+        "MailSender": {
+            "MailKit": {
+                "NoReply": {
+                    "SendEmail": false,
+                    "UsePickupDirectory": true,
+                    "PickupDirectory": "MailPickup",
+                    "From": "noreply@adminsample.local"
+                }
+            }
+        },
+        "PartyClient": { "App": { "NgApp": { "IntegrationMode": "Inline", "DefaultCulture": "fr", "ActiveCultures": "fr-CA, de-be, nl-BE, zh" }, "Hosting": { "RequestPath": "/", "DevServerPort": 4500 } } }
+    },
+    "CK-Monitoring": {
+        "LogPath": "Logs",
+        "HandleDotNetLogs": true,
+        "DefaultFilter": "Debug",
+        "GrandOutput": {
+            "Handlers": {
+                "Console": true,
+                "TextFile": {
+                    "Path": "Text"
+                }
+            }
+        }
+    },
+    "Logging": {
+        "LogLevel": {
+            "Default": "Information",
+            "Microsoft": "Warning",
+            "Microsoft.Hosting.Lifetime": "Warning"
+        },
+        "Console": {
+            "LogLevel": {
+                "Default": "None"
+            },
+            "FormatterOptions": {
+                "IncludeScopes": false
+            }
+        },
+        "Debug": {
+            "LogLevel": {
+                "Default": "None"
+            }
+        }
     }
   }
 }
