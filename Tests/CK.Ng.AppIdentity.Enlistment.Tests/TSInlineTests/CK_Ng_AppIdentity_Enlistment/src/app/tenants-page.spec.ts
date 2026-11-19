@@ -37,8 +37,9 @@ describe( 'TenantsPage', () => {
         return ( fixture.nativeElement as HTMLElement ).querySelectorAll( selector );
     }
 
-    function names( page: TenantsPage ): Array<[string, number | null | undefined, boolean, string | null | undefined]> {
-        return page.hosts()![0].templates![0].instances.map( i => [i.name, i.index, i.isConfigured, i.unloadedReason] );
+    // An absent optional value is undefined in the TypeScript Poco: null here, to compare.
+    function names( page: TenantsPage ): Array<[string, number | null, boolean, string | null]> {
+        return page.hosts()![0].templates![0].instances.map( i => [i.name, i.index ?? null, i.isConfigured, i.unloadedReason ?? null] );
     }
 
     afterEach( async () => {
