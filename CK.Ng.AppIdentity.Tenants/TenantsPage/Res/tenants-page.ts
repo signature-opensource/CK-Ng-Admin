@@ -14,8 +14,8 @@ export interface TenantHost {
 }
 
 /**
- * The tenants page. At the Critical level, it lists the applications that hold Opened tenant templates (the hosts of the
- * "Tenants" route), their templates and their tenants. A run-time tenant is created by its name (its index is the first
+ * The tenants page. At the Critical level, it lists the applications that hold Opened tenant templates (found among the
+ * remotes of its application and of the hub of the System), their templates and their tenants. A run-time tenant is created by its name (its index is the first
  * free one), moved to a free index, or removed (its identity is deleted: it needs a confirmation).
  */
 @Component( {
@@ -91,7 +91,10 @@ export class TenantsPage {
         this.newIndices.update( n => ( { ...n, [fullName]: value } ) );
     }
 
-    /** Reads the hosts of the "Tenants" route, then the templates of each one. */
+    /**
+     * Reads the applications that accept the tenant commands, then the templates of each one: an application without
+     * template is not shown (it may only have the handlers).
+     */
     async refreshAsync(): Promise<void> {
         this.loading.set( true );
         this.error.set( undefined );
@@ -102,7 +105,8 @@ export class TenantsPage {
                 try {
                     const q = new GetTenantInstancesQCommand();
                     q.targetPartyFullName = host;
-                    result.push( { host, templates: await this.#cris.sendOrThrowAsync( q ) ?? [] } );
+                    const templates = await this.#cris.sendOrThrowAsync( q ) ?? [];
+                    if( templates.length > 0 ) result.push( { host, templates } );
                 }
                 catch( e ) {
                     result.push( { host, error: e instanceof Error ? e.message : String( e ) } );

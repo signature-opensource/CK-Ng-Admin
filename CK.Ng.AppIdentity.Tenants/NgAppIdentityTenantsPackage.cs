@@ -7,8 +7,9 @@ namespace CK.Ng.AppIdentity.Tenants;
 
 /// <summary>
 /// The tenants page of the System (see <see cref="TenantsPageComponent"/>): the applications that hold Opened tenant
-/// templates are the hosts of the "Tenants" route that reach the party of the client application; the page sends the
-/// tenant commands to them (along the route beyond one hop: see CK.AppIdentity.Tenants).
+/// templates are found among the remotes of the party of the client application and of the hub of the System (its
+/// Authentication Center); the page sends the tenant commands to them (through the hub when they are not remotes: see
+/// CK.AppIdentity.Tenants, that the application of the page references too).
 /// </summary>
 [TypeScriptPackage]
 [Requires<NgCrisAuthenticationPackage>]

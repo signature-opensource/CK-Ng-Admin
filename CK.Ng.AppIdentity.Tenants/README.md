@@ -4,14 +4,16 @@ The tenants page of a CK-AppIdentity System, at `/app-identity/tenants` of the c
 package ([`TenantsPageComponent`](TenantsPage/TenantsPageComponent.cs)). It manages the run-time tenant domains of the
 applications of the System: the instances of their Opened tenant templates (see CK.AppIdentity.Tenants).
 
-- **The applications:** the hosts of the "Tenants" route that reach the party of the client application
-  (`IGetTenantHostsQCommand`): an application that holds Opened tenant templates hosts it. Each one is asked for its
-  templates and tenants (`IGetTenantInstancesQCommand`): the configured ones, the run-time ones (with their index) and
-  the unloaded ones (with their reason: their index is taken by a configured instance, or above a lowered bound...).
+- **The applications:** the ones that accept the tenant commands among the remotes of the party of the client
+  application and the remotes of the hub of the System, its Authentication Center (`IGetTenantHostsQCommand`, handled
+  by CK.AppIdentity.Tenants: the application of the page references it). Each one is asked for its templates and tenants
+  (`IGetTenantInstancesQCommand`), and shown when it has templates: the configured tenants, the run-time ones (with their
+  index) and the unloaded ones (with their reason: their index is taken by a configured instance, or above a lowered
+  bound...).
 - **The operations:** a tenant is created by its name (`ICreateTenantInstanceCommand`: its index is the first free one),
   a run-time tenant is moved to a free index (`ISetTenantIndexCommand`: an unloaded one is loaded again), or removed
   after a confirmation (`IRemoveTenantInstanceCommand`: its keys are deleted, a new tenant of the same name is a new
-  identity). The commands are party commands: they reach an application that is not a remote along the "Tenants" route.
+  identity). The commands are party commands: they reach an application that is not a remote through the hub.
 
 Like the approval page, it requires the Critical level: the operator signs in again in a popup, the page keeps what was
 entered.
