@@ -11,7 +11,7 @@
         <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Basic" Version="3.0.0-0.uc.0.ci.167" />
         <PackageReference Include="CK.DB.Tests.NUnit" Version="37.0.0-0.uc.0.ci.24" />
         <PackageReference Include="CK.SqlServer.Transaction" Version="15.0.0-0.uc.0.ci.20" />
-        <PackageReference Include="CK.Testing.Engine.AppIdentity.AuthCenter" Version="4.0.0-0.uc.0.ci.28" />
+        <PackageReference Include="CK.Testing.Engine.AppIdentity.AuthCenter" Version="4.0.0-0.uc.0.ci.29" />
         <PackageReference Include="CK.Testing.Nunit" Version="18.0.0-0.uc" />
         <PackageReference Include="CK.Cris.AspNet.Engine" Version="3.0.0-0.uc.0.ci.167" />
         <PackageReference Include="CK.Testing.Engine.SqlServer" Version="37.0.0-0.uc.0.ci.24" />
