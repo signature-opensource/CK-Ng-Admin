@@ -25,5 +25,13 @@
     "CK.AppIdentity.Enlist.Status.NotReady": "The code can't be checked yet: retry in a few seconds.",
     "CK.AppIdentity.Enlist.Status.NoPendingApproval": "No approval is pending anymore.",
     "CK.AppIdentity.Enlist.Status.Unreachable": "This party can't be reached.",
-    "CK.AppIdentity.Enlist.Status.Refused": "This party refused the approval."
+    "CK.AppIdentity.Enlist.Status.Refused": "This party refused the approval.",
+    "CK.AppIdentity.Enlist.ExpectHelp": "Expect a party: its ticket, given to it at start, enlists it without a code (and, while it is open, a key without it is refused).",
+    "CK.AppIdentity.Enlist.ExpectedPlaceholder": "Domain/$Party/#Environment",
+    "CK.AppIdentity.Enlist.Hours": "hours",
+    "CK.AppIdentity.Enlist.OpenTicket": "Open a ticket",
+    "CK.AppIdentity.Enlist.TicketOpened": "Ticket for {{party}}, until {{expires}}. Copy it now: it is shown once. It is a secret, give it to the party at start (\"Local:KeyManagement:EnlistTicket\").",
+    "CK.AppIdentity.Enlist.TicketOpen": "Ticket open until {{expires}}.",
+    "CK.AppIdentity.Enlist.TicketUsed": "Enlisted on {{used}}, key {{fingerprint}}.",
+    "CK.AppIdentity.Enlist.RevokeTicket": "Revoke"
 }

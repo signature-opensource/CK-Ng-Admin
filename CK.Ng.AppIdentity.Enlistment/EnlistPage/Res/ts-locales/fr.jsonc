@@ -25,5 +25,13 @@
     "CK.AppIdentity.Enlist.Status.NotReady": "Le code ne peut pas encore être vérifié : réessayez dans quelques secondes.",
     "CK.AppIdentity.Enlist.Status.NoPendingApproval": "Plus aucune approbation n'est en attente.",
     "CK.AppIdentity.Enlist.Status.Unreachable": "Cette partie ne peut pas être jointe.",
-    "CK.AppIdentity.Enlist.Status.Refused": "Cette partie a refusé l'approbation."
+    "CK.AppIdentity.Enlist.Status.Refused": "Cette partie a refusé l'approbation.",
+    "CK.AppIdentity.Enlist.ExpectHelp": "Attendre une partie : son ticket, donné au démarrage, l'enrôle sans code (et, tant qu'il est ouvert, une clé sans lui est refusée).",
+    "CK.AppIdentity.Enlist.ExpectedPlaceholder": "Domaine/$Partie/#Environnement",
+    "CK.AppIdentity.Enlist.Hours": "heures",
+    "CK.AppIdentity.Enlist.OpenTicket": "Ouvrir un ticket",
+    "CK.AppIdentity.Enlist.TicketOpened": "Ticket pour {{party}}, jusqu'au {{expires}}. Copiez-le maintenant : il n'est affiché qu'une fois. C'est un secret, à donner à la partie au démarrage (\"Local:KeyManagement:EnlistTicket\").",
+    "CK.AppIdentity.Enlist.TicketOpen": "Ticket ouvert jusqu'au {{expires}}.",
+    "CK.AppIdentity.Enlist.TicketUsed": "Enrôlée le {{used}}, clé {{fingerprint}}.",
+    "CK.AppIdentity.Enlist.RevokeTicket": "Révoquer"
 }

@@ -33,6 +33,37 @@
                     }
                 </div>
             }
+            <!-- The pre-authorized enlistment: the operator expects a party, the ticket is given to it at start. -->
+            <div class="ck-enlist-expect">
+                <span class="sub">{{ 'CK.AppIdentity.Enlist.ExpectHelp' | translate }}</span>
+                <div class="ck-enlist-expect-form">
+                    <input nz-input class="ck-enlist-expected" [ngModel]="expected()" (ngModelChange)="expected.set( $event )"
+                           [placeholder]="'CK.AppIdentity.Enlist.ExpectedPlaceholder' | translate" autocomplete="off" />
+                    <input nz-input type="number" min="1" max="168" class="ck-enlist-lifetime" [ngModel]="lifetimeHours()" (ngModelChange)="lifetimeHours.set( +$event )" />
+                    <span class="sub">{{ 'CK.AppIdentity.Enlist.Hours' | translate }}</span>
+                    <button nz-button nzType="primary" class="ck-enlist-open-ticket" [disabled]="expected().trim().length === 0" [nzLoading]="openingTicket()" (click)="openTicketAsync()">
+                        {{ 'CK.AppIdentity.Enlist.OpenTicket' | translate }}
+                    </button>
+                </div>
+                @if ( openedTicket(); as t ) {
+                    <nz-alert nzType="success" class="ck-enlist-ticket" [nzMessage]="'CK.AppIdentity.Enlist.TicketOpened' | translate: { party: expected(), expires: formatSince( t.expires.toMillis() ) }" nzShowIcon />
+                    <textarea nz-input readonly class="ck-enlist-ticket-text" rows="3" [value]="t.ticket"></textarea>
+                }
+                @for ( t of tickets() ?? []; track t.id ) {
+                    <div class="ck-enlist-ticket-row">
+                        <span class="ck-enlist-ticket-party">{{ t.partyFullName }}</span>
+                        @if ( t.used ) {
+                            <span class="sub">{{ 'CK.AppIdentity.Enlist.TicketUsed' | translate: { used: formatSince( t.used.toMillis() ), fingerprint: t.usedByFingerprint } }}</span>
+                        } @else {
+                            <span class="sub">{{ 'CK.AppIdentity.Enlist.TicketOpen' | translate: { expires: formatSince( t.expires.toMillis() ) } }}</span>
+                        }
+                        <button nz-button nzType="default" nzDanger class="ck-enlist-revoke-ticket" [nzLoading]="revoking() === t.id"
+                                [disabled]="revoking() !== undefined" (click)="revokeTicketAsync( t.id )">
+                            {{ 'CK.AppIdentity.Enlist.RevokeTicket' | translate }}
+                        </button>
+                    </div>
+                }
+            </div>
             <!-- The approved dynamic instances of the Opened templates: the operator can remove them. -->
             @if ( instanceParties().length > 0 ) {
                 <span class="sub">{{ 'CK.AppIdentity.Enlist.Instances' | translate }}</span>

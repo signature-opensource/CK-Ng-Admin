@@ -12,8 +12,9 @@ An operator opens the URL, reads the approval code on the waiting party and ente
 (`[PartyClientFact( "Enlistment", "app-identity/enlist" )]`, the path of the page): a client application built with it
 is the approval page, so its party hosts the "Enlistment" route of the System, whose target is the URL of the client
 application followed by the value of the fact.
-It registers the `IApprovePartyCommand`, the `IGetPendingApprovalsQCommand`, the `IGetPartyInstancesQCommand` and the
-`IRemovePartyInstanceCommand` of
+It registers the `IApprovePartyCommand`, the `IGetPendingApprovalsQCommand`, the `IGetPartyInstancesQCommand`, the
+`IRemovePartyInstanceCommand` and the enlistment ticket commands (`IOpenEnlistmentTicketCommand`,
+`IGetEnlistmentTicketsQCommand`, `IRevokeEnlistmentTicketCommand`) of
 [CK.IO.AppIdentity.Enlistment](https://github.com/signature-opensource/CK-AppIdentity-Transport/blob/stable/CK.IO.AppIdentity.Enlistment/README.md).
 
 ## The page
@@ -32,6 +33,13 @@ It registers the `IApprovePartyCommand`, the `IGetPendingApprovalsQCommand`, the
 - without `?party=`, also lists the approved dynamic instances of the Opened templates (`IGetPartyInstancesQCommand`),
   each one with a "Remove" button that sends the `IRemovePartyInstanceCommand` (Critical: when the window is over, the
   click signs in again first): its holders forget its identity, it becomes a candidate again when it calls;
+- without `?party=`, also has "Expect a party": the operator enters the full name of a party it expects and the lifetime
+  of its ticket (24 hours by default, 168 at most) and opens a pre-authorized enlistment ticket
+  (`IOpenEnlistmentTicketCommand`, Critical). The ticket is shown once, to copy: it is a secret given to the party at
+  start ("Local:KeyManagement:EnlistTicket"), the party is then trusted by the Authentication Center without a code
+  (and, while the ticket is open, a key presented under this name without it is refused). The tickets of the center are
+  listed (`IGetEnlistmentTicketsQCommand`: open until, or used when and by which key), each one with a "Revoke" button
+  (`IRevokeEnlistmentTicketCommand`);
 - with `?party=`, shows the party, the holders it waits on (the kind, since when, the fingerprint of the key), the
   routes it states that it hosts (each one unchecked: the operator checks the ones it is authorized to host, sent in
   `IApprovePartyCommand.Routes`), and one code field per holder (a code belongs to a pair of parties; "Add a code" adds one);

@@ -6,7 +6,7 @@ import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzInputModule } from 'ng-zorro-antd/input';
-import { ApprovePartyCommand, AuthLevel, GetPartyInstancesQCommand, GetPendingApprovalsQCommand, HttpCrisEndpoint, NgAuthService, PartyApprovalOutcome, PartyApprovalStatus, PartyInstance, PendingApproval, RemovePartyInstanceCommand } from '@local/ck-gen';
+import { ApprovePartyCommand, AuthLevel, EnlistmentTicket, EnlistmentTicketInfo, GetEnlistmentTicketsQCommand, GetPartyInstancesQCommand, GetPendingApprovalsQCommand, HttpCrisEndpoint, NgAuthService, OpenEnlistmentTicketCommand, PartyApprovalOutcome, PartyApprovalStatus, PartyInstance, PendingApproval, RemovePartyInstanceCommand, RevokeEnlistmentTicketCommand } from '@local/ck-gen';
 
 /** A party that waits for an approval, with the holders of its pending approvals. */
 export interface WaitingParty {
@@ -67,6 +67,17 @@ export class EnlistPage {
     readonly instances = signal<PartyInstance[] | undefined>( undefined );
     /** The instance being removed. */
     readonly removing = signal<string | undefined>( undefined );
+    /** The full name of the party the operator expects (the pre-authorized enlistment ticket). */
+    readonly expected = signal( '' );
+    /** The lifetime of the ticket, in hours. */
+    readonly lifetimeHours = signal( 24 );
+    /** The ticket just opened: shown once (its text is a secret, given to the expected party at start). */
+    readonly openedTicket = signal<EnlistmentTicket | undefined>( undefined );
+    /** The enlistment tickets of the Authentication Center (read at the Critical level), undefined before they are read. */
+    readonly tickets = signal<EnlistmentTicketInfo[] | undefined>( undefined );
+    readonly openingTicket = signal( false );
+    /** The ticket being revoked. */
+    readonly revoking = signal<string | undefined>( undefined );
     readonly loading = signal( false );
     protected readonly statusName = PartyApprovalStatus;
     readonly #now = signal( Date.now() );
@@ -155,6 +166,7 @@ export class EnlistPage {
             this.pending.set( list ?? [] );
             if( this.party === null ) {
                 this.instances.set( await this.#cris.sendOrThrowAsync( new GetPartyInstancesQCommand() ) ?? [] );
+                this.tickets.set( await this.#cris.sendOrThrowAsync( new GetEnlistmentTicketsQCommand() ) ?? [] );
             }
             const holders = this.holders().length;
             if( this.party !== null && holders > 1 && this.codes().every( c => c.trim().length === 0 ) ) {
@@ -188,6 +200,54 @@ export class EnlistPage {
         }
         finally {
             this.removing.set( undefined );
+        }
+        await this.refreshAsync();
+    }
+
+    /**
+     * Opens a pre-authorized enlistment ticket for the expected party: the ticket is shown once, the operator gives it to
+     * the party (it starts with it and is trusted at once). Like the approval, it requires the Critical level.
+     */
+    async openTicketAsync(): Promise<void> {
+        const party = this.expected().trim();
+        if( party.length === 0 || this.openingTicket() ) return;
+        if( !this.isCritical() && !await this.signInAsync() ) return;
+        this.openingTicket.set( true );
+        this.error.set( undefined );
+        this.openedTicket.set( undefined );
+        try {
+            const c = new OpenEnlistmentTicketCommand();
+            c.partyFullName = party;
+            c.lifetimeHours = this.lifetimeHours();
+            const t = await this.#cris.sendOrThrowAsync( c );
+            if( !t ) this.error.set( 'The Authentication Center refused the ticket (see its logs).' );
+            else this.openedTicket.set( t );
+        }
+        catch( e ) {
+            this.error.set( e instanceof Error ? e.message : String( e ) );
+        }
+        finally {
+            this.openingTicket.set( false );
+        }
+        await this.refreshAsync();
+    }
+
+    /** Revokes an enlistment ticket. */
+    async revokeTicketAsync( id: string ): Promise<void> {
+        if( this.revoking() !== undefined ) return;
+        if( !this.isCritical() && !await this.signInAsync() ) return;
+        this.revoking.set( id );
+        this.error.set( undefined );
+        try {
+            const c = new RevokeEnlistmentTicketCommand();
+            c.ticketId = id;
+            await this.#cris.sendOrThrowAsync( c );
+        }
+        catch( e ) {
+            this.error.set( e instanceof Error ? e.message : String( e ) );
+        }
+        finally {
+            this.revoking.set( undefined );
         }
         await this.refreshAsync();
     }
