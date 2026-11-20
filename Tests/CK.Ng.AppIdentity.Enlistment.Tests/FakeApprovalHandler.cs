@@ -85,4 +85,43 @@ public sealed class FakeApprovalHandler : IAutoService
             return _instances.RemoveAll( i => i.Party == command.PartyFullName );
         }
     }
+
+    // The enlistment tickets: none at first, opened and revoked by the page.
+    static readonly List<(string Id, string Party, DateTime Opened, DateTime Expires)> _tickets = [];
+
+    [CommandHandler]
+    public IEnlistmentTicket? Handle( IOpenEnlistmentTicketCommand command, PocoDirectory pocos )
+    {
+        var id = Guid.NewGuid().ToString( "N" );
+        var expires = DateTime.UtcNow.AddHours( command.LifetimeHours == 0 ? 24 : command.LifetimeHours );
+        lock( _tickets ) _tickets.Add( (id, command.PartyFullName, DateTime.UtcNow, expires) );
+        return pocos.Create<IEnlistmentTicket>( t =>
+        {
+            t.Id = id;
+            t.Ticket = "ckt1.FAKE-" + id;
+            t.Expires = expires;
+        } );
+    }
+
+    [CommandHandler]
+    public IList<IEnlistmentTicketInfo> Handle( IGetEnlistmentTicketsQCommand command, PocoDirectory pocos )
+    {
+        lock( _tickets )
+        {
+            return _tickets.Select( t => pocos.Create<IEnlistmentTicketInfo>( i =>
+                           {
+                               i.Id = t.Id;
+                               i.PartyFullName = t.Party;
+                               i.Opened = t.Opened;
+                               i.Expires = t.Expires;
+                           } ) )
+                           .ToList();
+        }
+    }
+
+    [CommandHandler]
+    public bool Handle( IRevokeEnlistmentTicketCommand command )
+    {
+        lock( _tickets ) return _tickets.RemoveAll( t => t.Id == command.TicketId ) > 0;
+    }
 }

@@ -185,6 +185,26 @@ describe( 'EnlistPage', () => {
         expect( query( fixture, '.ck-enlist-competing' ).length ).toBe( 1 );
     } );
 
+    it( 'opens a ticket for an expected party, shows it once, lists it and revokes it', async () => {
+        const fixture = await createAsync( null );
+        const page = fixture.componentInstance;
+        await signInAsync();
+        await waitForListAsync( fixture );
+        expect( page.tickets()!.length ).toBe( 0 );
+        page.expected.set( 'Test/$Worker-9' );
+        await page.openTicketAsync();
+        expect( page.error() ).toBeUndefined();
+        const opened = page.openedTicket()!;
+        expect( opened.ticket ).toMatch( /^ckt1\./ );
+        expect( page.tickets()!.map( t => t.partyFullName ) ).toEqual( ['Test/$Worker-9'] );
+        fixture.detectChanges();
+        expect( query( fixture, '.ck-enlist-ticket-text' ).length ).toBe( 1 );
+        expect( query( fixture, '.ck-enlist-ticket-row' ).length ).toBe( 1 );
+        await page.revokeTicketAsync( opened.id );
+        expect( page.error() ).toBeUndefined();
+        expect( page.tickets()!.length ).toBe( 0 );
+    } );
+
     // Last: the removal changes the instances of the fake handler.
     it( 'removes an approved instance', async () => {
         const fixture = await createAsync( null );
