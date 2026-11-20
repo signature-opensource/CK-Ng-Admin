@@ -130,21 +130,14 @@ describe( 'EnlistPage', () => {
         expect( query( fixture, '.ck-enlist-remove-instance' ).length ).toBe( 1 );
     } );
 
-    it( 'authorizes only the routes the operator checks', async () => {
+    it( 'approves a party with its code', async () => {
         const fixture = await createAsync( 'Test/$D' );
         const page = fixture.componentInstance;
         await signInAsync();
         await waitForListAsync( fixture );
-        // The route the party states that it hosts is shown, unchecked: nothing is authorized by default.
-        expect( page.routes() ).toEqual( ['MailSender'] );
-        expect( query( fixture, '.ck-enlist-route' ).length ).toBe( 1 );
         page.setCode( 0, goodCode );
         await page.approveAsync();
         expect( page.outcomes()!.map( o => [o.holderFullName, o.status] ) ).toEqual( [['Test/$Holder', PartyApprovalStatus.Approved]] );
-        // Checked: it is sent with the approval.
-        page.setRouteAuthorized( 'MailSender', true );
-        await page.approveAsync();
-        expect( page.outcomes()!.map( o => [o.holderFullName, o.status] ) ).toEqual( [['Test/$Holder [MailSender]', PartyApprovalStatus.Approved]] );
     } );
 
     it( 'gives one code field per holder of the party', async () => {

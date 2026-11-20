@@ -13,7 +13,6 @@
     "CK.AppIdentity.Enlist.InstanceOf": "An instance of {{template}}, held by {{holders}}.",
     "CK.AppIdentity.Enlist.RemoveInstance": "Remove",
     "CK.AppIdentity.Enlist.Holder": "Waits on {{holder}} ({{kind}}) since {{since}}, key {{fingerprint}}.",
-    "CK.AppIdentity.Enlist.RoutesHelp": "It states that it hosts these routes: check the ones it is authorized to host.",
     "CK.AppIdentity.Enlist.CodesHelp": "Enter the approval code shown by the party (one per party it waits on).",
     "CK.AppIdentity.Enlist.CodePlaceholder": "1234-5678",
     "CK.AppIdentity.Enlist.AddCode": "Add a code",

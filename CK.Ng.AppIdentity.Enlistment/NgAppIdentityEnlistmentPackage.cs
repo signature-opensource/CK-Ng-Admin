@@ -8,8 +8,8 @@ namespace CK.Ng.AppIdentity.Enlistment;
 
 /// <summary>
 /// The approval page of the System (see <see cref="EnlistPageComponent"/>): a client application built with this package
-/// has the "Enlistment" fact, so its party hosts the "Enlistment" route of the System and the pending approvals of the
-/// System reach it.
+/// has the "Enlistment" fact, so its party is the approval page of the System (the Authentication Center states its URL)
+/// and the page asks the pending approvals of the System through the center.
 /// </summary>
 [TypeScriptPackage]
 [Requires<NgCrisAuthenticationPackage>]

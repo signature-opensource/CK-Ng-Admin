@@ -1,17 +1,17 @@
 # CK.Ng.AppIdentity.Enlistment
 
 The approval page of a CK-AppIdentity System. A party that a holder doesn't trust yet waits for an approval: its
-holder hands it the URL of the approval page of the System, followed by `?party={its full name}`, and the pending
-approval travels the "Enlistment" route up to the party that hosts the page (see the routes of
-[CK.AppIdentity.TransportLayer](https://github.com/signature-opensource/CK-AppIdentity-Transport/blob/stable/CK.AppIdentity.TransportLayer/README.md#the-routes-and-the-enlistment-url)).
+holder hands it the URL of the approval page of the System, followed by `?party={its full name}`; the page asks the
+pending approvals of the System through the Authentication Center, the hub of the System (see
+[CK.AppIdentity.TransportLayer](https://github.com/signature-opensource/CK-AppIdentity-Transport/blob/stable/CK.AppIdentity.TransportLayer/README.md#the-approval-page-and-the-enlistment-url)).
 An operator opens the URL, reads the approval code on the waiting party and enters it on the page.
 
 ## The package
 
 [`NgAppIdentityEnlistmentPackage`](NgAppIdentityEnlistmentPackage.cs) has the "Enlistment" fact
 (`[PartyClientFact( "Enlistment", "app-identity/enlist" )]`, the path of the page): a client application built with it
-is the approval page, so its party hosts the "Enlistment" route of the System, whose target is the URL of the client
-application followed by the value of the fact.
+is the approval page: its party states the fact in its description, the Authentication Center reads it and states the
+URL of the page (the URL of the client application followed by the value of the fact) to the System.
 It registers the `IApprovePartyCommand`, the `IGetPendingApprovalsQCommand`, the `IGetPartyInstancesQCommand`, the
 `IRemovePartyInstanceCommand` and the enlistment ticket commands (`IOpenEnlistmentTicketCommand`,
 `IGetEnlistmentTicketsQCommand`, `IRevokeEnlistmentTicketCommand`) of
@@ -40,9 +40,8 @@ It registers the `IApprovePartyCommand`, the `IGetPendingApprovalsQCommand`, the
   (and, while the ticket is open, a key presented under this name without it is refused). The tickets of the center are
   listed (`IGetEnlistmentTicketsQCommand`: open until, or used when and by which key), each one with a "Revoke" button
   (`IRevokeEnlistmentTicketCommand`);
-- with `?party=`, shows the party, the holders it waits on (the kind, since when, the fingerprint of the key), the
-  routes it states that it hosts (each one unchecked: the operator checks the ones it is authorized to host, sent in
-  `IApprovePartyCommand.Routes`), and one code field per holder (a code belongs to a pair of parties; "Add a code" adds one);
+- with `?party=`, shows the party, the holders it waits on (the kind, since when, the fingerprint of the key), and one
+  code field per holder (a code belongs to a pair of parties; "Add a code" adds one);
 - sends the `IApprovePartyCommand` (when the Critical window is over, the Approve click signs in again first, the codes
   are kept) and shows its outcome for each party that holds a pending approval of the party.
 
