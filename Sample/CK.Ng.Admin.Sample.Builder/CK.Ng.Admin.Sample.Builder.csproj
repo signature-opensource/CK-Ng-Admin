@@ -10,11 +10,11 @@
     <PackageReference Include="CK.AppIdentity.Engine" Version="3.0.0-0.uc.0.ci.144" />
     <PackageReference Include="CK.AppBuilder" Version="37.0.0-0.uc.0.ci.34" />
     <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.uc.0.ci.144" />
-    <PackageReference Include="CK.Cris.AspNet.Engine" Version="3.0.0-0.uc.0.ci.177" />
+    <PackageReference Include="CK.Cris.AspNet.Engine" Version="3.0.0-0.uc.0.ci.178" />
     <PackageReference Include="CK.Globalization.Engine" Version="3.0.0-0.uc.0.ci.65" />
     <PackageReference Include="CK.Setupable.Engine" Version="37.0.0-0.uc.0.ci.34" />
     <PackageReference Include="CK.SqlServer.Setup.Engine" Version="37.0.0-0.uc.0.ci.34" />
-    <PackageReference Include="CK.TS.Angular.Engine" Version="3.0.1-0.uc.0.ci.86" />
+    <PackageReference Include="CK.TS.Angular.Engine" Version="3.0.1-0.uc.0.ci.87" />
     <PackageReference Include="CK.Template.Fluid.Engine" Version="3.0.0-0.uc.0.ci.61" />
   </ItemGroup>
   <ItemGroup>
