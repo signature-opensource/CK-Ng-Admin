@@ -274,6 +274,3 @@ CodeCakeBuilder/[Rr]eleases/
 
 # The install marker of the CK.TypeScript engine (it describes the local install).
 **/.yarn/ck-install-state
-
-# The AppIdentity store of each test project (identity keys of the test parties: never committed).
-/Tests/*/TestStore/
