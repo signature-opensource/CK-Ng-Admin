@@ -4,7 +4,7 @@
     <IsPackable>False</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CK.AppHost" Version="25.0.0-0.uc.0.ci.46" />
+    <PackageReference Include="CK.AppHost" Version="25.0.0-0.uc.0.ci.47" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CK.Ng.Admin.Sample.App\CK.Ng.Admin.Sample.App.csproj" />
