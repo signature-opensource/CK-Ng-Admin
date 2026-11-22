@@ -15,7 +15,7 @@
 
         <PackageReference Include="CK.SqlServer.Transaction" Version="15.0.0-0.uc.0.ci.22" />
         <!-- The IUpdateUserCommand handler. -->
-        <PackageReference Include="CK.UserProfile" Version="3.0.0-0.uc.0.ci.186" />
+        <PackageReference Include="CK.UserProfile" Version="3.0.0-0.uc.0.ci.188" />
         <PackageReference Include="CK.Testing.Engine.AppIdentity.AuthCenter" Version="4.0.0-0.uc.0.ci.55" />
         <PackageReference Include="CK.Testing.Nunit" Version="18.0.0-0.uc" />
         <PackageReference Include="CK.Cris.AspNet.Engine" Version="3.0.0-0.uc.0.ci.184" />
