@@ -7,9 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CK.Ng.UserProfile.Workspace" Version="3.0.0-0.uc.0.ci.193" />
+    <PackageReference Include="CK.Ng.UserProfile.Workspace" Version="3.0.0-0.uc.0.ci.195" />
     <!-- The IsPlatformAdmin of the user profile (CK.IO.Admin.IUserProfile): the server rule, read by isAdmin. -->
-    <PackageReference Include="CK.IO.Admin" Version="3.0.0-0.uc.0.ci.137" />
+    <PackageReference Include="CK.IO.Admin" Version="3.0.0-0.uc.0.ci.139" />
   </ItemGroup>
 
 </Project>
