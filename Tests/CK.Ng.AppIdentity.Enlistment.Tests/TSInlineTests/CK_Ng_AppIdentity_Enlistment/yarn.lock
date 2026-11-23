@@ -3442,11 +3442,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@yarnpkg/sdks@npm:^3.3.1":
-  version: 3.3.1
-  resolution: "@yarnpkg/sdks@npm:3.3.1"
+"@yarnpkg/sdks@npm:^3.3.2":
+  version: 3.3.2
+  resolution: "@yarnpkg/sdks@npm:3.3.2"
   dependencies:
-    "@yarnpkg/core": "npm:^4.9.1"
+    "@yarnpkg/core": "npm:^4.9.3"
     "@yarnpkg/fslib": "npm:^3.1.5"
     "@yarnpkg/parsers": "npm:^3.1.0"
     chalk: "npm:^4.1.2"
@@ -3456,7 +3456,7 @@ __metadata:
     tslib: "npm:^2.4.0"
   bin:
     sdks: ./lib/cli.js
-  checksum: 10/ea2401373de838c02539e657715f5471ddc63d4d9a8563fba4ac350282ff5a1b6a2dbda7de0a7af6771ee615c0d0d54840b0f01a4ef9fdcd8b00004b9651ab09
+  checksum: 10/867e70dba72d81e83fb52393b67bb0a072ae008d96dc0364ec3da1f054f43087a40873331c4d1d88dd21c7e743b69c13bb59d9838833b78a976af3b80556743e
   languageName: node
   linkType: hard
 
@@ -4012,7 +4012,7 @@ __metadata:
     "@types/jest": "npm:^30"
     "@types/luxon": "npm:^3.6.2"
     "@types/node": "npm:^26.6.6"
-    "@yarnpkg/sdks": "npm:^3.3.1"
+    "@yarnpkg/sdks": "npm:^3.3.2"
     axios: "npm:^1.7.7"
     jest: "npm:^30.5.2"
     jest-environment-jsdom: "npm:^30.5.2"
