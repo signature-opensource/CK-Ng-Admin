@@ -4,7 +4,6 @@
         <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <Description>The tenants page of a CK-AppIdentity System: an operator lists the applications that hold Opened tenant templates, and creates, moves and removes their run-time tenant domains.</Description>
     </PropertyGroup>
 
     <ItemGroup>

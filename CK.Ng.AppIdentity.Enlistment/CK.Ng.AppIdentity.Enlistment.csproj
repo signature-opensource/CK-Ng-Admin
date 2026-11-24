@@ -4,7 +4,6 @@
         <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <Description>The approval page of a CK-AppIdentity System: a client application built with this package hosts the "Enlistment" route, where an operator approves a party that waits to be enlisted with the codes read on it.</Description>
     </PropertyGroup>
 
     <ItemGroup>
