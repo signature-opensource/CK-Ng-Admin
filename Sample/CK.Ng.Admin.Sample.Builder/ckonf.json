@@ -35,11 +35,13 @@
         },
         "MailSender": {
             "MailKit": {
-                "NoReply": {
-                    "SendEmail": false,
-                    "UsePickupDirectory": true,
-                    "PickupDirectory": "MailPickup",
-                    "From": "noreply@adminsample.local"
+                "Senders": {
+                    "NoReply": {
+                        "SendEmail": false,
+                        "UsePickupDirectory": true,
+                        "PickupDirectory": "MailPickup",
+                        "From": "noreply@adminsample.local"
+                    }
                 }
             }
         },
