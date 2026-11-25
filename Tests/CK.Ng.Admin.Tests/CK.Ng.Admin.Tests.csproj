@@ -7,22 +7,22 @@
         <IsTestProject>true</IsTestProject>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="CK.DB.User.UserPassword" Version="31.0.0-0.uc.3.ci.124" />
-        <PackageReference Include="CK.DB.Workspace" Version="18.0.0-0.uc.3.ci.111" />
-        <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Basic" Version="3.0.0-0.uc.3.ci.210" />
-        <PackageReference Include="CK.DB.Tests.NUnit" Version="37.0.0-0.uc.3.ci.65" />
+        <PackageReference Include="CK.DB.User.UserPassword" Version="31.0.0-0.uc.3.ci.125" />
+        <PackageReference Include="CK.DB.Workspace" Version="18.0.0-0.uc.3.ci.112" />
+        <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Basic" Version="3.0.0-0.uc.3.ci.211" />
+        <PackageReference Include="CK.DB.Tests.NUnit" Version="37.0.0-0.uc.3.ci.66" />
         <PackageReference Include="CK.SqlServer.Dapper" Version="18.0.0-0.uc.3.ci.88" />
 
         <PackageReference Include="CK.SqlServer.Transaction" Version="15.0.0-0.uc.3" />
         <!-- The IUpdateUserCommand handler. -->
-        <PackageReference Include="CK.UserProfile" Version="3.0.0-0.uc.3.ci.213" />
-        <PackageReference Include="CK.Testing.Engine.AppIdentity.AuthCenter" Version="4.0.0-0.uc.3.ci.90" />
+        <PackageReference Include="CK.UserProfile" Version="3.0.0-0.uc.3.ci.214" />
+        <PackageReference Include="CK.Testing.Engine.AppIdentity.AuthCenter" Version="4.0.0-0.uc.3.ci.91" />
         <PackageReference Include="CK.Testing.Nunit" Version="18.0.0-0.uc.1" />
-        <PackageReference Include="CK.Cris.AspNet.Engine" Version="3.0.0-0.uc.3.ci.210" />
-        <PackageReference Include="CK.Testing.Engine.SqlServer" Version="37.0.0-0.uc.3.ci.65" />
-        <PackageReference Include="CK.Testing.Engine.TypeScript" Version="4.0.0-0.uc.3.ci.65" />
-        <PackageReference Include="CK.Globalization.Engine" Version="3.0.0-0.uc.3.ci.93" />
-        <PackageReference Include="CK.TS.Angular.Engine" Version="3.0.1-0.uc.3.ci.121" />
+        <PackageReference Include="CK.Cris.AspNet.Engine" Version="3.0.0-0.uc.3.ci.211" />
+        <PackageReference Include="CK.Testing.Engine.SqlServer" Version="37.0.0-0.uc.3.ci.66" />
+        <PackageReference Include="CK.Testing.Engine.TypeScript" Version="4.0.0-0.uc.3.ci.66" />
+        <PackageReference Include="CK.Globalization.Engine" Version="3.0.0-0.uc.3.ci.94" />
+        <PackageReference Include="CK.TS.Angular.Engine" Version="3.0.1-0.uc.3.ci.122" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
         <PackageReference Include="NUnit3TestAdapter" Version="6.3.1" />
     </ItemGroup>
