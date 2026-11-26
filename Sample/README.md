@@ -7,7 +7,7 @@ page, the user management and the user profile, on a host that is its own AuthCe
 |---|---|
 | `CK.Ng.Admin.Sample.App` | The application: its packages, `AdminSamplePackage` (its TypeScript package), its commands and `DemoData` (the demo data seeded when the host starts). |
 | `CK.Ng.Admin.Sample.Builder` | Runs the engine (`CKSetup.xml`): the database `AdminSampleDB_LOCAL` on the local SQL Server, the generated code of the host and the `ck-gen` of the client application. |
-| `CK.Ng.Admin.Sample.Host` | The host: a CK.AppHost party (`Program.cs` is `await CK.Core.CKomposableAppHost.RunAsync( args );`) whose web server is its "HttpEndpoint" feature. |
+| `CK.Ng.Admin.Sample.Host` | The host: a CK.AppHost party (`Program.cs` is `return CK.Core.CKomposableAppHost.Run( args );`) whose web server is its "HttpEndpoint" feature. |
 
 ## The host
 
