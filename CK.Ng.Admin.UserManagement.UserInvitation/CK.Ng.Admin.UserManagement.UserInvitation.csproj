@@ -8,7 +8,7 @@
 
     <ItemGroup>
         <PackageReference Include="CK.IO.UserManagement.UserInvitation" Version="3.0.0-0.uc.4.ci.161" />
-        <PackageReference Include="CK.Ng.UserProfile.UserPassword.Lost" Version="3.0.0-0.uc.4.ci.221" />
+        <PackageReference Include="CK.Ng.UserProfile.UserPassword.Lost" Version="3.0.0-0.uc.4.ci.222" />
     </ItemGroup>
 
     <ItemGroup>
