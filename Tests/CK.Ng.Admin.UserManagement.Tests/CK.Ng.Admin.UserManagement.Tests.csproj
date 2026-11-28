@@ -7,30 +7,30 @@
         <IsTestProject>true</IsTestProject>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="CK.DB.User.UserPassword" Version="31.0.0-0.uc.4.ci.133" />
-        <PackageReference Include="CK.DB.Workspace" Version="18.0.0-0.uc.4.ci.121" />
-        <PackageReference Include="CK.DB.Acl" Version="31.0.0-0.uc.4.ci.148" />
-        <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Basic" Version="3.0.0-0.uc.4.ci.224" />
-        <PackageReference Include="CK.DB.Tests.NUnit" Version="37.0.0-0.uc.4.ci.78" />
-        <PackageReference Include="CK.SqlServer.Dapper" Version="18.0.0-0.uc.4.ci.97" />
-        <PackageReference Include="CK.SqlServer.Transaction" Version="15.0.0-0.uc.4.ci.38" />
-        <PackageReference Include="CK.Testing.Engine.AppIdentity.AuthCenter" Version="4.0.0-0.uc.4.ci.108" />
+        <PackageReference Include="CK.DB.User.UserPassword" Version="31.0.0-0.uc.4.ci.134" />
+        <PackageReference Include="CK.DB.Workspace" Version="18.0.0-0.uc.4.ci.122" />
+        <PackageReference Include="CK.DB.Acl" Version="31.0.0-0.uc.4.ci.149" />
+        <PackageReference Include="CK.Ng.Cris.AspNet.Authentication.Basic" Version="3.0.0-0.uc.4.ci.225" />
+        <PackageReference Include="CK.DB.Tests.NUnit" Version="37.0.0-0.uc.4.ci.79" />
+        <PackageReference Include="CK.SqlServer.Dapper" Version="18.0.0-0.uc.4.ci.98" />
+        <PackageReference Include="CK.SqlServer.Transaction" Version="15.0.0-0.uc.4.ci.39" />
+        <PackageReference Include="CK.Testing.Engine.AppIdentity.AuthCenter" Version="4.0.0-0.uc.4.ci.109" />
         <PackageReference Include="CK.Testing.Nunit" Version="18.0.0-0.uc.1" />
-        <PackageReference Include="CK.Cris.AspNet.Engine" Version="3.0.0-0.uc.4.ci.224" />
-        <PackageReference Include="CK.Testing.Engine.SqlServer" Version="37.0.0-0.uc.4.ci.78" />
-        <PackageReference Include="CK.Testing.Engine.TypeScript" Version="4.0.0-0.uc.4.ci.79" />
-        <PackageReference Include="CK.Globalization.Engine" Version="3.0.0-0.uc.4.ci.104" />
-        <PackageReference Include="CK.TS.Angular.Engine" Version="3.0.1-0.uc.4.ci.136" />
+        <PackageReference Include="CK.Cris.AspNet.Engine" Version="3.0.0-0.uc.4.ci.225" />
+        <PackageReference Include="CK.Testing.Engine.SqlServer" Version="37.0.0-0.uc.4.ci.79" />
+        <PackageReference Include="CK.Testing.Engine.TypeScript" Version="4.0.0-0.uc.4.ci.80" />
+        <PackageReference Include="CK.Globalization.Engine" Version="3.0.0-0.uc.4.ci.105" />
+        <PackageReference Include="CK.TS.Angular.Engine" Version="3.0.1-0.uc.4.ci.137" />
         <!-- Engine-side assembly for the user-invitation Fluid mail templates. -->
-        <PackageReference Include="CK.Template.Fluid.Engine" Version="3.0.0-0.uc.4.ci.93" />
+        <PackageReference Include="CK.Template.Fluid.Engine" Version="3.0.0-0.uc.4.ci.94" />
         <!-- CK.UserManagement pulls CK.Mailer -> CK.AppIdentity; the host must provide its configuration. -->
-        <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.uc.4.ci.211" />
+        <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.uc.4.ci.213" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
         <PackageReference Include="NUnit3TestAdapter" Version="6.3.1" />
         <!-- Backend command handlers/services exercised by the integration spec, now consumed as a published package. -->
-        <PackageReference Include="CK.UserManagement" Version="3.0.0-0.uc.4.ci.165" />
-        <PackageReference Include="CK.UserManagement.UserBanned" Version="3.0.0-0.uc.4.ci.165" />
-        <PackageReference Include="CK.UserManagement.UserInvitation" Version="3.0.0-0.uc.4.ci.165" />
+        <PackageReference Include="CK.UserManagement" Version="3.0.0-0.uc.4.ci.166" />
+        <PackageReference Include="CK.UserManagement.UserBanned" Version="3.0.0-0.uc.4.ci.166" />
+        <PackageReference Include="CK.UserManagement.UserInvitation" Version="3.0.0-0.uc.4.ci.166" />
     </ItemGroup>
     <ItemGroup>
         <!-- NG components (UsersTab, forms, ...) + IO contracts, plus the invitation / banned siblings. -->
