@@ -7,15 +7,15 @@
     <IsPackable>False</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CK.AppIdentity.Engine" Version="3.0.0-0.uc.4.ci.215" />
-    <PackageReference Include="CK.AppBuilder" Version="37.0.1-0.uc.1.ci.39" />
-    <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.uc.4.ci.215" />
-    <PackageReference Include="CK.Cris.AspNet.Engine" Version="3.0.0-0.uc.4.ci.227" />
-    <PackageReference Include="CK.Globalization.Engine" Version="3.0.0-0.uc.4.ci.107" />
-    <PackageReference Include="CK.Setupable.Engine" Version="37.0.0-0.uc.4.ci.81" />
-    <PackageReference Include="CK.SqlServer.Setup.Engine" Version="37.0.0-0.uc.4.ci.81" />
-    <PackageReference Include="CK.TS.Angular.Engine" Version="3.0.1-0.uc.4.ci.139" />
-    <PackageReference Include="CK.Template.Fluid.Engine" Version="3.0.0-0.uc.4.ci.96" />
+    <PackageReference Include="CK.AppIdentity.Engine" Version="3.0.0-0.uc.4.ci.216" />
+    <PackageReference Include="CK.AppBuilder" Version="37.0.1-0.uc.1.ci.40" />
+    <PackageReference Include="CK.AppIdentity.Hosting" Version="3.0.0-0.uc.4.ci.216" />
+    <PackageReference Include="CK.Cris.AspNet.Engine" Version="3.0.0-0.uc.4.ci.228" />
+    <PackageReference Include="CK.Globalization.Engine" Version="3.0.0-0.uc.4.ci.108" />
+    <PackageReference Include="CK.Setupable.Engine" Version="37.0.0-0.uc.4.ci.82" />
+    <PackageReference Include="CK.SqlServer.Setup.Engine" Version="37.0.0-0.uc.4.ci.82" />
+    <PackageReference Include="CK.TS.Angular.Engine" Version="3.0.1-0.uc.4.ci.140" />
+    <PackageReference Include="CK.Template.Fluid.Engine" Version="3.0.0-0.uc.4.ci.97" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CK.Ng.Admin.Sample.App\CK.Ng.Admin.Sample.App.csproj" />
